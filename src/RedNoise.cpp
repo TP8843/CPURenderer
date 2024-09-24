@@ -4,10 +4,12 @@
 #include <fstream>
 #include <vector>
 
+#include "Interpolation.h"
+
 #define WIDTH 320
 #define HEIGHT 240
 
-void draw(DrawingWindow &window) {
+void drawRedNoise(DrawingWindow &window) {
 	window.clearPixels();
 	for (size_t y = 0; y < window.height; y++) {
 		for (size_t x = 0; x < window.width; x++) {
@@ -16,6 +18,45 @@ void draw(DrawingWindow &window) {
 			float blue = 0.0;
 			uint32_t colour = (255 << 24) + (int(red) << 16) + (int(green) << 8) + int(blue);
 			window.setPixelColour(x, y, colour);
+		}
+	}
+}
+
+void drawGreyscaleInterpolation(DrawingWindow &window)
+{
+	window.clearPixels();
+	std::vector<float> gradient = Interpolation::interpolateSingleFloats(255, 0, 256);
+
+	for (float x = 0; x < window.width; x++)
+	{
+		const size_t index = floor((x / window.width) * gradient.size());
+		const size_t color = gradient[index];
+		for (size_t y = 0; y < window.height; y++)
+		{
+			window.setPixelColour(x, y, (color << 16) + (color << 8) + color);
+		}
+	}
+}
+
+void drawTwoDimensionalColorInterpolation(DrawingWindow &window)
+{
+	const glm::vec3 topLeft(255, 0, 0);        // red
+	const glm::vec3 topRight(0, 0, 255);       // blue
+	const glm::vec3 bottomRight(0, 255, 0);    // green
+	const glm::vec3 bottomLeft(255, 255, 0);   // yellow
+
+	window.clearPixels();
+
+	const std::vector<glm::vec3> firstColumn = Interpolation::interpolateThreeElementValues(topLeft, bottomLeft, window.height);
+	const std::vector<glm::vec3> lastColumn = Interpolation::interpolateThreeElementValues(topRight, bottomRight, window.height);
+
+	for( size_t y = 0; y < window.height; y++)
+	{
+		std::vector<glm::vec3> row = Interpolation::interpolateThreeElementValues(firstColumn[y], lastColumn[y], window.width);
+		for (size_t x = 0; x < window.width; x++)
+		{
+			const uint32_t color = (255 << 24) + (static_cast<uint32_t>(row[x].x) << 16) + (static_cast<uint32_t>(row[x].y) << 8) + static_cast<uint32_t>(row[x].z);
+			window.setPixelColour(x, y, color);
 		}
 	}
 }
@@ -33,12 +74,25 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 }
 
 int main(int argc, char *argv[]) {
+	const std::vector<glm::vec3> result = Interpolation::interpolateThreeElementValues(
+		glm::vec3(1.0, 4.0, 9.2),
+		glm::vec3(4.0, 1.0, 9.8),
+		4);
+
+	for(size_t i = 0; i < result.size(); i++)
+		std::cout << "(" << result[i].x << ", " << result[i].y << ", " << result[i].z << ")" << std::endl;
+
+	std::cout << std::endl;
+
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;
 	while (true) {
 		// We MUST poll for events - otherwise the window will freeze !
 		if (window.pollForInputEvents(event)) handleEvent(event, window);
-		draw(window);
+		// drawRedNoise(window);
+		// drawGreyscaleInterpolation(window);
+		drawTwoDimensionalColorInterpolation(window);
+
 		// Need to render the frame at the end, or nothing actually gets shown on the screen !
 		window.renderFrame();
 	}
