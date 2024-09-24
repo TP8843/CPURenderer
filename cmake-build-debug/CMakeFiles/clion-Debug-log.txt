@@ -1,0 +1,4 @@
+/Users/thomasparr/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Users/thomasparr/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G Ninja -S "/Users/thomasparr/Library/CloudStorage/GoogleDrive-google.87ail@tpalias.com/My Drive/Documents/University/Year 3/cg-labs/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise" -B "/Users/thomasparr/Library/CloudStorage/GoogleDrive-google.87ail@tpalias.com/My Drive/Documents/University/Year 3/cg-labs/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/cmake-build-debug"
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/thomasparr/Library/CloudStorage/GoogleDrive-google.87ail@tpalias.com/My Drive/Documents/University/Year 3/cg-labs/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/cmake-build-debug
