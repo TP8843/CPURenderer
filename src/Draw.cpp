@@ -9,27 +9,58 @@ void Draw::drawLine(DrawingWindow &window, const CanvasPoint &from, const Canvas
 {
     const auto yDif = glm::abs(to.y - from.y);
     const auto xDif = glm::abs(to.x - from.x);
-
-    const auto maxDif = glm::max(yDif, xDif);
-
-    std::vector<float> xs = Interpolation::interpolateSingleFloats(from.x, to.x, maxDif + 1);
-    std::vector<float> ys = Interpolation::interpolateSingleFloats(from.y, to.y, maxDif + 1);
     const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
 
-    // Run algorithm row by row
-    for (int i = 0; i < maxDif; i++)
+    if (xDif >= yDif)
     {
-        const float proportion = i / (maxDif - 1);
+        // Use x as a base
+        CanvasPoint start;
+        CanvasPoint end;
 
-        int x = xs[i];
-        int y = ys[i];
+        if (from.x > to.x)
+        {
+            start = to;
+            end = from;
+        }
+        else
+        {
+            start = from;
+            end = to;
+        }
 
-        x = Interpolation::interpolateSingleFloat(from.x, to.x, proportion);
-        y = Interpolation::interpolateSingleFloat(from.y, to.y, proportion);
+        for (int x = glm::floor(start.x); x <= static_cast<int>(glm::floor(end.x)); x++)
+        {
+            const float proportion = (static_cast<float>(x) - start.x) / (end.x - start.x);
 
-        window.setPixelColour(x, y, colourValue);
+            const int y = static_cast<int>(glm::floor(Interpolation::interpolateSingleFloat(start.y, end.y, proportion)));
+            window.setPixelColour(x, y, colourValue);
+        }
     }
+    else
+    {
+        // Use y as a base
+        CanvasPoint start;
+        CanvasPoint end;
 
+        if (from.y > to.y)
+        {
+            start = to;
+            end = from;
+        }
+        else
+        {
+            start = from;
+            end = to;
+        }
+
+        for (int y = glm::floor(start.y); y <= static_cast<int>(glm::floor(end.y)); y++)
+        {
+            const float proportion = (static_cast<float>(y) - start.y) / (end.y - start.y);
+
+            const int x = static_cast<int>(glm::floor(Interpolation::interpolateSingleFloat(start.x, end.x, proportion)));
+            window.setPixelColour(x, y, colourValue);
+        }
+    }
 }
 
 void Draw::drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour& colour)
@@ -59,44 +90,44 @@ void Draw::drawFilledTriangle(DrawingWindow &window, const CanvasTriangle& trian
     const auto sliceStart = vMid;
     const auto sliceEnd = CanvasPoint(Interpolation::interpolateSingleFloat(vMin.x, vMax.x, proportion), vMid.y);
 
-    drawFlatBottomTriangle(window, sliceStart, sliceEnd, vMax, colour);
-    drawFlatTopTriangle(window, sliceStart, sliceEnd, vMin, colour);
+    drawFilledFlatBottomTriangle(window, sliceStart, sliceEnd, vMax, colour);
+    drawFilledFlatTopTriangle(window, sliceStart, sliceEnd, vMin, colour);
 }
 
- void Draw::drawFlatBottomTriangle(DrawingWindow &window, const CanvasPoint &sliceStart,
+ void Draw::drawFilledFlatBottomTriangle(DrawingWindow &window, const CanvasPoint &sliceStart,
      const CanvasPoint &sliceEnd, const CanvasPoint &other, const Colour &colour)
 {
     const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
 
-    for (int y = sliceStart.y; y < other.y; y++)
+    for (int y = glm::floor(sliceStart.y); y < static_cast<int>(glm::floor(other.y)); y++)
     {
-        float proportion = (y - sliceStart.y) / (other.y - sliceStart.y);
-        int start = Interpolation::interpolateSingleFloat(sliceStart.x, other.x, proportion);
-        int end = Interpolation::interpolateSingleFloat(sliceEnd.x, other.x, proportion);
+        const float proportion = (static_cast<float>(y) - sliceStart.y) / (other.y - sliceStart.y);
+        float start = Interpolation::interpolateSingleFloat(sliceStart.x, other.x, proportion);
+        float end = Interpolation::interpolateSingleFloat(sliceEnd.x, other.x, proportion);
 
         if (start > end) std::swap(start, end);
 
-        for (int x = start; x < end; x++)
+        for (int x = glm::ceil(start); x < static_cast<int>(glm::ceil(end)); x++)
         {
             window.setPixelColour(x, y, colourValue);
         }
     }
 }
 
-void Draw::drawFlatTopTriangle(DrawingWindow &window, const CanvasPoint &sliceStart,
+void Draw::drawFilledFlatTopTriangle(DrawingWindow &window, const CanvasPoint &sliceStart,
     const CanvasPoint &sliceEnd, const CanvasPoint &other, const Colour &colour)
 {
     const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
 
-    for (int y = other.y; y < sliceStart.y; y++)
+    for (int y = glm::floor(sliceStart.y); y > static_cast<int>(glm::floor(other.y)); y--)
     {
-        float proportion = (y - other.y) / (sliceStart.y - other.y);
-        int start = Interpolation::interpolateSingleFloat(other.x, sliceStart.x, proportion);
-        int end = Interpolation::interpolateSingleFloat(other.x, sliceEnd.x, proportion);
+        const float proportion = (static_cast<float>(y) - sliceStart.y) / (other.y - sliceStart.y);
+        float start = Interpolation::interpolateSingleFloat(sliceStart.x, other.x, proportion);
+        float end = Interpolation::interpolateSingleFloat(sliceEnd.x, other.x, proportion);
 
         if (start > end) std::swap(start, end);
 
-        for (int x = start; x < end; x++)
+        for (int x = glm::ceil(start); x < static_cast<int>(glm::ceil(end)); x++)
         {
             window.setPixelColour(x, y, colourValue);
         }

@@ -66,7 +66,7 @@ else ()
 
     set(DEBUG_OPTIONS -O2 -fno-omit-frame-pointer -g)
     set(RELEASE_OPTIONS -O3 -march=native -mtune=native)
-    target_link_libraries(RedNoise PUBLIC $<$<CONFIG:Debug>:-Wl>)
+    target_link_libraries(RedNoise PUBLIC $<$<CONFIG:Debug>:>)
 #    Removed , -lasan
 
 endif()

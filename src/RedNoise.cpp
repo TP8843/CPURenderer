@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
 		// drawRedNoise(window);
 		// drawGreyscaleInterpolation(window);
 		// drawTwoDimensionalColorInterpolation(window);
-		// drawLineTest(window);
+		drawLineTest(window);
 
 		// Need to render the frame at the end, or nothing actually gets shown on the screen !
 		window.renderFrame();

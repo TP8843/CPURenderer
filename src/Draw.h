@@ -20,11 +20,11 @@ public:
     static void drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour& colour);
 
 private:
-    static void drawFlatBottomTriangle(DrawingWindow& window, const CanvasPoint& sliceStart,
+    static void drawFilledFlatBottomTriangle(DrawingWindow& window, const CanvasPoint& sliceStart,
         const CanvasPoint& sliceEnd, const CanvasPoint& other, const Colour& colour);
 
 private:
-    static void drawFlatTopTriangle(DrawingWindow& window, const CanvasPoint& sliceStart, const CanvasPoint& sliceEnd,
+    static void drawFilledFlatTopTriangle(DrawingWindow& window, const CanvasPoint& sliceStart, const CanvasPoint& sliceEnd,
                              const CanvasPoint& other, const Colour& colour);
 };
 
