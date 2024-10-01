@@ -37,7 +37,9 @@ add_executable(RedNoise
         libs/sdw/Utils.cpp
         src/RedNoise.cpp
         src/Interpolation.cpp
-        src/Interpolation.h)
+        src/Interpolation.h
+        src/Draw.cpp
+        src/Draw.h)
 
 if (MSVC)
     target_compile_options(RedNoise

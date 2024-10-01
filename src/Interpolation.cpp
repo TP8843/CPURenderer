@@ -1,22 +1,26 @@
-//
-// Created by Thomas Parr on 24/09/2024.
-//
-
 #include "Interpolation.h"
 
 #include <glm/glm.hpp>
 
-std::vector<float> Interpolation::interpolateSingleFloats(float from, float to, int count)
+std::vector<float> Interpolation::interpolateSingleFloats(const float from, const float to, const int count)
 {
-    const float difference = (to - from) / (count - 1);
+    const float difference = (to - from) / static_cast<float>(count - 1);
     std::vector<float> result;
 
-    for (int i = 0; i < count; i++)
+    float x = from;
+    for (float i = 0; i < count; i++)
     {
-        result.push_back(from + (difference * i));
+        x += difference;
+        result.push_back(x);
     }
 
     return result;
+}
+
+// Distance is number of values from from value
+float Interpolation::interpolateSingleFloat(const float from, const float to, const float proportion)
+{
+    return from + (to - from) * proportion;
 }
 
 std::vector<glm::vec3> Interpolation::interpolateThreeElementValues(const glm::vec3 from, const glm::vec3 to, const int count)
