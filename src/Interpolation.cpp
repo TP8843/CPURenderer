@@ -17,7 +17,6 @@ std::vector<float> Interpolation::interpolateSingleFloats(const float from, cons
     return result;
 }
 
-// Distance is number of values from from value
 float Interpolation::interpolateSingleFloat(const float from, const float to, const float proportion)
 {
     return from + (to - from) * proportion;

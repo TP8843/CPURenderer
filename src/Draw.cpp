@@ -19,8 +19,13 @@ void Draw::drawLine(DrawingWindow &window, const CanvasPoint &from, const Canvas
     // Run algorithm row by row
     for (int i = 0; i < maxDif; i++)
     {
+        const float proportion = i / (maxDif - 1);
+
         int x = xs[i];
         int y = ys[i];
+
+        x = Interpolation::interpolateSingleFloat(from.x, to.x, proportion);
+        y = Interpolation::interpolateSingleFloat(from.y, to.y, proportion);
 
         window.setPixelColour(x, y, colourValue);
     }
