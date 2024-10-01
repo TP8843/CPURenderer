@@ -2,10 +2,11 @@
 
 #include <CanvasPoint.h>
 #include <Colour.h>
+#include <TextureMap.h>
 
 #include "Interpolation.h"
 
-void Draw::drawLine(DrawingWindow &window, const CanvasPoint &from, const CanvasPoint &to, const Colour &colour)
+void Draw::drawLine(DrawingWindow& window, const CanvasPoint& from, const CanvasPoint& to, const Colour& colour)
 {
     const auto yDif = glm::abs(to.y - from.y);
     const auto xDif = glm::abs(to.x - from.x);
@@ -74,7 +75,7 @@ void Draw::drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& tria
     drawLine(window, v2, v3, colour);
 }
 
-void Draw::drawFilledTriangle(DrawingWindow &window, const CanvasTriangle& triangle, const Colour &colour)
+void Draw::drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour &colour)
 {
     auto vMin = triangle.vertices[0];
     auto vMid = triangle.vertices[1];
@@ -92,6 +93,27 @@ void Draw::drawFilledTriangle(DrawingWindow &window, const CanvasTriangle& trian
 
     drawFilledFlatBottomTriangle(window, sliceStart, sliceEnd, vMax, colour);
     drawFilledFlatTopTriangle(window, sliceStart, sliceEnd, vMin, colour);
+}
+
+void Draw::drawTexturedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const TextureMap& texture)
+{
+    auto vMin = triangle.vertices[0];
+    auto vMid = triangle.vertices[1];
+    auto vMax = triangle.vertices[2];
+
+    // Sort triangle based on y value
+    if (vMin.y > vMid.y) std::swap(vMin, vMid);
+    if (vMid.y > vMax.y) std::swap(vMid, vMax);
+    if (vMin.y > vMid.y) std::swap(vMin, vMid);
+
+    const float canvasProportion = (vMid.y - vMin.y) / (vMax.y - vMin.y);
+    const float textureXProportion = (vMid.texturePoint.x - vMin.texturePoint.x) / (vMax.texturePoint.x - vMin.texturePoint.x);
+    const float textureYProportion = (vMid.texturePoint.y - vMin.texturePoint.y) / (vMax.texturePoint.y - vMin.texturePoint.y);
+
+    const auto sliceStart = vMid;
+    const auto sliceEnd = CanvasPoint(Interpolation::interpolateSingleFloat(vMin.x, vMax.x, canvasProportion), vMid.y, );
+    sliceEnd.texturePoint = TexturePoint(Interpolation::interpolateSingleFloat(vMin.texturePoint.x, vMax.texturePoint.x, textureXProportion),
+                                         Interpolation::interpolateSingleFloat(vMin.texturePoint.y, vMax.texturePoint.y, textureYProportion));
 }
 
  void Draw::drawFilledFlatBottomTriangle(DrawingWindow &window, const CanvasPoint &sliceStart,

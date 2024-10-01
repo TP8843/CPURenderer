@@ -8,16 +8,20 @@
 #include <CanvasTriangle.h>
 #include <Colour.h>
 #include <DrawingWindow.h>
+#include <TextureMap.h>
 
 
 class Draw {
 public:
-    static void drawLine(DrawingWindow &window, const CanvasPoint &from, const CanvasPoint &to, const Colour &colour);
+    static void drawLine(DrawingWindow& window, const CanvasPoint& from, const CanvasPoint& to, const Colour& colour);
 
 public:
-    static void drawStrokedTriangle(DrawingWindow &window, const CanvasTriangle &triangle, const Colour &colour);
+    static void drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour& colour);
 public:
     static void drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour& colour);
+
+public:
+    static void drawTexturedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const TextureMap& texture);
 
 private:
     static void drawFilledFlatBottomTriangle(DrawingWindow& window, const CanvasPoint& sliceStart,
