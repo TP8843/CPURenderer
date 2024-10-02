@@ -77,91 +77,86 @@ void Draw::drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& tria
 
 void Draw::drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour &colour)
 {
-    auto vMin = triangle.vertices[0];
-    auto vMid = triangle.vertices[1];
-    auto vMax = triangle.vertices[2];
+    const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
+    std::array<CanvasPoint, 3> vertices =  triangle.vertices;
 
     // Sort triangle based on y value
-    if (vMin.y > vMid.y) std::swap(vMin, vMid);
-    if (vMid.y > vMax.y) std::swap(vMid, vMax);
-    if (vMin.y > vMid.y) std::swap(vMin, vMid);
+    if (vertices[0].y > vertices[1].y) std::swap(vertices[0], vertices[1]);
+    if (vertices[1].y > vertices[2].y) std::swap(vertices[1], vertices[2]);
+    if (vertices[0].y > vertices[1].y) std::swap(vertices[0], vertices[1]);
 
-    const float proportion = (vMid.y - vMin.y) / (vMax.y - vMin.y);
+    int startVertex = 0;
 
-    const auto sliceStart = vMid;
-    const auto sliceEnd = CanvasPoint(Interpolation::interpolateSingleFloat(vMin.x, vMax.x, proportion), vMid.y);
+    for(size_t y = glm::floor(vertices[0].y); y <= static_cast<size_t>(glm::floor(vertices[2].y)); y++)
+    {
+        const float rowStartProportion = (static_cast<float>(y) - vertices[startVertex].y) / (vertices[startVertex + 1].y - vertices[startVertex].y);
+        float rowStart = Interpolation::interpolateSingleFloat(vertices[startVertex].x, vertices[startVertex + 1].x, rowStartProportion);
 
-    drawFilledFlatBottomTriangle(window, sliceStart, sliceEnd, vMax, colour);
-    drawFilledFlatTopTriangle(window, sliceStart, sliceEnd, vMin, colour);
+        const float rowEndProportion = (static_cast<float>(y) - vertices[0].y) / (vertices[2].y - vertices[0].y);
+        float rowEnd = Interpolation::interpolateSingleFloat(vertices[0].x, vertices[2].x, rowEndProportion);
+
+        if (rowStart > rowEnd) std::swap(rowStart, rowEnd);
+
+        for(size_t x = glm::ceil(rowStart); x < static_cast<size_t>(glm::ceil(rowEnd)); x++)
+        {
+            window.setPixelColour(x, y, colourValue);
+        }
+
+        if (y == static_cast<size_t>(vertices[1].y)) startVertex++;
+    }
 }
 
 void Draw::drawTexturedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const TextureMap& texture)
 {
-    auto vMin = triangle.vertices[0];
-    auto vMid = triangle.vertices[1];
-    auto vMax = triangle.vertices[2];
+    auto vertices =  triangle.vertices;
 
     // Sort triangle based on y value
-    if (vMin.y > vMid.y) std::swap(vMin, vMid);
-    if (vMid.y > vMax.y) std::swap(vMid, vMax);
-    if (vMin.y > vMid.y) std::swap(vMin, vMid);
+    if (vertices[0].y > vertices[1].y) std::swap(vertices[0], vertices[1]);
+    if (vertices[1].y > vertices[2].y) std::swap(vertices[1], vertices[2]);
+    if (vertices[0].y > vertices[1].y) std::swap(vertices[0], vertices[1]);
 
-    const float canvasProportion = (vMid.y - vMin.y) / (vMax.y - vMin.y);
-    const float textureProportion = (vMid.texturePoint.y - vMin.texturePoint.y) / (vMax.texturePoint.y - vMin.texturePoint.y);
+    int startVertex = 0;
 
-    const auto sliceStart = vMid;
-
-    const auto sliceEndTexturePoint = TexturePoint(Interpolation::interpolateSingleFloat(vMin.texturePoint.x, vMax.texturePoint.x, textureProportion),
-                                                   Interpolation::interpolateSingleFloat(vMin.texturePoint.y, vMax.texturePoint.y, textureProportion));
-
-    const auto sliceEnd = CanvasPoint(
-            Interpolation::interpolateSingleFloat(vMin.x, vMax.x, canvasProportion),
-            vMid.y,
-            sliceEndTexturePoint
-        );
-
-    drawTexturedFlatBottomTriangle(window, sliceStart, sliceEnd, vMax, texture);
-    drawTexturedFlatTopTriangle(window, sliceStart, sliceEnd, vMin, texture);
-}
-
- void Draw::drawFilledFlatBottomTriangle(DrawingWindow &window, const CanvasPoint &sliceStart,
-     const CanvasPoint &sliceEnd, const CanvasPoint &other, const Colour &colour)
-{
-    const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
-
-    for (int y = glm::floor(sliceStart.y); y < static_cast<int>(glm::floor(other.y)); y++)
+    for(size_t y = glm::floor(vertices[0].y); y <= static_cast<size_t>(glm::floor(vertices[2].y)); y++)
     {
-        const float proportion = (static_cast<float>(y) - sliceStart.y) / (other.y - sliceStart.y);
-        float start = Interpolation::interpolateSingleFloat(sliceStart.x, other.x, proportion);
-        float end = Interpolation::interpolateSingleFloat(sliceEnd.x, other.x, proportion);
+        const float rowStartProportion = (static_cast<float>(y) - vertices[startVertex].y) / (vertices[startVertex + 1].y - vertices[startVertex].y);
+        float rowStart = Interpolation::interpolateSingleFloat(vertices[startVertex].x, vertices[startVertex + 1].x, rowStartProportion);
+        auto textureRowStart = TexturePoint(
+            Interpolation::interpolateSingleFloat(vertices[startVertex].texturePoint.x, vertices[startVertex + 1].texturePoint.x, rowStartProportion),
+            Interpolation::interpolateSingleFloat(vertices[startVertex].texturePoint.y, vertices[startVertex + 1].texturePoint.y, rowStartProportion)
+            );
 
-        if (start > end) std::swap(start, end);
+        const float rowEndProportion = (static_cast<float>(y) - vertices[0].y) / (vertices[2].y - vertices[0].y);
+        float rowEnd = Interpolation::interpolateSingleFloat(vertices[0].x, vertices[2].x, rowEndProportion);
+        auto textureRowEnd = TexturePoint(
+            Interpolation::interpolateSingleFloat(vertices[0].texturePoint.x, vertices[2].texturePoint.x, rowEndProportion),
+            Interpolation::interpolateSingleFloat(vertices[0].texturePoint.y, vertices[2].texturePoint.y, rowEndProportion)
+            );
 
-        for (int x = glm::ceil(start); x < static_cast<int>(glm::ceil(end)); x++)
+        if (rowStart > rowEnd)
         {
+            std::swap(rowStart, rowEnd);
+            std::swap(textureRowStart, textureRowEnd);
+        }
+
+        for(size_t x = glm::ceil(rowStart); x < static_cast<size_t>(glm::ceil(rowEnd)); x++)
+        {
+            const float currentRowProportion = (static_cast<float>(x) - rowStart) / (rowEnd - rowStart);
+
+            const auto texturePosition = TexturePoint(
+                Interpolation::interpolateSingleFloat(textureRowStart.x, textureRowEnd.x, currentRowProportion),
+                Interpolation::interpolateSingleFloat(textureRowStart.y, textureRowEnd.y, currentRowProportion)
+            );
+            const size_t colour = texture.pixels.at(glm::floor(texturePosition.y) * static_cast<float>(texture.width) + glm::floor(texturePosition.x));
+            const auto colourValue = (0xFF << 24) + (colour & 0xFFFFFF);
             window.setPixelColour(x, y, colourValue);
         }
+
+        if (y == static_cast<size_t>(vertices[1].y)) startVertex++;
     }
-}
 
-void Draw::drawFilledFlatTopTriangle(DrawingWindow &window, const CanvasPoint &sliceStart,
-    const CanvasPoint &sliceEnd, const CanvasPoint &other, const Colour &colour)
-{
-    const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
-
-    for (int y = glm::floor(sliceStart.y); y > static_cast<int>(glm::floor(other.y)); y--)
-    {
-        const float proportion = (static_cast<float>(y) - sliceStart.y) / (other.y - sliceStart.y);
-        float start = Interpolation::interpolateSingleFloat(sliceStart.x, other.x, proportion);
-        float end = Interpolation::interpolateSingleFloat(sliceEnd.x, other.x, proportion);
-
-        if (start > end) std::swap(start, end);
-
-        for (int x = glm::ceil(start); x < static_cast<int>(glm::ceil(end)); x++)
-        {
-            window.setPixelColour(x, y, colourValue);
-        }
-    }
+    // const auto sliceEndTexturePoint = TexturePoint(Interpolation::interpolateSingleFloat(vMin.texturePoint.x, vMax.texturePoint.x, textureProportion),
+    //                                                Interpolation::interpolateSingleFloat(vMin.texturePoint.y, vMax.texturePoint.y, textureProportion));
 }
 
 void Draw::drawTexturedFlatBottomTriangle(DrawingWindow &window, const CanvasPoint &sliceStart, const CanvasPoint &sliceEnd, const CanvasPoint &other, const TextureMap &texture)

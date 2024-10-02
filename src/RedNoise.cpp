@@ -94,6 +94,7 @@ void drawTexturedTriangleText(DrawingWindow &window)
 	const auto triangle = CanvasTriangle(v1, v2, v3);
 
 	Draw::drawTexturedTriangle(window, triangle, texture);
+	Draw::drawStrokedTriangle(window, triangle, Colour(255, 255, 255));
 }
 
 void handleEvent(SDL_Event event, DrawingWindow &window) {
