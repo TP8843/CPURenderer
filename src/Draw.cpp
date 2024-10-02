@@ -107,13 +107,21 @@ void Draw::drawTexturedTriangle(DrawingWindow& window, const CanvasTriangle& tri
     if (vMin.y > vMid.y) std::swap(vMin, vMid);
 
     const float canvasProportion = (vMid.y - vMin.y) / (vMax.y - vMin.y);
-    const float textureXProportion = (vMid.texturePoint.x - vMin.texturePoint.x) / (vMax.texturePoint.x - vMin.texturePoint.x);
-    const float textureYProportion = (vMid.texturePoint.y - vMin.texturePoint.y) / (vMax.texturePoint.y - vMin.texturePoint.y);
+    const float textureProportion = (vMid.texturePoint.y - vMin.texturePoint.y) / (vMax.texturePoint.y - vMin.texturePoint.y);
 
     const auto sliceStart = vMid;
-    const auto sliceEnd = CanvasPoint(Interpolation::interpolateSingleFloat(vMin.x, vMax.x, canvasProportion), vMid.y, );
-    sliceEnd.texturePoint = TexturePoint(Interpolation::interpolateSingleFloat(vMin.texturePoint.x, vMax.texturePoint.x, textureXProportion),
-                                         Interpolation::interpolateSingleFloat(vMin.texturePoint.y, vMax.texturePoint.y, textureYProportion));
+
+    const auto sliceEndTexturePoint = TexturePoint(Interpolation::interpolateSingleFloat(vMin.texturePoint.x, vMax.texturePoint.x, textureProportion),
+                                                   Interpolation::interpolateSingleFloat(vMin.texturePoint.y, vMax.texturePoint.y, textureProportion));
+
+    const auto sliceEnd = CanvasPoint(
+            Interpolation::interpolateSingleFloat(vMin.x, vMax.x, canvasProportion),
+            vMid.y,
+            sliceEndTexturePoint
+        );
+
+    drawTexturedFlatBottomTriangle(window, sliceStart, sliceEnd, vMax, texture);
+    drawTexturedFlatTopTriangle(window, sliceStart, sliceEnd, vMin, texture);
 }
 
  void Draw::drawFilledFlatBottomTriangle(DrawingWindow &window, const CanvasPoint &sliceStart,
@@ -152,6 +160,80 @@ void Draw::drawFilledFlatTopTriangle(DrawingWindow &window, const CanvasPoint &s
         for (int x = glm::ceil(start); x < static_cast<int>(glm::ceil(end)); x++)
         {
             window.setPixelColour(x, y, colourValue);
+        }
+    }
+}
+
+void Draw::drawTexturedFlatBottomTriangle(DrawingWindow &window, const CanvasPoint &sliceStart, const CanvasPoint &sliceEnd, const CanvasPoint &other, const TextureMap &texture)
+{
+
+    for (int y = glm::floor(sliceStart.y); y < static_cast<int>(glm::floor(other.y)); y++)
+    {
+        const float yProportion = (static_cast<float>(y) - sliceStart.y) / (other.y - sliceStart.y);
+
+        float start = Interpolation::interpolateSingleFloat(sliceStart.x, other.x, yProportion);
+        float end = Interpolation::interpolateSingleFloat(sliceEnd.x, other.x, yProportion);
+
+        auto textureStart = TexturePoint(
+            Interpolation::interpolateSingleFloat(sliceStart.texturePoint.x, other.texturePoint.x, yProportion),
+            Interpolation::interpolateSingleFloat(sliceStart.texturePoint.y, other.texturePoint.y, yProportion)
+        );
+
+        auto textureEnd = TexturePoint(
+            Interpolation::interpolateSingleFloat(sliceEnd.texturePoint.x, other.texturePoint.x, yProportion),
+            Interpolation::interpolateSingleFloat(sliceEnd.texturePoint.y, other.texturePoint.y, yProportion)
+        );
+
+        if (start > end)
+        {
+            std::swap(start, end);
+            std::swap(textureStart, textureEnd);
+        }
+
+        for (int x = glm::ceil(start); x < static_cast<int>(glm::ceil(end)); x++)
+        {
+            const float xProportion = (static_cast<float>(x) - start) / (end - start);
+            const auto texturePoint = TexturePoint(
+                Interpolation::interpolateSingleFloat(textureStart.x, textureEnd.x, xProportion),
+                Interpolation::interpolateSingleFloat(textureStart.y, textureEnd.y, xProportion)
+            );
+
+            const int textureColour = texture.pixels.at(glm::round(texturePoint.y) * texture.width + glm::round(texturePoint.x));
+            const int formattedColour = (0xFF << 24) + (textureColour & 0xFFFFFF);
+
+            window.setPixelColour(x, y, formattedColour);
+        }
+    }
+}
+
+void Draw::drawTexturedFlatTopTriangle(DrawingWindow &window, const CanvasPoint &sliceStart, const CanvasPoint &sliceEnd, const CanvasPoint &other, const TextureMap &texture)
+{
+
+    for (int y = glm::floor(sliceStart.y); y > static_cast<int>(glm::floor(other.y)); y--)
+    {
+        const float yProportion = (static_cast<float>(y) - sliceStart.y) / (other.y - sliceStart.y);
+        const float textureY = Interpolation::interpolateSingleFloat(sliceStart.texturePoint.y, other.texturePoint.y, yProportion);
+
+        float start = Interpolation::interpolateSingleFloat(sliceStart.x, other.x, yProportion);
+        float end = Interpolation::interpolateSingleFloat(sliceEnd.x, other.x, yProportion);
+        float textureStart = Interpolation::interpolateSingleFloat(sliceStart.texturePoint.x, other.texturePoint.x, yProportion);
+        float textureEnd = Interpolation::interpolateSingleFloat(sliceEnd.texturePoint.x, other.texturePoint.x, yProportion);
+
+        if (start > end)
+        {
+            std::swap(start, end);
+            std::swap(textureStart, textureEnd);
+        }
+
+        for (int x = glm::ceil(start); x < static_cast<int>(glm::ceil(end)); x++)
+        {
+            const float xProportion = (static_cast<float>(x) - start) / (end - start);
+            const float textureX = Interpolation::interpolateSingleFloat(textureStart, textureEnd, xProportion);
+
+            const int textureColour = texture.pixels.at(glm::round(textureY) * texture.width + glm::round(textureX));
+            const int formattedColour = (0xFF << 24) + (textureColour & 0xFFFFFF);
+
+            window.setPixelColour(x, y, formattedColour);
         }
     }
 }

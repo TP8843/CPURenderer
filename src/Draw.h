@@ -30,6 +30,14 @@ private:
 private:
     static void drawFilledFlatTopTriangle(DrawingWindow& window, const CanvasPoint& sliceStart, const CanvasPoint& sliceEnd,
                              const CanvasPoint& other, const Colour& colour);
+
+private:
+    static void drawTexturedFlatBottomTriangle(DrawingWindow& window, const CanvasPoint& sliceStart, const CanvasPoint& sliceEnd,
+                                               const CanvasPoint& other, const TextureMap& texture);
+
+private:
+    static void drawTexturedFlatTopTriangle(DrawingWindow& window, const CanvasPoint& sliceStart, const CanvasPoint& sliceEnd,
+                                     const CanvasPoint& other, const TextureMap& texture);
 };
 
 

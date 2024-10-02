@@ -14,5 +14,6 @@ struct CanvasPoint {
 	CanvasPoint(float xPos, float yPos);
 	CanvasPoint(float xPos, float yPos, float pointDepth);
 	CanvasPoint(float xPos, float yPos, float pointDepth, float pointBrightness);
+	CanvasPoint(float xPos, float yPos, TexturePoint texturePoint);
 	friend std::ostream &operator<<(std::ostream &os, const CanvasPoint &point);
 };

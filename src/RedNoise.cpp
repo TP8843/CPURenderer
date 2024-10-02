@@ -84,6 +84,18 @@ void drawLineTest(DrawingWindow &window)
 	Draw::drawLine(window, from, to, colour);
 }
 
+void drawTexturedTriangleText(DrawingWindow &window)
+{
+	const auto texture = TextureMap("./texture.ppm");
+	const auto v1 = CanvasPoint(160, 10, TexturePoint(195, 5));
+	const auto v2 = CanvasPoint(300, 230, TexturePoint(395, 380));
+	const auto v3 = CanvasPoint(10, 150, TexturePoint(65, 330));
+
+	const auto triangle = CanvasTriangle(v1, v2, v3);
+
+	Draw::drawTexturedTriangle(window, triangle, texture);
+}
+
 void handleEvent(SDL_Event event, DrawingWindow &window) {
 	if (event.type == SDL_KEYDOWN) {
 		if (event.key.keysym.sym == SDLK_LEFT) std::cout << "LEFT" << std::endl;
@@ -130,7 +142,8 @@ int main(int argc, char *argv[]) {
 		// drawRedNoise(window);
 		// drawGreyscaleInterpolation(window);
 		// drawTwoDimensionalColorInterpolation(window);
-		drawLineTest(window);
+		// drawLineTest(window);
+		drawTexturedTriangleText(window);
 
 		// Need to render the frame at the end, or nothing actually gets shown on the screen !
 		window.renderFrame();

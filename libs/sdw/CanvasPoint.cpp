@@ -24,6 +24,15 @@ CanvasPoint::CanvasPoint(float xPos, float yPos, float pointDepth, float pointBr
 		brightness(pointBrightness),
 		texturePoint(-1, -1) {}
 
+CanvasPoint::CanvasPoint(float xPos, float yPos, TexturePoint texturePoint) :
+		x(xPos),
+		y(yPos),
+		depth(0.0),
+		brightness(1.0),
+		texturePoint(texturePoint)
+{}
+
+
 std::ostream &operator<<(std::ostream &os, const CanvasPoint &point) {
 	os << "(" << point.x << ", " << point.y << ", " << point.depth << ") " << point.brightness;
 	return os;
