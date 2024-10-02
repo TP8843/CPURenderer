@@ -84,7 +84,7 @@ void drawLineTest(DrawingWindow &window)
 	Draw::drawLine(window, from, to, colour);
 }
 
-void drawTexturedTriangleText(DrawingWindow &window)
+void drawTexturedTriangleTest(DrawingWindow &window)
 {
 	const auto texture = TextureMap("./texture.ppm");
 	const auto v1 = CanvasPoint(160, 10, TexturePoint(195, 5));
@@ -95,6 +95,32 @@ void drawTexturedTriangleText(DrawingWindow &window)
 
 	Draw::drawTexturedTriangle(window, triangle, texture);
 	Draw::drawStrokedTriangle(window, triangle, Colour(255, 255, 255));
+}
+
+void drawEdgeCaseTriangles (DrawingWindow &window)
+{
+	const auto colour = Colour(255, 255, 255);
+	auto triangle1 = CanvasTriangle(
+		CanvasPoint(0, 0),
+		CanvasPoint(100, 0),
+		CanvasPoint(50, 200)
+	);
+
+	auto triangle2 = CanvasTriangle(
+		CanvasPoint(window.width -1, 0),
+		CanvasPoint(window.width - 1, 100),
+		CanvasPoint(window.width - 50, 100)
+	);
+
+	auto triangle3 = CanvasTriangle(
+		CanvasPoint(window.width / 2, window.height - 51),
+		CanvasPoint(window.width / 2 + 100, window.height - 1),
+		CanvasPoint(window.width / 2, window.height - 1)
+	);
+
+	Draw::drawFilledTriangle(window, triangle1, colour);
+	Draw::drawFilledTriangle(window, triangle2, colour);
+	Draw::drawFilledTriangle(window, triangle3, colour);
 }
 
 void handleEvent(SDL_Event event, DrawingWindow &window) {
@@ -144,7 +170,8 @@ int main(int argc, char *argv[]) {
 		// drawGreyscaleInterpolation(window);
 		// drawTwoDimensionalColorInterpolation(window);
 		// drawLineTest(window);
-		drawTexturedTriangleText(window);
+		// drawTexturedTriangleTest(window);
+		drawEdgeCaseTriangles(window);
 
 		// Need to render the frame at the end, or nothing actually gets shown on the screen !
 		window.renderFrame();

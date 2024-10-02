@@ -17,6 +17,12 @@ std::vector<float> Interpolation::interpolateSingleFloats(const float from, cons
     return result;
 }
 
+float Interpolation::proportion(const float from, const float to, const float current, const float fallback = 1)
+{
+    if (to - from == 0) return fallback;
+    return (current - from) / (to - from);
+}
+
 float Interpolation::interpolateSingleFloat(const float from, const float to, const float proportion)
 {
     return from + (to - from) * proportion;

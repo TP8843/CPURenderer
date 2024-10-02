@@ -6,6 +6,8 @@
 
 class Interpolation {
 public: static std::vector<float> interpolateSingleFloats(float, float, int);
+
+public: static float proportion(float from, float to, float current, float fallback);
 public: static float interpolateSingleFloat(float from, float to, float progress);
 
 public: static std::vector<glm::vec3> interpolateThreeElementValues(glm::vec3, glm:: vec3, int);
