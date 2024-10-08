@@ -7,6 +7,7 @@
 
 #include "Draw.h"
 #include "Interpolation.h"
+#include "Model.h"
 
 #define WIDTH 320
 #define HEIGHT 240
@@ -150,15 +151,12 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 }
 
 int main(int argc, char *argv[]) {
-	const std::vector<glm::vec3> result = Interpolation::interpolateThreeElementValues(
-		glm::vec3(1.0, 4.0, 9.2),
-		glm::vec3(4.0, 1.0, 9.8),
-		4);
+	const auto model = Model::import("cornell-box.obj");
 
-	for(size_t i = 0; i < result.size(); i++)
-		std::cout << "(" << result[i].x << ", " << result[i].y << ", " << result[i].z << ")" << std::endl;
-
-	std::cout << std::endl;
+	for (auto triangle : model.triangles)
+	{
+		std::cout << triangle << std::endl;
+	}
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;
