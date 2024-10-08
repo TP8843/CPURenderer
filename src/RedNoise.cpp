@@ -9,8 +9,8 @@
 #include "Interpolation.h"
 #include "Model.h"
 
-#define WIDTH 320
-#define HEIGHT 240
+#define WIDTH 640
+#define HEIGHT 480
 
 void drawRedNoise(DrawingWindow &window) {
 	window.clearPixels();
@@ -151,12 +151,7 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 }
 
 int main(int argc, char *argv[]) {
-	const auto model = Model::import("cornell-box.obj");
-
-	for (auto triangle : model.triangles)
-	{
-		std::cout << triangle << std::endl;
-	}
+	auto model = Model::import("cornell-box.obj");
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;
@@ -169,7 +164,9 @@ int main(int argc, char *argv[]) {
 		// drawTwoDimensionalColorInterpolation(window);
 		// drawLineTest(window);
 		// drawTexturedTriangleTest(window);
-		drawEdgeCaseTriangles(window);
+		// drawEdgeCaseTriangles(window);
+
+		model.wireframeRender(window, glm::vec3(0, 0, 8), 4, 100);
 
 		// Need to render the frame at the end, or nothing actually gets shown on the screen !
 		window.renderFrame();

@@ -7,7 +7,16 @@
 #include <ModelTriangle.h>
 #include <vector>
 #include <fstream>
+#include <unordered_map>
 #include <Utils.h>
+
+#include "Draw.h"
+#include "Interpolation.h"
+#include "Interpolation.h"
+#include "Interpolation.h"
+#include "Interpolation.h"
+#include "Interpolation.h"
+#include "Interpolation.h"
 
 Model::Model(const std::vector<ModelTriangle>& triangles) : triangles(triangles)
 {}
@@ -41,19 +50,13 @@ Model Model::import(const char* objectPath)
                 std::stof(tokens.at(2)),
                 std::stof(tokens.at(3)));
 
-            vertices.push_back(v);
+            vertices.emplace_back(v);
         }
 
         // Material
         if (tokens.at(0) == "usemtl")
         {
             currentMaterial = materialMap[tokens.at(1)];
-        }
-
-        // New object
-        if (tokens.at(0) == "o")
-        {
-            vertices.empty();
         }
 
         // Face
@@ -67,11 +70,71 @@ Model Model::import(const char* objectPath)
                 faceVertices.push_back(vertices[std::stoi(tokens.at(i)) - 1]);
             }
 
-            triangles.push_back(ModelTriangle(faceVertices[0], faceVertices[1], faceVertices[2], currentMaterial));
+            triangles.emplace_back(faceVertices[0], faceVertices[1], faceVertices[2], currentMaterial);
         }
     }
 
     return Model(triangles);
+}
+
+CanvasPoint Model::projectVertexOntoCanvasPoint(const glm::vec3 cameraPosition, const float focalLength, const float imagePlaneScaling, const glm::vec3 vertexPosition, const glm::vec2 canvasSize)
+{
+    // Map model space to camera space
+    glm::vec3 cameraVertexPosition = vertexPosition - cameraPosition;
+
+    float u = imagePlaneScaling * focalLength * (- cameraVertexPosition.x / cameraVertexPosition.z) + (canvasSize.x / 2);
+    float v = imagePlaneScaling * focalLength * (cameraVertexPosition.y / cameraVertexPosition.z) + (canvasSize.y / 2);
+
+    return {u, v};
+}
+
+void Model::pointcloudRender(DrawingWindow &window, glm::vec3 cameraPosition, float focalLength, float imagePlaneScaling)
+{
+    const auto canvasSize = glm::vec2(window.width, window.height);
+
+    for (const auto& triangle: triangles)
+    {
+        for (auto vertex: triangle.vertices)
+        {
+            auto mappedVertex = projectVertexOntoCanvasPoint(cameraPosition, focalLength, imagePlaneScaling, vertex, canvasSize);
+
+            window.setPixelColour(mappedVertex.x, mappedVertex.y, 0xFFFFFFFF);
+        }
+    }
+}
+
+void Model::wireframeRender(DrawingWindow &window, glm::vec3 cameraPosition, float focalLength, float imagePlaneScaling)
+{
+    const auto canvasSize = glm::vec2(window.width, window.height);
+
+    for (const auto& triangle: triangles)
+    {
+        std::vector<CanvasPoint> mappedVertices;
+
+        for (auto vertex: triangle.vertices)
+        {
+            mappedVertices.push_back(projectVertexOntoCanvasPoint(cameraPosition, focalLength, imagePlaneScaling, vertex, canvasSize));
+        }
+
+        Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2]), Colour(255, 255, 255));
+    }
+}
+
+void Model::rasterRender(DrawingWindow &window, glm::vec3 cameraPosition, float focalLength, float imagePlaneScaling)
+{
+    const auto canvasSize = glm::vec2(window.width, window.height);
+
+    for (const auto& triangle: triangles)
+    {
+        std::vector<CanvasPoint> mappedVertices;
+
+        for (auto vertex: triangle.vertices)
+        {
+            mappedVertices.push_back(projectVertexOntoCanvasPoint(cameraPosition, focalLength, imagePlaneScaling, vertex, canvasSize));
+        }
+
+        Draw::drawFilledTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2]), triangle.colour);
+    }
 }
 
 std::unordered_map<std::string, Colour> Model::importMaterials(const std::string &path)
@@ -98,7 +161,6 @@ std::unordered_map<std::string, Colour> Model::importMaterials(const std::string
                 std::stof(tokens.at(3)) * 255);
 
             materialMap[currentMaterial] = colourValue;
-
             std::cout << "Material " << currentMaterial << " added: " << materialMap[currentMaterial] << std::endl;
         }
     }
