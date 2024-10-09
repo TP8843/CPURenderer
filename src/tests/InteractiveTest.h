@@ -4,9 +4,9 @@
 
 #ifndef INTERACTIVETEST_H
 #define INTERACTIVETEST_H
-#include <CanvasTriangle.h>
-#include <Colour.h>
-#include <DrawingWindow.h>
+#include <../../libs/sdw/CanvasTriangle.h>
+#include <../../libs/sdw/Colour.h>
+#include <../../libs/sdw/DrawingWindow.h>
 
 
 class InteractiveTest {

@@ -42,10 +42,14 @@ add_executable(RedNoise
         src/Draw.h
         src/Model.cpp
         src/Model.h
-        src/InteractiveTest.cpp
-        src/InteractiveTest.h
-        src/DrawTests.cpp
-        src/DrawTests.h)
+        src/tests/InteractiveTest.cpp
+        src/tests/InteractiveTest.h
+        src/tests/DrawTests.cpp
+        src/tests/DrawTests.h
+        src/tests/RenderTests.cpp
+        src/tests/RenderTests.h
+        src/RasterRenderer.cpp
+        src/RasterRenderer.h)
 
 if (MSVC)
     target_compile_options(RedNoise

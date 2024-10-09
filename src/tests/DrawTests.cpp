@@ -8,8 +8,8 @@
 #include <Colour.h>
 #include <DrawingWindow.h>
 
-#include "Draw.h"
-#include "Interpolation.h"
+#include "../Draw.h"
+#include "../Interpolation.h"
 
 DrawTests::DrawTests(DrawingWindow &window) : window(window) {}
 

@@ -4,9 +4,9 @@
 
 #include "InteractiveTest.h"
 
-#include <CanvasTriangle.h>
+#include <../../libs/sdw/CanvasTriangle.h>
 
-#include "Draw.h"
+#include "../Draw.h"
 
 InteractiveTest::InteractiveTest(DrawingWindow& window)
     : window(window),

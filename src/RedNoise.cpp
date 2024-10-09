@@ -1,25 +1,29 @@
-#include <CanvasTriangle.h>
-#include <Colour.h>
 #include <DrawingWindow.h>
-#include <Utils.h>
-#include <fstream>
-#include <vector>
 
-#include "Draw.h"
-#include "DrawTests.h"
-#include "InteractiveTest.h"
-#include "Interpolation.h"
 #include "Model.h"
+#include "tests/DrawTests.h"
+#include "tests/InteractiveTest.h"
+#include "tests/RenderTests.h"
 
 #define WIDTH 640
 #define HEIGHT 480
 
-int main(int argc, char *argv[]) {
-	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
+int main(int argc, char* argv[])
+{
+    auto window = DrawingWindow(WIDTH, HEIGHT, false);
 
-	// auto interactiveTest = InteractiveTest(window);
-	// interactiveTest.run();
+    auto interactiveTest = InteractiveTest(window);
+    interactiveTest.run();
 
-	auto drawTests = DrawTests(window);
-	drawTests.run();
+    // auto model = Model::import("cornell-box.obj");
+    // auto renderer = RasterRenderer(window,
+    //                                model,
+    //                                glm::vec3(0, 0, 10),
+    //                                5,
+    //                                80);
+    // auto renderTests = RenderTests(window, renderer);
+    // renderTests.run();
+
+    // auto drawTests = DrawTests(window);
+    // drawTests.run();
 }

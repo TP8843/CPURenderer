@@ -72,66 +72,6 @@ Model Model::import(const char* objectPath)
     return Model(triangles);
 }
 
-CanvasPoint Model::projectVertexOntoCanvasPoint(const glm::vec3 cameraPosition, const float focalLength, const float imagePlaneScaling, const glm::vec3 vertexPosition, const glm::vec2 canvasSize)
-{
-    // Map model space to camera space
-    glm::vec3 cameraVertexPosition = vertexPosition - cameraPosition;
-
-    float u = imagePlaneScaling * focalLength * (- cameraVertexPosition.x / cameraVertexPosition.z) + (canvasSize.x / 2);
-    float v = imagePlaneScaling * focalLength * (cameraVertexPosition.y / cameraVertexPosition.z) + (canvasSize.y / 2);
-
-    return {u, v};
-}
-
-void Model::pointcloudRender(DrawingWindow &window, glm::vec3 cameraPosition, float focalLength, float imagePlaneScaling)
-{
-    const auto canvasSize = glm::vec2(window.width, window.height);
-
-    for (const auto& triangle: triangles)
-    {
-        for (auto vertex: triangle.vertices)
-        {
-            auto mappedVertex = projectVertexOntoCanvasPoint(cameraPosition, focalLength, imagePlaneScaling, vertex, canvasSize);
-
-            window.setPixelColour(mappedVertex.x, mappedVertex.y, 0xFFFFFFFF);
-        }
-    }
-}
-
-void Model::wireframeRender(DrawingWindow &window, glm::vec3 cameraPosition, float focalLength, float imagePlaneScaling)
-{
-    const auto canvasSize = glm::vec2(window.width, window.height);
-
-    for (const auto& triangle: triangles)
-    {
-        std::vector<CanvasPoint> mappedVertices;
-
-        for (auto vertex: triangle.vertices)
-        {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(cameraPosition, focalLength, imagePlaneScaling, vertex, canvasSize));
-        }
-
-        Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2]), Colour(255, 255, 255));
-    }
-}
-
-void Model::rasterRender(DrawingWindow &window, glm::vec3 cameraPosition, float focalLength, float imagePlaneScaling)
-{
-    const auto canvasSize = glm::vec2(window.width, window.height);
-
-    for (const auto& triangle: triangles)
-    {
-        std::vector<CanvasPoint> mappedVertices;
-
-        for (auto vertex: triangle.vertices)
-        {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(cameraPosition, focalLength, imagePlaneScaling, vertex, canvasSize));
-        }
-
-        Draw::drawFilledTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2]), triangle.colour);
-    }
-}
-
 std::unordered_map<std::string, Colour> Model::importMaterials(const std::string &path)
 {
     std::ifstream MaterialFile(path);
