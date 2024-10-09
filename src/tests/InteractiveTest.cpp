@@ -19,7 +19,7 @@ InteractiveTest::InteractiveTest(DrawingWindow& window)
 {
 }
 
-void InteractiveTest::handleEvent(const SDL_Event& event, const DrawingWindow& window)
+void InteractiveTest::handleEvent(SDL_Event& event, DrawingWindow& window)
 {
     if (event.type == SDL_KEYDOWN)
     {
@@ -27,11 +27,6 @@ void InteractiveTest::handleEvent(const SDL_Event& event, const DrawingWindow& w
         {
             selectedVertex = (selectedVertex + 1) % 4;
         }
-    }
-    else if (event.type == SDL_MOUSEBUTTONDOWN)
-    {
-        window.savePPM("output.ppm");
-        window.saveBMP("output.bmp");
     }
 
     // If vertex is currently selected
@@ -47,32 +42,22 @@ void InteractiveTest::handleEvent(const SDL_Event& event, const DrawingWindow& w
 }
 
 
-void InteractiveTest::run()
+void InteractiveTest::renderFrame(DrawingWindow &window)
 {
-    SDL_Event event;
+    window.clearPixels();
 
-    while (true)
+    Draw::drawFilledTriangle(window, triangle, triangleColour);
+
+    if (selectedVertex < 3)
     {
-        window.clearPixels();
+        const auto currentVertex = triangle.vertices[selectedVertex];
 
-        // We MUST poll for events - otherwise the window will freeze !
-        if (window.pollForInputEvents(event)) handleEvent(event, window);
-
-        Draw::drawFilledTriangle(window, triangle, triangleColour);
-
-        if (selectedVertex < 3)
+        for (int i = -4; i <= 4; i++)
         {
-            const auto currentVertex = triangle.vertices[selectedVertex];
-
-            for (int i = -4; i <= 4; i++)
+            for (int j = -4; j <= 4; j++)
             {
-                for (int j = -4; j <= 4; j++)
-                {
-                    window.setPixelColour(currentVertex.x + i, currentVertex.y + j, 0xFFFF0000);
-                }
+                window.setPixelColour(currentVertex.x + i, currentVertex.y + j, 0xFFFF0000);
             }
         }
-
-        window.renderFrame();
     }
 }

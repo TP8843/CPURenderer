@@ -8,33 +8,31 @@
 
 #include "Draw.h"
 
-RasterRenderer::RasterRenderer(DrawingWindow& window,
-                               Model& model,
+RasterRenderer::RasterRenderer(Model& model,
                                const glm::vec3 cameraPosition,
                                const float focalLength,
                                const float imagePlaneScaling)
     : cameraPosition(cameraPosition),
       focalLength(focalLength),
       imagePlaneScaling(imagePlaneScaling),
-      model(model),
-      window(window)
+      model(model)
 {
 }
 
-void RasterRenderer::pointCloudRender() const
+void RasterRenderer::pointCloudRender(DrawingWindow &window) const
 {
     for (const auto& triangle : model.triangles)
     {
         for (const auto vertex : triangle.vertices)
         {
-            const auto mappedVertex = projectVertexOntoCanvasPoint(vertex);
+            const auto mappedVertex = projectVertexOntoCanvasPoint(window, vertex);
 
             window.setPixelColour(mappedVertex.x, mappedVertex.y, 0xFFFFFFFF);
         }
     }
 }
 
-void RasterRenderer::wireframeRender() const
+void RasterRenderer::wireframeRender(DrawingWindow &window) const
 {
     for (const auto& triangle : model.triangles)
     {
@@ -42,7 +40,7 @@ void RasterRenderer::wireframeRender() const
 
         for (const auto vertex : triangle.vertices)
         {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(vertex));
+            mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex));
         }
 
         Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2]),
@@ -50,7 +48,7 @@ void RasterRenderer::wireframeRender() const
     }
 }
 
-void RasterRenderer::rasterRender() const
+void RasterRenderer::rasterRender(DrawingWindow &window) const
 {
     for (const auto& triangle : model.triangles)
     {
@@ -58,7 +56,7 @@ void RasterRenderer::rasterRender() const
 
         for (const auto vertex : triangle.vertices)
         {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(vertex));
+            mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex));
         }
 
         Draw::drawFilledTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2]),
@@ -66,7 +64,7 @@ void RasterRenderer::rasterRender() const
     }
 }
 
-CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(const glm::vec3 vertexPosition) const
+CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(DrawingWindow &window, const glm::vec3 vertexPosition) const
 {
     // Map model space to camera space
     const glm::vec3 cameraVertexPosition = vertexPosition - cameraPosition;

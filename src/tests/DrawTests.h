@@ -6,8 +6,10 @@
 #define DRAWTESTS_H
 #include <DrawingWindow.h>
 
+#include "RenderTest.h"
 
-class DrawTests {
+
+class DrawTests : public RenderTest {
 public:
     static void drawRedNoise(DrawingWindow& window);
     static void drawGreyscaleInterpolation(DrawingWindow& window);
@@ -16,15 +18,13 @@ public:
     static void drawTexturedTriangleTest(DrawingWindow& window);
     static void drawEdgeCaseTriangles(DrawingWindow& window);
 
-    explicit DrawTests(DrawingWindow &window);
+    DrawTests();
 
-    void run();
+    void renderFrame(DrawingWindow &window) override;
+    void handleEvent(SDL_Event& event, DrawingWindow& window) override;
 
 private:
-    void handleEvent(const SDL_Event& event, DrawingWindow& window);
-
-    DrawingWindow &window;
-    int currentTest = 0;
+    int currentTest;
     std::vector<void (*)(DrawingWindow&)> testFunctions = std::vector<void (*)(DrawingWindow&)>
     {
         drawRedNoise,

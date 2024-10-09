@@ -12,12 +12,14 @@
 class RasterRenderer
 {
 public:
-    RasterRenderer(DrawingWindow& window, Model& model, glm::vec3 cameraPosition, float focalLength,
+    RasterRenderer(Model& model,
+                   glm::vec3 cameraPosition,
+                   float focalLength,
                    float imagePlaneScaling);
 
-    void pointCloudRender() const;
-    void wireframeRender() const;
-    void rasterRender() const;
+    void pointCloudRender(DrawingWindow &window) const;
+    void wireframeRender(DrawingWindow &window) const;
+    void rasterRender(DrawingWindow &window) const;
 
     glm::vec3 cameraPosition;
     float focalLength;
@@ -25,9 +27,7 @@ public:
     Model& model;
 
 private:
-    CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 vertexPosition) const;
-
-    DrawingWindow& window;
+    CanvasPoint projectVertexOntoCanvasPoint(DrawingWindow &window, glm::vec3 vertexPosition) const;
 };
 
 

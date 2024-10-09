@@ -8,15 +8,17 @@
 #include <../../libs/sdw/Colour.h>
 #include <../../libs/sdw/DrawingWindow.h>
 
+#include "RenderTest.h"
 
-class InteractiveTest {
+
+class InteractiveTest final : public RenderTest {
 public:
     explicit InteractiveTest(DrawingWindow &window);
 
-    void run();
+    void renderFrame(DrawingWindow& window) override;
+    void handleEvent(SDL_Event& event, DrawingWindow &window) override;
 
 private:
-    void handleEvent(const SDL_Event& event, const DrawingWindow &window);
 
     DrawingWindow &window;
 

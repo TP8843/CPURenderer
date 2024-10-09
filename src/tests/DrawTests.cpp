@@ -11,16 +11,16 @@
 #include "../Draw.h"
 #include "../Interpolation.h"
 
-DrawTests::DrawTests(DrawingWindow &window) : window(window) {}
+DrawTests::DrawTests() : currentTest(0) {}
 
 void DrawTests::drawRedNoise(DrawingWindow &window) {
 	window.clearPixels();
 	for (size_t y = 0; y < window.height; y++) {
 		for (size_t x = 0; x < window.width; x++) {
-			float red = rand() % 256;
-			float green = 0.0;
-			float blue = 0.0;
-			uint32_t colour = (255 << 24) + (int(red) << 16) + (int(green) << 8) + int(blue);
+			const float red = rand() % 256;
+			constexpr float green = 0.0;
+			constexpr float blue = 0.0;
+			const uint32_t colour = (255 << 24) + (static_cast<int>(red) << 16) + (static_cast<int>(green) << 8) + static_cast<int>(blue);
 			window.setPixelColour(x, y, colour);
 		}
 	}
@@ -29,7 +29,7 @@ void DrawTests::drawRedNoise(DrawingWindow &window) {
 void DrawTests::drawGreyscaleInterpolation(DrawingWindow &window)
 {
 	window.clearPixels();
-	std::vector<float> gradient = Interpolation::interpolateSingleFloats(255, 0, 256);
+	const std::vector<float> gradient = Interpolation::interpolateSingleFloats(255, 0, 256);
 
 	for (float x = 0; x < window.width; x++)
 	{
@@ -132,15 +132,11 @@ void DrawTests::drawEdgeCaseTriangles (DrawingWindow &window)
 	Draw::drawFilledTriangle(window, triangle4, colour);
 }
 
-void DrawTests::handleEvent(const SDL_Event& event, DrawingWindow& window)
+void DrawTests::handleEvent(SDL_Event& event, DrawingWindow& window)
 {
 	if (event.type == SDL_KEYDOWN)
 	{
-		if (event.key.keysym.sym == SDLK_LEFT) std::cout << "LEFT" << std::endl;
-		else if (event.key.keysym.sym == SDLK_RIGHT) std::cout << "RIGHT" << std::endl;
-		else if (event.key.keysym.sym == SDLK_UP) std::cout << "UP" << std::endl;
-		else if (event.key.keysym.sym == SDLK_DOWN) std::cout << "DOWN" << std::endl;
-		else if (event.key.keysym.sym == SDLK_t)
+		if (event.key.keysym.sym == SDLK_t)
 		{
 			currentTest = (currentTest + 1) % testFunctions.size();
 			window.clearPixels();
@@ -160,25 +156,10 @@ void DrawTests::handleEvent(const SDL_Event& event, DrawingWindow& window)
 			Draw::drawStrokedTriangle(window, triangle, white);
 		}
 	}
-	else if (event.type == SDL_MOUSEBUTTONDOWN)
-	{
-		window.savePPM("output.ppm");
-		window.saveBMP("output.bmp");
-	}
 }
 
 
-void DrawTests::run()
+void DrawTests::renderFrame(DrawingWindow &window)
 {
-	SDL_Event event;
-
-	while(true)
-	{
-		// We MUST poll for events - otherwise the window will freeze !
-		if (window.pollForInputEvents(event)) handleEvent(event, window);
-
-		testFunctions[currentTest](window);
-
-		window.renderFrame();
-	}
+	testFunctions[currentTest](window);
 }
