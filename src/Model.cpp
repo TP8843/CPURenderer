@@ -12,11 +12,6 @@
 
 #include "Draw.h"
 #include "Interpolation.h"
-#include "Interpolation.h"
-#include "Interpolation.h"
-#include "Interpolation.h"
-#include "Interpolation.h"
-#include "Interpolation.h"
 
 Model::Model(const std::vector<ModelTriangle>& triangles) : triangles(triangles)
 {}

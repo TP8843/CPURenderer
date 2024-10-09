@@ -41,7 +41,11 @@ add_executable(RedNoise
         src/Draw.cpp
         src/Draw.h
         src/Model.cpp
-        src/Model.h)
+        src/Model.h
+        src/InteractiveTest.cpp
+        src/InteractiveTest.h
+        src/DrawTests.cpp
+        src/DrawTests.h)
 
 if (MSVC)
     target_compile_options(RedNoise
