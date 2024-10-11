@@ -13,15 +13,12 @@
 
 class InteractiveTest final : public RenderTest {
 public:
-    explicit InteractiveTest(DrawingWindow &window);
+    explicit InteractiveTest();
 
     void renderFrame(DrawingWindow& window) override;
     void handleEvent(SDL_Event& event, DrawingWindow &window) override;
 
 private:
-
-    DrawingWindow &window;
-
     // Between 0 and 3 based on which vertex is currently selected. 3 means no vertex selected
     int selectedVertex;
 

@@ -8,12 +8,11 @@
 
 #include "../Draw.h"
 
-InteractiveTest::InteractiveTest(DrawingWindow& window)
-    : window(window),
-      selectedVertex(3),
-      triangle(CanvasTriangle(CanvasPoint(window.width / 3, window.height * 2 / 3),
-                              CanvasPoint(window.width * 2 / 3, window.height * 2 / 3),
-                              CanvasPoint(window.width / 2, window.height / 3))),
+InteractiveTest::InteractiveTest()
+    : selectedVertex(3),
+      triangle(CanvasTriangle(CanvasPoint(20, 100),
+                              CanvasPoint(100, 100),
+                              CanvasPoint(60, 50))),
       triangleColour(Colour(255, 255, 255)),
       vertexColour(Colour(255, 0, 0))
 {
