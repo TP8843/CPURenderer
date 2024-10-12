@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
     auto model = Model::import("cornell-box.obj");
     auto renderer = RasterRenderer(model,
                                    glm::vec3(0, 0, 10),
+                                   glm::mat3(1, 0, 0, 0, 1, 0, 0, 0, 1),
                                    5,
                                    80);
     RenderTest* rasterTest = new RasterTest(renderer);

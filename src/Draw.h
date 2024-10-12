@@ -14,30 +14,9 @@
 class Draw {
 public:
     static void drawLine(DrawingWindow& window, const CanvasPoint& from, const CanvasPoint& to, const Colour& colour);
-
-public:
     static void drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour& colour);
-public:
     static void drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour& colour);
-
-public:
     static void drawTexturedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const TextureMap& texture);
-
-private:
-    static void drawFilledFlatBottomTriangle(DrawingWindow& window, const CanvasPoint& sliceStart,
-        const CanvasPoint& sliceEnd, const CanvasPoint& other, const Colour& colour);
-
-private:
-    static void drawFilledFlatTopTriangle(DrawingWindow& window, const CanvasPoint& sliceStart, const CanvasPoint& sliceEnd,
-                             const CanvasPoint& other, const Colour& colour);
-
-private:
-    static void drawTexturedFlatBottomTriangle(DrawingWindow& window, const CanvasPoint& sliceStart, const CanvasPoint& sliceEnd,
-                                               const CanvasPoint& other, const TextureMap& texture);
-
-private:
-    static void drawTexturedFlatTopTriangle(DrawingWindow& window, const CanvasPoint& sliceStart, const CanvasPoint& sliceEnd,
-                                     const CanvasPoint& other, const TextureMap& texture);
 };
 
 
