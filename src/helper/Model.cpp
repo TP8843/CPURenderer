@@ -2,14 +2,13 @@
 // Created by Thomas Parr on 08/10/2024.
 //
 
-#include "Model.h"
-
-#include <ModelTriangle.h>
 #include <vector>
 #include <fstream>
 #include <unordered_map>
-#include <Utils.h>
+#include <../../libs/sdw/Utils.h>
+#include <../../libs/sdw/ModelTriangle.h>
 
+#include "Model.h"
 #include "Draw.h"
 #include "Interpolation.h"
 

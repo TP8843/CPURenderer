@@ -1,7 +1,7 @@
 #ifndef INTERPOLATION_H
 #define INTERPOLATION_H
 #include <vector>
-#include <glm/glm.hpp>
+#include <../../libs/glm-0.9.7.2/glm/glm.hpp>
 
 
 class Interpolation {

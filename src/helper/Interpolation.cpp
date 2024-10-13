@@ -1,6 +1,6 @@
 #include "Interpolation.h"
 
-#include <glm/glm.hpp>
+#include <../../libs/glm-0.9.7.2/glm/glm.hpp>
 
 std::vector<float> Interpolation::interpolateSingleFloats(const float from, const float to, const int count)
 {

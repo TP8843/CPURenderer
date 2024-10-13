@@ -36,12 +36,12 @@ add_executable(RedNoise
         libs/sdw/TexturePoint.cpp
         libs/sdw/Utils.cpp
         src/RedNoise.cpp
-        src/Interpolation.cpp
-        src/Interpolation.h
-        src/Draw.cpp
-        src/Draw.h
-        src/Model.cpp
-        src/Model.h
+        src/helper/Interpolation.cpp
+        src/helper/Interpolation.h
+        src/helper/Draw.cpp
+        src/helper/Draw.h
+        src/helper/Model.cpp
+        src/helper/Model.h
         src/tests/InteractiveTest.cpp
         src/tests/InteractiveTest.h
         src/tests/DrawTests.cpp
@@ -52,7 +52,10 @@ add_executable(RedNoise
         src/RenderLoop.cpp
         src/RenderLoop.h
         src/tests/RasterTest.cpp
-        src/tests/RasterTest.h)
+        src/tests/RasterTest.h
+        src/helper/Camera.cpp
+        src/helper/Camera.h
+        src/helper/constants.h)
 
 if (MSVC)
     target_compile_options(RedNoise

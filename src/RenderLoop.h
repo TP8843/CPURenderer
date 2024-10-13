@@ -1,7 +1,3 @@
-//
-// Created by Thomas Parr on 09/10/2024.
-//
-
 #ifndef RENDERLOOP_H
 #define RENDERLOOP_H
 #include <DrawingWindow.h>
@@ -18,7 +14,7 @@ public:
 
 private:
     void handleEvent(SDL_Event &event);
-    RenderTest* getCurrentRenderTest();
+    RenderTest* getCurrentRenderTest() const;
 
     DrawingWindow window;
     int currentTest;

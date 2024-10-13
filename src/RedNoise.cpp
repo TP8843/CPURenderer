@@ -1,4 +1,4 @@
-#include "Model.h"
+#include "helper/Model.h"
 #include "RasterRenderer.h"
 #include "RenderLoop.h"
 #include "tests/DrawTests.h"
@@ -13,11 +13,11 @@ int main(int argc, char* argv[])
     renderLoop.addTest(interactiveTest);
 
     auto model = Model::import("cornell-box.obj");
-    auto renderer = RasterRenderer(model,
-                                   glm::vec3(0, 0, 10),
-                                   glm::mat3(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                                   5,
-                                   80);
+    auto camera = Camera(glm::vec3(0, 0, 10),
+                         glm::mat3(),
+                         5,
+                         80);
+    auto renderer = RasterRenderer(model, camera);
     RenderTest* rasterTest = new RasterTest(renderer);
     renderLoop.addTest(rasterTest);
 

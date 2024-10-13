@@ -1,24 +1,14 @@
-//
-// Created by Thomas Parr on 09/10/2024.
-//
-
 #include "RasterRenderer.h"
 
 #include <CanvasTriangle.h>
 
-#include "Draw.h"
-#include "Interpolation.h"
+#include "helper/Draw.h"
+#include "helper/Interpolation.h"
 
 RasterRenderer::RasterRenderer(Model& model,
-                               const glm::vec3 cameraPosition,
-                               const glm::mat3 cameraRotation,
-                               const float focalLength,
-                               const float imagePlaneScaling)
-    : cameraPosition(cameraPosition),
-      cameraRotation(cameraRotation),
-      focalLength(focalLength),
-      imagePlaneScaling(imagePlaneScaling),
-      model(model)
+                               Camera& camera)
+    : model(model),
+      camera(camera)
 {
 }
 
@@ -87,12 +77,12 @@ void RasterRenderer::rasterRender(DrawingWindow& window) const
 CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(DrawingWindow& window, const glm::vec3 vertexPosition) const
 {
     // Map model space to camera space
-    glm::vec3 cameraVertexPosition = vertexPosition - cameraPosition;
+    glm::vec3 cameraVertexPosition = vertexPosition - camera.position;
 
-    cameraVertexPosition =cameraVertexPosition * cameraRotation;
+    cameraVertexPosition = cameraVertexPosition * camera.rotation;
 
-    float u = imagePlaneScaling * focalLength * (-cameraVertexPosition.x / cameraVertexPosition.z) + (window.width / 2);
-    float v = imagePlaneScaling * focalLength * (cameraVertexPosition.y / cameraVertexPosition.z) + (window.height / 2);
+    float u = camera.imagePlaneScaling * camera.focalLength * (-cameraVertexPosition.x / cameraVertexPosition.z) + (window.width / 2);
+    float v = camera.imagePlaneScaling * camera.focalLength * (cameraVertexPosition.y / cameraVertexPosition.z) + (window.height / 2);
 
     float depth = 0;
 
@@ -107,7 +97,7 @@ CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(DrawingWindow& window, 
 }
 
 void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle,
-                                                  const Colour& colour, float **depthBuffer)
+                                                  const Colour& colour, float** depthBuffer)
 {
     const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
     auto vertices = std::array<CanvasPoint, 3>(triangle.vertices);

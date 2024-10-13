@@ -1,10 +1,8 @@
-//
-// Created by Thomas Parr on 09/10/2024.
-//
-
 #include "RasterTest.h"
-#define TRANSLATION_RATE 0.05
-#define ROTATION_RATE 0.05
+
+#include "../helper/constants.h"
+
+using namespace constants;
 
 RasterTest::RasterTest(RasterRenderer &renderer)
     : renderer(renderer)
@@ -30,60 +28,69 @@ void RasterTest::handleEvent(SDL_Event& event, DrawingWindow& window)
 {
     if (event.type == SDL_KEYDOWN)
     {
-        if (event.key.keysym.sym == SDLK_t)
+        if (event.key.keysym.sym == keyboard::SUB_TEST)
         {
             currentTest = (currentTest + 1) % testFunctions.size();
             window.clearPixels();
         }
 
-        // Tripod camera up
-        if (event.key.keysym.sym == SDLK_r)
+        // Pedestal camera up
+        if (event.key.keysym.sym == keyboard::PEDESTAL_UP)
         {
-            renderer.cameraPosition += renderer.cameraRotation *  glm::vec3(0, TRANSLATION_RATE, 0);
+            renderer.camera.translateRelative(glm::vec3(0, speed::TRANSLATION_SPEED, 0));
         }
 
-        // Tripod camera down
-        if (event.key.keysym.sym == SDLK_f)
+        // Pedestal camera down
+        if (event.key.keysym.sym == keyboard::PEDESTAL_DOWN)
         {
-            renderer.cameraPosition += renderer.cameraRotation *  glm::vec3(0, -TRANSLATION_RATE, 0);
+            renderer.camera.translateRelative(glm::vec3(0, -speed::TRANSLATION_SPEED, 0));
         }
 
-        // Dolly camera "forwards"
-        if (event.key.keysym.sym == SDLK_s)
+        // Dolly camera "forwards" in camera space
+        if (event.key.keysym.sym == keyboard::DOLLY_FORWARD)
         {
-            renderer.cameraPosition += renderer.cameraRotation * glm::vec3(0, 0, TRANSLATION_RATE);
+            renderer.camera.translateRelative(glm::vec3(0, 0, speed::TRANSLATION_SPEED));
         }
-
         // Dolly camera "backwards"
-        if (event.key.keysym.sym == SDLK_w)
+        if (event.key.keysym.sym == keyboard::DOLLY_BACK)
         {
-            renderer.cameraPosition += renderer.cameraRotation * glm::vec3(0, 0, -TRANSLATION_RATE);
+            renderer.camera.translateRelative(glm::vec3(0, 0, -speed::TRANSLATION_SPEED));
         }
 
-        // Pan camera left
-        if (event.key.keysym.sym == SDLK_a)
+        // Truck camera left
+        if (event.key.keysym.sym == keyboard::TRUCK_LEFT)
         {
-            renderer.cameraPosition += renderer.cameraRotation * glm::vec3(-TRANSLATION_RATE, 0, 0);
+            renderer.camera.translateRelative(glm::vec3(-speed::TRANSLATION_SPEED, 0, 0));
         }
 
-        // Pan camera right about y-axis
-        if (event.key.keysym.sym == SDLK_d)
+        // Truck camera right
+        if (event.key.keysym.sym == keyboard::TRUCK_RIGHT)
         {
-            renderer.cameraPosition += renderer.cameraRotation *  glm::vec3(TRANSLATION_RATE, 0, 0);
+            renderer.camera.translateRelative(glm::vec3(speed::TRANSLATION_SPEED, 0, 0));
         }
 
-        // Rotate camera left about y-axis
-        if (event.key.keysym.sym == SDLK_q)
+        // Pan left
+        if (event.key.keysym.sym == keyboard::PAN_LEFT)
         {
-            renderer.cameraRotation = renderer.cameraRotation
-                * glm::mat3(glm::cos(-ROTATION_RATE), 0, glm::sin(-ROTATION_RATE), 0, 1, 0, -glm::sin(-ROTATION_RATE), 0, glm::cos(-ROTATION_RATE));
+            renderer.camera.rotateY(speed::ROTATION_SPEED);
         }
 
-        // Rotate camera right about y-axis
-        if (event.key.keysym.sym == SDLK_e)
+        // Pan right
+        if (event.key.keysym.sym == keyboard::PAN_RIGHT)
         {
-            renderer.cameraRotation = renderer.cameraRotation
-                * glm::mat3(glm::cos(ROTATION_RATE), 0, glm::sin(ROTATION_RATE), 0, 1, 0, -glm::sin(ROTATION_RATE), 0, glm::cos(ROTATION_RATE));
+            renderer.camera.rotateY(-speed::ROTATION_SPEED);
+        }
+
+        // Tilt up
+        if (event.key.keysym.sym == keyboard::TILT_UP)
+        {
+            renderer.camera.rotateX(speed::ROTATION_SPEED);
+        }
+
+        // Tilt down
+        if (event.key.keysym.sym == keyboard::TILT_DOWN)
+        {
+            renderer.camera.rotateX(-speed::ROTATION_SPEED);
         }
     }
 }

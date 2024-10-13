@@ -1,7 +1,3 @@
-//
-// Created by Thomas Parr on 01/10/2024.
-//
-
 #ifndef LINE_H
 #define LINE_H
 #include <CanvasPoint.h>

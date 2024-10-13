@@ -1,13 +1,10 @@
-//
-// Created by Thomas Parr on 09/10/2024.
-//
-
 #include "RenderLoop.h"
 
 #include <DrawingWindow.h>
 #include <SDL_events.h>
 
-#include "Draw.h"
+#include "./helper/Draw.h"
+#include "helper/constants.h"
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -23,11 +20,7 @@ void RenderLoop::handleEvent(SDL_Event& event)
 {
     if (event.type == SDL_KEYDOWN)
     {
-        if (event.key.keysym.sym == SDLK_LEFT) std::cout << "LEFT" << std::endl;
-        else if (event.key.keysym.sym == SDLK_RIGHT) std::cout << "RIGHT" << std::endl;
-        else if (event.key.keysym.sym == SDLK_UP) std::cout << "UP" << std::endl;
-        else if (event.key.keysym.sym == SDLK_DOWN) std::cout << "DOWN" << std::endl;
-        else if (event.key.keysym.sym == SDLK_m)
+        if (event.key.keysym.sym == constants::keyboard::MAIN_TEST)
         {
             std::cout << "Changing to test " << currentTest << std::endl;
 
@@ -54,12 +47,10 @@ void RenderLoop::run()
 {
     SDL_Event event;
 
-
     while (true)
     {
         // We MUST poll for events - otherwise the window will freeze !
         if (window.pollForInputEvents(event)) handleEvent(event);
-
 
         getCurrentRenderTest()->renderFrame(window);
 
@@ -67,7 +58,7 @@ void RenderLoop::run()
     }
 }
 
-RenderTest* RenderLoop::getCurrentRenderTest()
+RenderTest* RenderLoop::getCurrentRenderTest() const
 {
     return tests[currentTest];
 }

@@ -4,9 +4,9 @@
 
 #ifndef OBJECT_H
 #define OBJECT_H
-#include <CanvasPoint.h>
-#include <DrawingWindow.h>
-#include <ModelTriangle.h>
+#include <../../libs/sdw/CanvasPoint.h>
+#include <../../libs/sdw/DrawingWindow.h>
+#include <../../libs/sdw/ModelTriangle.h>
 #include <unordered_map>
 #include <vector>
 

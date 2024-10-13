@@ -1,15 +1,12 @@
-//
-// Created by Thomas Parr on 09/10/2024.
-//
-
 #include "DrawTests.h"
 
 #include <CanvasPoint.h>
 #include <Colour.h>
 #include <DrawingWindow.h>
 
-#include "../Draw.h"
-#include "../Interpolation.h"
+#include "../helper/constants.h"
+#include "../helper/Draw.h"
+#include "../helper/Interpolation.h"
 
 DrawTests::DrawTests() : currentTest(0) {}
 
@@ -136,12 +133,12 @@ void DrawTests::handleEvent(SDL_Event& event, DrawingWindow& window)
 {
 	if (event.type == SDL_KEYDOWN)
 	{
-		if (event.key.keysym.sym == SDLK_t)
+		if (event.key.keysym.sym == constants::keyboard::SUB_TEST)
 		{
 			currentTest = (currentTest + 1) % testFunctions.size();
 			window.clearPixels();
 		}
-		else if (event.key.keysym.sym == SDLK_u)
+		else if (event.key.keysym.sym == constants::keyboard::RAND_TRIANGLE)
 		{
 			const auto triangle = CanvasTriangle(
 				CanvasPoint(rand() % window.width, rand() % window.height),
