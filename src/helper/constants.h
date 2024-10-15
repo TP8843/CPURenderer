@@ -6,8 +6,6 @@
 #define OPTIONS_H
 #include <SDL_keycode.h>
 
-#endif //OPTIONS_H
-
 namespace constants
 {
     namespace window
@@ -19,7 +17,8 @@ namespace constants
     namespace speed
     {
         constexpr float ROTATION_SPEED = 0.03f;
-        constexpr float TRANSLATION_SPEED = 0.04f;
+        constexpr float ORBIT_SPEED = 0.003f;
+        constexpr float TRANSLATION_SPEED = 0.2f;
     }
 
     namespace keyboard
@@ -38,9 +37,15 @@ namespace constants
         constexpr int TILT_UP = SDLK_UP;
         constexpr int TILT_DOWN = SDLK_DOWN;
 
+        constexpr int ORBIT = SDLK_o;
+        constexpr int RESET_RENDER = SDLK_z;
+        constexpr int LOOK_AT = SDLK_l;
+
         // Test Switching
         constexpr int MAIN_TEST = SDLK_m;
         constexpr int SUB_TEST = SDLK_n;
         constexpr int RAND_TRIANGLE = SDLK_u;
     };
 }
+
+#endif //OPTIONS_H

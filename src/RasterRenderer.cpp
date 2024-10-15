@@ -133,7 +133,7 @@ void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const C
             const float proportion = Interpolation::proportion(rowStartX, rowEndX, x, 0);
             const float zInv = Interpolation::interpolateSingleFloat(rowStartZ, rowEndZ, proportion);
 
-            if (zInv < 1 && x >= 0 && x < window.width && y >= 0 && y < window.height &&
+            if (zInv > 0 && zInv < 0.7 && x >= 0 && x < window.width && y >= 0 && y < window.height &&
                 zInv > depthBuffer[static_cast<int>(y)][static_cast<int>(x)])
             {
                 depthBuffer[y][x] = zInv;

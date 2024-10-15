@@ -92,6 +92,22 @@ void RasterTest::handleEvent(SDL_Event& event, DrawingWindow& window)
         {
             renderer.camera.rotateX(-speed::ROTATION_SPEED);
         }
+
+        // Toggle orbit mode
+        if (event.key.keysym.sym == keyboard::ORBIT)
+        {
+            renderer.camera.toggleOrbit();
+        }
+
+        if (event.key.keysym.sym == keyboard::RESET_RENDER)
+        {
+            renderer.camera.reset();
+        }
+
+        if (event.key.keysym.sym == keyboard::LOOK_AT)
+        {
+            renderer.camera.lookAt(glm::vec3(0, 0, 0));
+        }
     }
 }
 
@@ -99,4 +115,9 @@ void RasterTest::renderFrame(DrawingWindow &window)
 {
     window.clearPixels();
     testFunctions[currentTest](renderer, window);
+
+    if (renderer.camera.getOrbit())
+    {
+        renderer.camera.iterateOrbit();
+    }
 }

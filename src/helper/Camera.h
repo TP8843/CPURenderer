@@ -11,7 +11,13 @@ public:
            float focalLength,
            float imagePlaneScaling);
 
-    // Rotate camera using rotation matrix
+    // Move camera by given vector along rotated axis
+    void translateRelative(glm::vec3 translation);
+
+    // Move camera by given vector along absolute axis
+    void translateAbsolute(glm::vec3 translation);
+
+    // Rotate camera relative to scene using rotation matrix
     void rotate(const glm::mat3& newRotation);
 
     // Rotate around x-axis by given angle (radians)
@@ -20,11 +26,20 @@ public:
     // Rotate around y-axis by given angle (radians)
     void rotateY(float angle);
 
-    // Move camera by given vector along rotated axis
-    void translateRelative(glm::vec3 translation);
+    // Toggles orbit mode. During orbit mode, no camera controls work
+    bool toggleOrbit();
 
-    // Move camera by given vector along absolute axis
-    void translateAbsolute(glm::vec3 translation);
+    // Move camera to next stage of orbit. Only works in orbit mode
+    void iterateOrbit();
+
+    // Return state of orbit
+    bool getOrbit() const;
+
+    // Reset camera position
+    void reset();
+
+    // Look at location
+    void lookAt(glm::vec3 location);
 
     glm::vec3 position;
     glm::mat3 rotation;
@@ -32,7 +47,14 @@ public:
     float imagePlaneScaling;
 
 private:
+    // True if camera is orbiting
+    bool orbit = false;
 
+    // True if camera moves relative to scene
+    bool relative = true;
+
+    glm::vec3 initialPosition;
+    glm::mat3 initialRotation;
 };
 
 
