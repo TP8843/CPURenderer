@@ -80,14 +80,16 @@ CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(DrawingWindow& window, 
     glm::vec3 cameraVertexPosition = vertexPosition - camera.position;
 
     cameraVertexPosition = cameraVertexPosition * camera.rotation;
-
-    float u = camera.imagePlaneScaling * camera.focalLength * (-cameraVertexPosition.x / cameraVertexPosition.z) + (window.width / 2);
-    float v = camera.imagePlaneScaling * camera.focalLength * (cameraVertexPosition.y / cameraVertexPosition.z) + (window.height / 2);
+    float u = 0;
+    float v = 0;
 
     float depth = 0;
 
     if (cameraVertexPosition.z != 0)
     {
+        u = camera.imagePlaneScaling * camera.focalLength * (-cameraVertexPosition.x / cameraVertexPosition.z) + (window.width / 2);
+        v = camera.imagePlaneScaling * camera.focalLength * (cameraVertexPosition.y / cameraVertexPosition.z) + (window.height / 2);
+
         // Negative due to positive z out the screen
         depth = -1.0f / cameraVertexPosition.z;
     }

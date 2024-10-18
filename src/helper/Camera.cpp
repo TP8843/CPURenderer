@@ -1,8 +1,5 @@
 #include "Camera.h"
 
-#include <iostream>
-#include <ostream>
-
 #include "constants.h"
 
 Camera::Camera(const glm::vec3 position,
@@ -55,13 +52,6 @@ bool Camera::toggleOrbit()
 {
     orbit = !orbit;
 
-    // Set camera to orbit starting position.
-    if (orbit)
-    {
-        position = glm::vec3(0, 0, 10);
-        rotation = glm::mat3();
-    }
-
     return orbit;
 }
 
@@ -75,7 +65,7 @@ void Camera::iterateOrbit()
        glm::vec3(glm::sin(constants::speed::ORBIT_SPEED), 0, glm::cos(constants::speed::ORBIT_SPEED)));
 
         position = rotationMatrix * position;
-        rotate(rotationMatrix);
+        lookAt(glm::vec3(0,0,0));
     }
 }
 
