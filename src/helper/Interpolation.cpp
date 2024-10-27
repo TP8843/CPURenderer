@@ -23,11 +23,6 @@ float Interpolation::proportion(const float from, const float to, const float cu
     return glm::clamp<float>((current - from) / (to - from), 0, 1);
 }
 
-float Interpolation::interpolateSingleFloat(const float from, const float to, const float proportion)
-{
-    return from + (to - from) * proportion;
-}
-
 std::vector<glm::vec3> Interpolation::interpolateThreeElementValues(const glm::vec3 from, const glm::vec3 to, const int count)
 {
     const auto xs = interpolateSingleFloats(from.x, to.x, count);

@@ -55,7 +55,10 @@ add_executable(RedNoise
         src/tests/RasterTest.h
         src/helper/Camera.cpp
         src/helper/Camera.h
-        src/helper/constants.h)
+        src/helper/constants.h
+        src/helper/Material.cpp
+        src/helper/Material.h
+)
 
 if (MSVC)
     target_compile_options(RedNoise
