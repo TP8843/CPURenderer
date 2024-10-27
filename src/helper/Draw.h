@@ -10,8 +10,8 @@
 class Draw {
 public:
     static void drawLine(DrawingWindow& window, const CanvasPoint& from, const CanvasPoint& to, const Colour& colour);
-    static void drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour& colour);
-    static void drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour& colour);
+    static void drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& triangle);
+    static void drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle);
     static void drawTexturedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const TextureMap& texture);
 };
 

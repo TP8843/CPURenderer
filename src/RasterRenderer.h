@@ -25,9 +25,8 @@ private:
     CanvasPoint projectVertexOntoCanvasPoint(DrawingWindow& window, glm::vec3 vertexPosition) const;
 
     static void drawDepthAwareFilledTriangle(DrawingWindow& window,
-                                      const CanvasTriangle& triangle,
-                                      const Colour& colour,
-                                      float **depthBuffer) ;
+                                             const CanvasTriangle& triangle,
+                                             float** depthBuffer) ;
 };
 
 

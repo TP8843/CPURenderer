@@ -36,8 +36,7 @@ void RasterRenderer::wireframeRender(DrawingWindow& window) const
             mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex));
         }
 
-        Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2]),
-                                  Colour(255, 255, 255));
+        Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2], Colour(255, 255, 255)));
     }
 }
 
@@ -63,8 +62,8 @@ void RasterRenderer::rasterRender(DrawingWindow& window) const
             mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex));
         }
 
-        drawDepthAwareFilledTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2]),
-                                     triangle.colour, depthBuffer);
+        drawDepthAwareFilledTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2], triangle.colour),
+                                     depthBuffer);
     }
 
     for (int y = 0; y < window.height; y++)
@@ -99,9 +98,9 @@ CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(DrawingWindow& window, 
 }
 
 void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle,
-                                                  const Colour& colour, float** depthBuffer)
+                                                  float** depthBuffer)
 {
-    const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
+    const auto colourValue = (255 << 24) + (triangle.colour.red << 16) + (triangle.colour.green << 8) + triangle.colour.blue;
     auto vertices = std::array<CanvasPoint, 3>(triangle.vertices);
 
     // Sort triangle based on y value
@@ -136,7 +135,7 @@ void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const C
             const float zInv = Interpolation::interpolateSingleFloat(rowStartZ, rowEndZ, proportion);
 
             if (zInv > 0 && zInv < 0.7 && x >= 0 && x < window.width && y >= 0 && y < window.height &&
-                zInv > depthBuffer[static_cast<int>(y)][static_cast<int>(x)])
+                zInv > depthBuffer[y][x])
             {
                 depthBuffer[y][x] = zInv;
                 window.setPixelColour(x, y, colourValue);

@@ -90,10 +90,10 @@ void DrawTests::drawTexturedTriangleTest(DrawingWindow &window)
 	const auto v2 = CanvasPoint(300, 230, TexturePoint(395, 380));
 	const auto v3 = CanvasPoint(10, 150, TexturePoint(65, 330));
 
-	const auto triangle = CanvasTriangle(v1, v2, v3);
+	const auto triangle = CanvasTriangle(v1, v2, v3, Colour(255, 255, 255));
 
 	Draw::drawTexturedTriangle(window, triangle, texture);
-	Draw::drawStrokedTriangle(window, triangle, Colour(255, 255, 255));
+	Draw::drawStrokedTriangle(window, triangle);
 }
 
 void DrawTests::drawEdgeCaseTriangles (DrawingWindow &window)
@@ -102,31 +102,35 @@ void DrawTests::drawEdgeCaseTriangles (DrawingWindow &window)
 	const auto triangle1 = CanvasTriangle(
 		CanvasPoint(0, 0),
 		CanvasPoint(100, 0),
-		CanvasPoint(50, 200)
+		CanvasPoint(50, 200),
+		Colour(255, 255, 255)
 	);
 
 	const auto triangle2 = CanvasTriangle(
 		CanvasPoint(window.width -1, 0),
 		CanvasPoint(window.width - 1, 100),
-		CanvasPoint(window.width - 50, 100)
+		CanvasPoint(window.width - 50, 100),
+		Colour(255, 255, 255)
 	);
 
 	const auto triangle3 = CanvasTriangle(
 		CanvasPoint(window.width / 2, window.height - 51),
 		CanvasPoint(window.width / 2 + 100, window.height - 1),
-		CanvasPoint(window.width / 2, window.height - 1)
+		CanvasPoint(window.width / 2, window.height - 1),
+		Colour(255, 255, 255)
 	);
 
 	const auto triangle4 = CanvasTriangle(
 	CanvasPoint(window.width / 2, 20),
 	CanvasPoint(window.width / 2 + 100, 20),
-	CanvasPoint(window.width / 2, 21)
+	CanvasPoint(window.width / 2, 21),
+	Colour(255, 255, 255)
 );
 
-	Draw::drawFilledTriangle(window, triangle1, colour);
-	Draw::drawFilledTriangle(window, triangle2, colour);
-	Draw::drawFilledTriangle(window, triangle3, colour);
-	Draw::drawFilledTriangle(window, triangle4, colour);
+	Draw::drawFilledTriangle(window, triangle1);
+	Draw::drawFilledTriangle(window, triangle2);
+	Draw::drawFilledTriangle(window, triangle3);
+	Draw::drawFilledTriangle(window, triangle4);
 }
 
 void DrawTests::handleEvent(SDL_Event& event, DrawingWindow& window)
@@ -143,14 +147,16 @@ void DrawTests::handleEvent(SDL_Event& event, DrawingWindow& window)
 			const auto triangle = CanvasTriangle(
 				CanvasPoint(rand() % window.width, rand() % window.height),
 				CanvasPoint(rand() % window.width, rand() % window.height),
-				CanvasPoint(rand() % window.width, rand() % window.height)
+				CanvasPoint(rand() % window.width, rand() % window.height),
+				Colour(rand() % 255, rand() % 255, rand() % 255)
 			);
 
-			const auto colour = Colour(rand() % 255, rand() % 255, rand() % 255);
-			const auto white = Colour(255, 255, 255);
+			const auto outline = CanvasTriangle(
+				triangle[0], triangle[1], triangle[2], Colour(255, 255, 255)
+			);
 
-			Draw::drawFilledTriangle(window, triangle, colour);
-			Draw::drawStrokedTriangle(window, triangle, white);
+			Draw::drawFilledTriangle(window, triangle);
+			Draw::drawStrokedTriangle(window, outline);
 		}
 	}
 }

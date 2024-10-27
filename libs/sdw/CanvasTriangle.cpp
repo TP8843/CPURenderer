@@ -1,8 +1,8 @@
 #include "CanvasTriangle.h"
 
 CanvasTriangle::CanvasTriangle() = default;
-CanvasTriangle::CanvasTriangle(const CanvasPoint &v0, const CanvasPoint &v1, const CanvasPoint &v2) :
-    vertices({{v0, v1, v2}}) {}
+CanvasTriangle::CanvasTriangle(const CanvasPoint &v0, const CanvasPoint &v1, const CanvasPoint &v2, const Colour &c) :
+    vertices({{v0, v1, v2}}), colour(c) {}
 
 CanvasPoint &CanvasTriangle::v0() {
     return vertices[0];

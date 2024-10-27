@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <array>
+#include <TextureMap.h>
+
 #include "Colour.h"
 #include "TexturePoint.h"
 

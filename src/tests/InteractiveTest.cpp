@@ -14,7 +14,8 @@ InteractiveTest::InteractiveTest()
     : selectedVertex(3),
       triangle(CanvasTriangle(CanvasPoint(20, 100),
                               CanvasPoint(100, 100),
-                              CanvasPoint(60, 50))),
+                              CanvasPoint(60, 50),
+                              Colour(255, 255, 255))),
       triangleColour(Colour(255, 255, 255)),
       vertexColour(Colour(255, 0, 0))
 {
@@ -75,7 +76,7 @@ void InteractiveTest::renderFrame(DrawingWindow &window)
         triangle.vertices[selectedVertex].y = y;
     }
 
-    Draw::drawFilledTriangle(window, triangle, triangleColour);
+    Draw::drawFilledTriangle(window, triangle);
 
     for (int v = 0; v < 3; v++)
     {

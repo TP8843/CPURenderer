@@ -64,20 +64,20 @@ void Draw::drawLine(DrawingWindow& window, const CanvasPoint& from, const Canvas
     }
 }
 
-void Draw::drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour& colour)
+void Draw::drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& triangle)
 {
     const auto v1 = triangle.vertices[0];
     const auto v2 = triangle.vertices[1];
     const auto v3 = triangle.vertices[2];
 
-    drawLine(window, v1, v2, colour);
-    drawLine(window, v1, v3, colour);
-    drawLine(window, v2, v3, colour);
+    drawLine(window, v1, v2, triangle.colour);
+    drawLine(window, v1, v3, triangle.colour);
+    drawLine(window, v2, v3, triangle.colour);
 }
 
-void Draw::drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const Colour &colour)
+void Draw::drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle)
 {
-    const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
+    const auto colourValue = triangle.colour.asARGB();
     std::array<CanvasPoint, 3> vertices =  triangle.vertices;
 
     // Sort triangle based on y value
