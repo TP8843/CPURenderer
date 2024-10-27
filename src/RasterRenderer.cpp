@@ -111,7 +111,7 @@ void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const C
 
     int startVertex = 0;
 
-    for (size_t y = glm::floor(vertices[0].y); y <= static_cast<size_t>(glm::floor(vertices[2].y)); y++)
+    for (int y = glm::floor(vertices[0].y); y <= static_cast<int>(glm::floor(vertices[2].y)); y++)
     {
         const float rowStartProportion = Interpolation::proportion(vertices[startVertex].y, vertices[startVertex + 1].y,
                                                                    y, 0);
@@ -130,7 +130,7 @@ void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const C
             std::swap(rowStartZ, rowEndZ);
         }
 
-        for (size_t x = glm::ceil(rowStartX); x < static_cast<size_t>(glm::ceil(rowEndX)); x++)
+        for (int x = glm::ceil(rowStartX); x < static_cast<int>(glm::ceil(rowEndX)); x++)
         {
             const float proportion = Interpolation::proportion(rowStartX, rowEndX, x, 0);
             const float zInv = Interpolation::interpolateSingleFloat(rowStartZ, rowEndZ, proportion);
@@ -143,6 +143,6 @@ void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const C
             }
         }
 
-        if (y == static_cast<size_t>(vertices[1].y)) startVertex++;
+        if (y == static_cast<int>(vertices[1].y)) startVertex++;
     }
 }
