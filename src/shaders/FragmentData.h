@@ -5,6 +5,7 @@
 #ifndef POINTDATA_H
 #define POINTDATA_H
 #include <Colour.h>
+#include <DrawingWindow.h>
 #include <TextureMap.h>
 #include <TexturePoint.h>
 #include <glm/glm.hpp>
@@ -30,7 +31,11 @@ namespace FragmentData
 
     struct FilledDataUniform
     {
+        DrawingWindow& window;
+        float** depthBuffer;
+
         FilledDataUniform() = default;
+        FilledDataUniform(DrawingWindow& window, float** depthBuffer);
     };
 
     struct TextureData {
@@ -53,9 +58,11 @@ namespace FragmentData
 
     struct TextureDataUniform
     {
+        DrawingWindow& window;
+        float** depthBuffer;
         TextureMap textureMap;
 
-        explicit TextureDataUniform(TextureMap textureMap);
+        explicit TextureDataUniform(DrawingWindow &window, float** depthBuffer, TextureMap textureMap);
     };
 }
 

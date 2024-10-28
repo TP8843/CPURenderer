@@ -68,7 +68,7 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
 
         if (!triangle.material.hasTexture)
         {
-            FragmentData::FilledDataUniform uniform = FragmentData::FilledDataUniform();
+            FragmentData::FilledDataUniform uniform = FragmentData::FilledDataUniform(window, depthBuffer);
 
             FragmentData::FilledData d1 = { triangle.material.colour, glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
             FragmentData::FilledData d2 = { triangle.material.colour, glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
@@ -76,11 +76,11 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
 
             std::array<FragmentData::FilledData, 3> data = { d1, d2, d3 };
 
-            drawTriangle<FragmentData::FilledDataUniform, FragmentData::FilledData>(window, canvasTriangle, depthBuffer, uniform, data, FragmentShaders::filled );
+            drawTriangle<FragmentData::FilledDataUniform, FragmentData::FilledData>(canvasTriangle, uniform, data, FragmentShaders::filled );
         }
         else
         {
-            FragmentData::TextureDataUniform uniform = FragmentData::TextureDataUniform(triangle.material.textureMap);
+            FragmentData::TextureDataUniform uniform = FragmentData::TextureDataUniform(window, depthBuffer, triangle.material.textureMap);
 
             FragmentData::TextureData d1 = { triangle.material.colour, triangle.texturePoints[0] * v1.depth, glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
             FragmentData::TextureData d2 = { triangle.material.colour, triangle.texturePoints[1] * v2.depth, glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
@@ -88,7 +88,7 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
 
             std::array<FragmentData::TextureData, 3> data = { d1, d2, d3 };
 
-            drawTriangle<FragmentData::TextureDataUniform, FragmentData::TextureData>(window, canvasTriangle, depthBuffer, uniform, data, FragmentShaders::material );
+            drawTriangle<FragmentData::TextureDataUniform, FragmentData::TextureData>(canvasTriangle, uniform, data, FragmentShaders::material );
         }
     }
 

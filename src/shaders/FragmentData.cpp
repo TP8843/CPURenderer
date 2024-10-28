@@ -28,6 +28,10 @@ FragmentData::FilledData FragmentData::FilledData::operator-(const FilledData& o
         };
 }
 
+FragmentData::FilledDataUniform::FilledDataUniform(DrawingWindow& window, float** depthBuffer) :
+        window(window), depthBuffer(depthBuffer)
+{}
+
 FragmentData::TextureData::TextureData(Colour colour, const TexturePoint texturePoint, const glm::vec3 proportion, const float depth) :
         colour(std::move(colour)), texturePoint(texturePoint), proportion(proportion), depth(depth)
 {}
@@ -48,6 +52,6 @@ FragmentData::TextureData FragmentData::TextureData::operator-(const TextureData
                 depth - other.depth };
 }
 
-FragmentData::TextureDataUniform::TextureDataUniform(const TextureMap textureMap) :
-        textureMap(textureMap)
+FragmentData::TextureDataUniform::TextureDataUniform(DrawingWindow& window, float** depthBuffer, const TextureMap textureMap) :
+        window(window), depthBuffer(depthBuffer), textureMap(textureMap)
 {}

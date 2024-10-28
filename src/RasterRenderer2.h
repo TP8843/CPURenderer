@@ -25,16 +25,12 @@ private:
     CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 vertex, size_t width, size_t height) const;
 
     template <typename Uniform, typename Data>
-    static void drawTriangle(DrawingWindow& window,
-                             CanvasTriangle triangle,
-                             float** depthBuffer,
+    static void drawTriangle(CanvasTriangle triangle,
                              Uniform uniform,
                              std::array<Data, 3> verticesData,
-                             std::function<void (DrawingWindow&,
-                                                 CanvasTriangle,
+                             std::function<void (CanvasTriangle,
                                                  int,
                                                  int,
-                                                 float**,
                                                  const Uniform&,
                                                  const Data&)> fragmentShader)
     {
@@ -104,7 +100,7 @@ private:
                 const float proportion = Interpolation::proportion(rowStartX, rowEndX, x, 0);
                 const Data data = Interpolation::interpolate(rowStartData, rowEndData, proportion);
 
-                fragmentShader(window, triangle, x, y, depthBuffer, uniform, data);
+                fragmentShader(triangle, x, y, uniform, data);
             }
 
             if (y == static_cast<int>(vertices[1].y)) startVertex++;
