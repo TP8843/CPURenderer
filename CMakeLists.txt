@@ -56,8 +56,12 @@ add_executable(RedNoise
         src/helper/Camera.cpp
         src/helper/Camera.h
         src/helper/constants.h
-        src/helper/Material.cpp
-        src/helper/Material.h
+        src/shaders/PointData.cpp
+        src/shaders/PointData.h
+        src/shaders/FragmentShaders.cpp
+        src/shaders/FragmentShaders.h
+        src/RasterRenderer2.cpp
+        src/RasterRenderer2.h
 )
 
 if (MSVC)

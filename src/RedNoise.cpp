@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
                          glm::mat3(),
                          5,
                          80);
-    auto renderer = RasterRenderer(model, camera);
+    auto renderer = RasterRenderer2(model, camera);
     RenderTest* rasterTest = new RasterTest(renderer);
     renderLoop.addTest(rasterTest);
 

@@ -114,14 +114,14 @@ void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const C
     {
         const float rowStartProportion = Interpolation::proportion(vertices[startVertex].y, vertices[startVertex + 1].y,
                                                                    y, 0);
-        float rowStartX = Interpolation::interpolateSingleFloat(vertices[startVertex].x, vertices[startVertex + 1].x,
+        float rowStartX = Interpolation::interpolate(vertices[startVertex].x, vertices[startVertex + 1].x,
                                                                 rowStartProportion);
-        float rowStartZ = Interpolation::interpolateSingleFloat(vertices[startVertex].depth,
+        float rowStartZ = Interpolation::interpolate(vertices[startVertex].depth,
                                                                 vertices[startVertex + 1].depth, rowStartProportion);
 
         const float rowEndProportion = Interpolation::proportion(vertices[0].y, vertices[2].y, y, 1);
-        float rowEndX = Interpolation::interpolateSingleFloat(vertices[0].x, vertices[2].x, rowEndProportion);
-        float rowEndZ = Interpolation::interpolateSingleFloat(vertices[0].depth, vertices[2].depth, rowEndProportion);
+        float rowEndX = Interpolation::interpolate(vertices[0].x, vertices[2].x, rowEndProportion);
+        float rowEndZ = Interpolation::interpolate(vertices[0].depth, vertices[2].depth, rowEndProportion);
 
         if (rowStartX > rowEndX)
         {
@@ -132,7 +132,7 @@ void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const C
         for (int x = glm::ceil(rowStartX); x < static_cast<int>(glm::ceil(rowEndX)); x++)
         {
             const float proportion = Interpolation::proportion(rowStartX, rowEndX, x, 0);
-            const float zInv = Interpolation::interpolateSingleFloat(rowStartZ, rowEndZ, proportion);
+            const float zInv = Interpolation::interpolate(rowStartZ, rowEndZ, proportion);
 
             if (zInv > 0 && zInv < 0.7 && x >= 0 && x < window.width && y >= 0 && y < window.height &&
                 zInv > depthBuffer[y][x])

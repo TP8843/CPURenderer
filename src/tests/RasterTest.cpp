@@ -1,25 +1,26 @@
 #include "RasterTest.h"
 
 #include "../helper/constants.h"
+#include "../RasterRenderer2.h"
 
 using namespace constants;
 
-RasterTest::RasterTest(RasterRenderer &renderer)
+RasterTest::RasterTest(RasterRenderer2 &renderer)
     : renderer(renderer)
 {
 }
 
-void RasterTest::drawPointCloud(RasterRenderer &renderer, DrawingWindow &window)
+void RasterTest::drawPointCloud(RasterRenderer2 &renderer, DrawingWindow &window)
 {
     renderer.pointCloudRender(window);
 }
 
-void RasterTest::drawWireframe(RasterRenderer &renderer, DrawingWindow &window)
+void RasterTest::drawWireframe(RasterRenderer2 &renderer, DrawingWindow &window)
 {
     renderer.wireframeRender(window);
 }
 
-void RasterTest::drawRaster(RasterRenderer &renderer, DrawingWindow &window)
+void RasterTest::drawRaster(RasterRenderer2 &renderer, DrawingWindow &window)
 {
     renderer.rasterRender(window);
 }

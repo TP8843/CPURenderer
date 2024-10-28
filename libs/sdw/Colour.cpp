@@ -14,3 +14,19 @@ std::ostream &operator<<(std::ostream &os, const Colour &colour) {
 	   << colour.blue << "]";
 	return os;
 }
+
+Colour Colour::operator+(const Colour& other) const
+{
+	return Colour(name,
+		red + other.red,
+		green + other.green,
+		blue + other.blue);
+}
+
+Colour Colour::operator-(const Colour& other) const
+{
+	return Colour(name,
+		red - other.red,
+		green - other.green,
+		blue - other.blue);
+}

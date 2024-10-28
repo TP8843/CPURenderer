@@ -11,7 +11,7 @@ public:
     static float proportion(float from, float to, float current, float fallback);
 
     template <typename T>
-    static T interpolateSingleFloat(T from, T to, float proportion)
+    static T interpolate(T from, T to, float proportion)
     {
         return from + (to - from) * proportion;
     };
