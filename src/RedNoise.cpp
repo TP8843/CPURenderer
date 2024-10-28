@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
     RenderTest* interactiveTest = new InteractiveTest();
     renderLoop.addTest(interactiveTest);
 
-    auto model = Model::import("cornell-box.obj");
+    auto model = Model::import("textured-cornell-box.obj");
     auto camera = Camera(glm::vec3(0, 0, 10),
                          glm::mat3(),
                          5,

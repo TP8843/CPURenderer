@@ -4,9 +4,11 @@
 
 #include "RasterRenderer2.h"
 
+#include "helper/Camera.h"
+#include "helper/Camera.h"
 #include "helper/Draw.h"
 #include "shaders/FragmentShaders.h"
-#include "shaders/PointData.h"
+#include "shaders/FragmentData.h"
 
 RasterRenderer2::RasterRenderer2(Model& model, Camera& camera) :
         model(model), camera(camera)
@@ -56,20 +58,38 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
     for (const auto &triangle : model.triangles)
     {
         auto mappedVertices = std::vector<CanvasPoint>();
-        auto fragmentData = std::vector<PointData::FilledData>();
+        auto fragmentData = std::vector<FragmentData::FilledData>();
 
         CanvasPoint v1 = projectVertexOntoCanvasPoint(triangle.vertices[0], window.width, window.height);
         CanvasPoint v2 = projectVertexOntoCanvasPoint(triangle.vertices[1], window.width, window.height);
         CanvasPoint v3 = projectVertexOntoCanvasPoint(triangle.vertices[2], window.width, window.height);
 
-        PointData::FilledData d1 = { triangle.colour, glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
-        PointData::FilledData d2 = { triangle.colour, glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
-        PointData::FilledData d3 = { triangle.colour, glm::vec3(0.0f, 0.0f, 1.0f), v3.depth };
+        CanvasTriangle canvasTriangle = CanvasTriangle(v1, v2, v3, triangle.material.colour);
 
-        CanvasTriangle canvasTriangle = CanvasTriangle(v1, v2, v3, triangle.colour);
-        std::array<PointData::FilledData, 3> data = { d1, d2, d3 };
+        if (!triangle.material.hasTexture)
+        {
+            FragmentData::FilledDataUniform uniform = FragmentData::FilledDataUniform();
 
-        drawTriangle<PointData::FilledData>(window, canvasTriangle, depthBuffer, data, FragmentShaders::outline );
+            FragmentData::FilledData d1 = { triangle.material.colour, glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
+            FragmentData::FilledData d2 = { triangle.material.colour, glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
+            FragmentData::FilledData d3 = { triangle.material.colour, glm::vec3(0.0f, 0.0f, 1.0f), v3.depth };
+
+            std::array<FragmentData::FilledData, 3> data = { d1, d2, d3 };
+
+            drawTriangle<FragmentData::FilledDataUniform, FragmentData::FilledData>(window, canvasTriangle, depthBuffer, uniform, data, FragmentShaders::filled );
+        }
+        else
+        {
+            FragmentData::TextureDataUniform uniform = FragmentData::TextureDataUniform(triangle.material.textureMap);
+
+            FragmentData::TextureData d1 = { triangle.material.colour, triangle.texturePoints[0] * v1.depth, glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
+            FragmentData::TextureData d2 = { triangle.material.colour, triangle.texturePoints[1] * v2.depth, glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
+            FragmentData::TextureData d3 = { triangle.material.colour, triangle.texturePoints[2] * v3.depth, glm::vec3(0.0f, 0.0f, 1.0f), v3.depth };
+
+            std::array<FragmentData::TextureData, 3> data = { d1, d2, d3 };
+
+            drawTriangle<FragmentData::TextureDataUniform, FragmentData::TextureData>(window, canvasTriangle, depthBuffer, uniform, data, FragmentShaders::material );
+        }
     }
 
     for (int y = 0; y < window.height; y++)
@@ -95,7 +115,7 @@ float** RasterRenderer2::createDepthBuffer(const int width, const int height)
     return depthBuffer;
 }
 
-CanvasPoint RasterRenderer2::projectVertexOntoCanvasPoint(const glm::vec3 vertex, const int width, const int height) const
+CanvasPoint RasterRenderer2::projectVertexOntoCanvasPoint(const glm::vec3 vertex, const size_t width, const size_t height) const
 {
     // Map model space to camera space
     glm::vec3 cameraVertexPosition = vertex - camera.position;

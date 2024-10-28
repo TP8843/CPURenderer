@@ -62,7 +62,7 @@ void RasterRenderer::rasterRender(DrawingWindow& window) const
             mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex));
         }
 
-        drawDepthAwareFilledTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2], triangle.colour),
+        drawDepthAwareFilledTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2], triangle.material.colour),
                                      depthBuffer);
     }
 

@@ -1,9 +1,6 @@
-//
-// Created by Thomas Parr on 28/10/2024.
-//
-
 #ifndef RASTERRENDERER2_H
 #define RASTERRENDERER2_H
+#include <functional>
 #include <CanvasTriangle.h>
 
 #include "helper/Camera.h"
@@ -25,18 +22,20 @@ public:
 
 private:
     static float** createDepthBuffer(int width, int height);
-    CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 vertex, int width, int height) const;
+    CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 vertex, size_t width, size_t height) const;
 
-    template <typename Data>
+    template <typename Uniform, typename Data>
     static void drawTriangle(DrawingWindow& window,
                              CanvasTriangle triangle,
                              float** depthBuffer,
+                             Uniform uniform,
                              std::array<Data, 3> verticesData,
                              std::function<void (DrawingWindow&,
                                                  CanvasTriangle,
                                                  int,
                                                  int,
                                                  float**,
+                                                 const Uniform&,
                                                  const Data&)> fragmentShader)
     {
         auto vertices = std::array<CanvasPoint, 3>(triangle.vertices);
@@ -105,7 +104,7 @@ private:
                 const float proportion = Interpolation::proportion(rowStartX, rowEndX, x, 0);
                 const Data data = Interpolation::interpolate(rowStartData, rowEndData, proportion);
 
-                fragmentShader(window, triangle, x, y, depthBuffer, data);
+                fragmentShader(window, triangle, x, y, depthBuffer, uniform, data);
             }
 
             if (y == static_cast<int>(vertices[1].y)) startVertex++;

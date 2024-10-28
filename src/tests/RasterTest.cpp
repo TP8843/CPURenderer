@@ -115,10 +115,12 @@ void RasterTest::handleEvent(SDL_Event& event, DrawingWindow& window)
 void RasterTest::renderFrame(DrawingWindow &window)
 {
     window.clearPixels();
-    testFunctions[currentTest](renderer, window);
 
     if (renderer.camera.getOrbit())
     {
         renderer.camera.iterateOrbit();
     }
+
+    testFunctions[currentTest](renderer, window);
+
 }
