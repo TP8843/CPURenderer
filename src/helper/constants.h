@@ -17,7 +17,7 @@ namespace constants
     namespace speed
     {
         constexpr float ROTATION_SPEED = 0.03f;
-        constexpr float ORBIT_SPEED = 0.003f;
+        constexpr float ORBIT_SPEED = 0.01f;
         constexpr float TRANSLATION_SPEED = 0.2f;
     }
 

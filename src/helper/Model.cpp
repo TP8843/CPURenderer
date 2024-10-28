@@ -75,8 +75,6 @@ Model Model::import(const char* objectPath)
             {
                 auto vertexTokens = split(tokens.at(i), '/');
 
-                std::cout << "Stored in token 2: " << vertexTokens.at(1).size() << std::endl;
-
                 // Pull correct vertex from read in vertices
                 faceVertices.push_back(vertices[std::stoi(vertexTokens.at(0)) - 1]);
 
@@ -92,7 +90,6 @@ Model Model::import(const char* objectPath)
 
             if (hasTexture)
             {
-                std::cout << "Adding triangle with material" << std::endl;
                 triangles.emplace_back(faceVertices[0], texturePoints[0],
                                         faceVertices[1], texturePoints[1],
                                         faceVertices[2], texturePoints[2],

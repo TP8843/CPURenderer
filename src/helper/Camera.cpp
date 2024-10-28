@@ -29,11 +29,12 @@ void Camera::translateAbsolute(const glm::vec3 translation)
 
 void Camera::rotate(const glm::mat3& newRotation)
 {
-    rotation *= newRotation;
+    rotation = newRotation * rotation;
 }
 
 void Camera::rotateX(const float angle)
 {
+    // Rotate about camera x-axis
     rotation *= glm::mat3(
         glm::vec3(1, 0, 0),
         glm::vec3(0, glm::cos(angle), glm::sin(angle)),
@@ -42,10 +43,11 @@ void Camera::rotateX(const float angle)
 
 void Camera::rotateY(const float angle)
 {
-    rotation *= glm::mat3(
+    // Rotate about global y-axis
+    rotation = glm::mat3(
         glm::vec3(glm::cos(angle), 0, -glm::sin(angle)),
         glm::vec3(0, 1, 0),
-        glm::vec3(glm::sin(angle), 0, glm::cos(angle)));
+        glm::vec3(glm::sin(angle), 0, glm::cos(angle))) * rotation;
 }
 
 bool Camera::toggleOrbit()
