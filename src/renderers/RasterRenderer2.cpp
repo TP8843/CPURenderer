@@ -4,11 +4,10 @@
 
 #include "RasterRenderer2.h"
 
-#include "helper/Camera.h"
-#include "helper/Camera.h"
-#include "helper/Draw.h"
-#include "shaders/FragmentShaders.h"
-#include "shaders/FragmentData.h"
+#include "../helper/Camera.h"
+#include "../helper/Draw.h"
+#include "../shaders/FragmentShaders.h"
+#include "../shaders/FragmentData.h"
 
 RasterRenderer2::RasterRenderer2(Model& model, Camera& camera) :
         model(model), camera(camera)

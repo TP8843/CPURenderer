@@ -1,0 +1,22 @@
+#ifndef WIREFRAMEWRAPPER_H
+#define WIREFRAMEWRAPPER_H
+#include "RasterRenderer2.h"
+#include "RendererWrapper.h"
+
+
+class WireframeWrapper : public RendererWrapper {
+public:
+    Camera& getCamera() override;
+    Model& getModel() override;
+
+    void renderFrame(DrawingWindow& window) override;
+
+    explicit WireframeWrapper(RasterRenderer2& renderer);
+
+private:
+    RasterRenderer2& renderer;
+};
+
+
+
+#endif //WIREFRAMEWRAPPER_H

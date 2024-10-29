@@ -16,26 +16,26 @@ namespace constants
 
     namespace speed
     {
-        constexpr float ROTATION_SPEED = 0.03f;
+        constexpr float ROTATION_SPEED = 0.008f;
         constexpr float ORBIT_SPEED = 0.01f;
-        constexpr float TRANSLATION_SPEED = 0.2f;
+        constexpr float TRANSLATION_SPEED = 0.06f;
     }
 
     namespace keyboard
     {
         // Translation
-        constexpr int PEDESTAL_UP = SDLK_r;
-        constexpr int PEDESTAL_DOWN = SDLK_f;
-        constexpr int DOLLY_FORWARD = SDLK_s;
-        constexpr int DOLLY_BACK = SDLK_w;
-        constexpr int TRUCK_LEFT = SDLK_a;
-        constexpr int TRUCK_RIGHT = SDLK_d;
+        constexpr int PEDESTAL_UP = SDL_SCANCODE_R;
+        constexpr int PEDESTAL_DOWN = SDL_SCANCODE_F;
+        constexpr int DOLLY_FORWARD = SDL_SCANCODE_S;
+        constexpr int DOLLY_BACK = SDL_SCANCODE_W;
+        constexpr int TRUCK_LEFT = SDL_SCANCODE_A;
+        constexpr int TRUCK_RIGHT = SDL_SCANCODE_D;
 
         // Rotation
-        constexpr int PAN_LEFT = SDLK_LEFT;
-        constexpr int PAN_RIGHT = SDLK_RIGHT;
-        constexpr int TILT_UP = SDLK_UP;
-        constexpr int TILT_DOWN = SDLK_DOWN;
+        constexpr int PAN_LEFT = SDL_SCANCODE_LEFT;
+        constexpr int PAN_RIGHT = SDL_SCANCODE_RIGHT;
+        constexpr int TILT_UP = SDL_SCANCODE_UP;
+        constexpr int TILT_DOWN = SDL_SCANCODE_DOWN;
 
         constexpr int ORBIT = SDLK_o;
         constexpr int RESET_RENDER = SDLK_z;

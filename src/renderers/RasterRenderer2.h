@@ -3,9 +3,9 @@
 #include <functional>
 #include <CanvasTriangle.h>
 
-#include "helper/Camera.h"
-#include "helper/Interpolation.h"
-#include "helper/Model.h"
+#include "../helper/Camera.h"
+#include "../helper/Interpolation.h"
+#include "../helper/Model.h"
 
 // Electric Boogaloo
 class RasterRenderer2

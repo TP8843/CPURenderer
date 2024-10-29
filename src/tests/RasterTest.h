@@ -4,33 +4,28 @@
 
 #ifndef RASTERTEST_H
 #define RASTERTEST_H
-#include "RenderTest.h"
-#include "../RasterRenderer2.h"
 
+#include "RenderTest.h"
+#include "../renderers/RasterRenderer2.h"
+#include "../renderers/RendererWrapper.h"
 
 class RasterTest : public RenderTest
 {
 public:
-    static void drawPointCloud(RasterRenderer2 &renderer, DrawingWindow& window);
-    static void drawWireframe(RasterRenderer2 &renderer, DrawingWindow& window);
-    static void drawRaster(RasterRenderer2 &renderer, DrawingWindow& window);
-
-    explicit RasterTest(RasterRenderer2 &renderer);
+    RasterTest();
 
     void handleEvent(SDL_Event& event, DrawingWindow& window) override;
     void renderFrame(DrawingWindow& window) override;
 
-private:
-    RasterRenderer2 &renderer;
-    int currentTest = 1;
+    void addRendererWrapper(RendererWrapper* rendererWrapper);
 
-    std::vector<void (*)(RasterRenderer2 &renderer, DrawingWindow& window)> testFunctions
-        = std::vector<void (*)(RasterRenderer2 &renderer, DrawingWindow& window)>
-        {
-            drawPointCloud,
-            drawWireframe,
-            drawRaster
-        };
+private:
+    std::vector<RendererWrapper*> renderers;
+    int currentTest = 0;
+
+    RendererWrapper* getCurrentRendererWrapper() const;
+
+    void processKeys() const;
 };
 
 

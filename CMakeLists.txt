@@ -46,8 +46,8 @@ add_executable(RedNoise
         src/tests/InteractiveTest.h
         src/tests/DrawTests.cpp
         src/tests/DrawTests.h
-        src/RasterRenderer.cpp
-        src/RasterRenderer.h
+        src/renderers/RasterRenderer.cpp
+        src/renderers/RasterRenderer.h
         src/tests/RenderTest.h
         src/RenderLoop.cpp
         src/RenderLoop.h
@@ -60,10 +60,19 @@ add_executable(RedNoise
         src/shaders/FragmentData.h
         src/shaders/FragmentShaders.cpp
         src/shaders/FragmentShaders.h
-        src/RasterRenderer2.cpp
-        src/RasterRenderer2.h
+        src/renderers/RasterRenderer2.cpp
+        src/renderers/RasterRenderer2.h
         src/helper/Material.cpp
         src/helper/Material.h
+        src/renderers/Raytracer.cpp
+        src/renderers/Raytracer.h
+        src/renderers/RendererWrapper.h
+        src/renderers/RasterWrapper.cpp
+        src/renderers/RasterWrapper.h
+        src/renderers/RaytracerWrapper.cpp
+        src/renderers/RaytracerWrapper.h
+        src/renderers/WireframeWrapper.cpp
+        src/renderers/WireframeWrapper.h
 )
 
 if (MSVC)

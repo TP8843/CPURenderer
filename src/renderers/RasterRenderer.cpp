@@ -2,8 +2,8 @@
 
 #include <CanvasTriangle.h>
 
-#include "helper/Draw.h"
-#include "helper/Interpolation.h"
+#include "../helper/Draw.h"
+#include "../helper/Interpolation.h"
 
 RasterRenderer::RasterRenderer(Model& model,
                                Camera& camera)
