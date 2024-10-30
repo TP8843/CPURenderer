@@ -16,9 +16,15 @@ bool Material::hasTexture() const
         return hasTextureBool;
 }
 
-uint32_t Material::getPixelTextureColour(const size_t x, const size_t y) const
+Colour Material::getPixelTextureColour(const size_t x, const size_t y) const
 {
-        return texture.pixels[y * texture.width + x];
+        const uint32_t rawColour = texture.pixels[y * texture.width + x];
+
+        return Colour(
+                rawColour & (0xFF),
+                rawColour & (0xFF),
+                rawColour & (0xFF)
+        );
 }
 
 size_t Material::getTextureWidth() const

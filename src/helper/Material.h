@@ -12,7 +12,7 @@ class Material {
 public:
     Colour getColour() const;
     bool hasTexture() const;
-    uint32_t getPixelTextureColour(size_t x, size_t y) const;
+    Colour getPixelTextureColour(size_t x, size_t y) const;
     size_t getTextureWidth() const;
     size_t getTextureHeight() const;
 

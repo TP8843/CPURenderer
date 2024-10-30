@@ -35,7 +35,11 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::
             (possibleSolution.x < closestIntersection.second.distanceFromCamera || !closestIntersection.first))
         {
             closestIntersection.first = true;
-            glm::vec3 position = rayDirection * possibleSolution.x;
+            // glm::vec3 position = rayDirection * possibleSolution.x;
+
+            glm::vec3 position = triangle.vertices[0]
+                + (triangle.vertices[1] - triangle.vertices[0]) * possibleSolution.y
+                + (triangle.vertices[2] - triangle.vertices[0]) * possibleSolution.z;
 
             closestIntersection = std::pair<bool, RayTriangleIntersection>(true, RayTriangleIntersection(
                 position,
@@ -70,6 +74,17 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
             if (intersection.first)
             {
+                const auto lightPosition = glm::vec3(0,1,0);
+                const auto lightDistance = glm::normalize(intersection.second.intersectionPoint - lightPosition);
+
+                std::pair<bool, RayTriangleIntersection> closestToLight =
+                    getClosestIntersection(lightPosition, glm::normalize(lightDistance), model.triangles);
+
+                const bool inShadow = (closestToLight.first
+                    && closestToLight.second.triangleIndex != intersection.second.triangleIndex);
+
+                const float colourMultiplier = inShadow * 0.2 + !inShadow * 1;
+
                 const Material& material = model.materials.getMaterial(intersection.second.intersectedTriangle.material);
 
                 if (material.hasTexture())
@@ -82,11 +97,11 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
 
                     // window.setPixelColour(i, height - j, material.getColour().asARGB());
-                    window.setPixelColour(i, window.height - j, (0xFF << 24) + (material.getPixelTextureColour(finalTexturePoint.x, finalTexturePoint.y) & 0xFFFFFF));
+                    window.setPixelColour(i, window.height - j, (material.getPixelTextureColour(finalTexturePoint.x, finalTexturePoint.y) * colourMultiplier).asARGB());
                 }
                 else
                 {
-                    window.setPixelColour(i, window.height - j, material.getColour().asARGB());
+                    window.setPixelColour(i, window.height - j, (material.getColour() * colourMultiplier).asARGB());
                 }
             }
         }
