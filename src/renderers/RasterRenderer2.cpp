@@ -4,7 +4,7 @@
 
 #include "RasterRenderer2.h"
 
-#include "../helper/Camera.h"
+#include "../objects/Camera.h"
 #include "../helper/Draw.h"
 #include "../shaders/FragmentShaders.h"
 #include "../shaders/FragmentData.h"

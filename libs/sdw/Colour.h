@@ -11,7 +11,7 @@ struct Colour {
 	Colour(int r, int g, int b);
 	Colour(std::string n, int r, int g, int b);
 
-	int asARGB() const
+	uint32_t asARGB() const
 	{
 		return (255 << 24) + (red << 16) + (green << 8) + blue;
 	};

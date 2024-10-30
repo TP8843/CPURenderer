@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include "constants.h"
+#include "../helper/constants.h"
 
 Camera::Camera(const glm::vec3 position,
                const glm::mat3& rotation,

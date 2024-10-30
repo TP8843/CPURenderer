@@ -65,7 +65,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
             glm::vec3 scenePosition = glm::normalize(glm::vec3(
                 (i - width / 2) / height,
-                (j - height / 2) / height,
+                (j - height / 2 + 1) / height,
                 -1
             ));
 
@@ -74,16 +74,21 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
             if (intersection.first)
             {
-                const auto lightPosition = glm::vec3(0,1,0);
-                const auto lightDistance = glm::normalize(intersection.second.intersectionPoint - lightPosition);
+
+                const auto lightPosition = glm::vec3(0,2.5,0);
+                const auto lightDisplacement = intersection.second.intersectionPoint - lightPosition;
 
                 std::pair<bool, RayTriangleIntersection> closestToLight =
-                    getClosestIntersection(lightPosition, glm::normalize(lightDistance), model.triangles);
+                    getClosestIntersection(
+                        lightPosition,
+                        glm::normalize(lightDisplacement),
+                        model.triangles);
 
                 const bool inShadow = (closestToLight.first
+                    && closestToLight.second.distanceFromCamera - glm::length(lightDisplacement) < 0.00000002f
                     && closestToLight.second.triangleIndex != intersection.second.triangleIndex);
 
-                const float colourMultiplier = inShadow * 0.2 + !inShadow * 1;
+                const float colourMultiplier = inShadow * 0.2f + !inShadow * 1.0f;
 
                 const Material& material = model.materials.getMaterial(intersection.second.intersectedTriangle.material);
 
@@ -95,13 +100,11 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                         + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
                         + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
 
-
-                    // window.setPixelColour(i, height - j, material.getColour().asARGB());
-                    window.setPixelColour(i, window.height - j, (material.getPixelTextureColour(finalTexturePoint.x, finalTexturePoint.y) * colourMultiplier).asARGB());
+                    window.setPixelColour(i, window.height - j - 1, (material.getPixelTextureColour(finalTexturePoint.x, finalTexturePoint.y) * colourMultiplier).asARGB());
                 }
                 else
                 {
-                    window.setPixelColour(i, window.height - j, (material.getColour() * colourMultiplier).asARGB());
+                    window.setPixelColour(i, window.height - j - 1, (material.getColour() * colourMultiplier).asARGB());
                 }
             }
         }

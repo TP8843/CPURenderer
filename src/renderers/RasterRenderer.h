@@ -4,8 +4,8 @@
 #include <CanvasTriangle.h>
 #include <DrawingWindow.h>
 
-#include "../helper/Camera.h"
-#include "../helper/Model.h"
+#include "../objects/Camera.h"
+#include "../objects/Model.h"
 
 
 class RasterRenderer

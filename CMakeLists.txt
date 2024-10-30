@@ -40,8 +40,8 @@ add_executable(RedNoise
         src/helper/Interpolation.h
         src/helper/Draw.cpp
         src/helper/Draw.h
-        src/helper/Model.cpp
-        src/helper/Model.h
+        src/objects/Model.cpp
+        src/objects/Model.h
         src/tests/InteractiveTest.cpp
         src/tests/InteractiveTest.h
         src/tests/DrawTests.cpp
@@ -53,8 +53,8 @@ add_executable(RedNoise
         src/RenderLoop.h
         src/tests/RasterTest.cpp
         src/tests/RasterTest.h
-        src/helper/Camera.cpp
-        src/helper/Camera.h
+        src/objects/Camera.cpp
+        src/objects/Camera.h
         src/helper/constants.h
         src/shaders/FragmentData.cpp
         src/shaders/FragmentData.h

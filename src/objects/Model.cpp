@@ -8,9 +8,9 @@
 #include <../../libs/sdw/ModelTriangle.h>
 
 #include "Model.h"
-#include "Draw.h"
-#include "Interpolation.h"
-#include "MaterialMap.h"
+#include "../helper/Draw.h"
+#include "../helper/Interpolation.h"
+#include "../helper/MaterialMap.h"
 
 Model::Model(const std::vector<ModelTriangle>& triangles, const MaterialMap& materials) :
     triangles(triangles), materials(materials)

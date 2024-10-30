@@ -1,4 +1,4 @@
-#include "helper/Model.h"
+#include "objects/Model.h"
 #include "renderers/RasterRenderer2.h"
 #include "RenderLoop.h"
 #include "renderers/RendererWrapper.h"

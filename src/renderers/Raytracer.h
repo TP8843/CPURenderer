@@ -4,8 +4,8 @@
 #include <ModelTriangle.h>
 #include <RayTriangleIntersection.h>
 
-#include "../helper/Camera.h"
-#include "../helper/Model.h"
+#include "../objects/Camera.h"
+#include "../objects/Model.h"
 
 
 class Raytracer
