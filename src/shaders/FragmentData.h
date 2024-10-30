@@ -14,11 +14,10 @@
 namespace FragmentData
 {
     struct FilledData {
-        Colour colour;
         glm::vec3 proportion;
         float depth;
 
-        FilledData(Colour  colour, glm::vec3 proportion, float depth);
+        FilledData(glm::vec3 proportion, float depth);
 
         FilledData operator+(const FilledData &other) const;
         FilledData operator-(const FilledData &other) const;
@@ -26,26 +25,16 @@ namespace FragmentData
         template<typename N>
         FilledData operator*(const N num)
         {
-            return FilledData(colour * num, proportion * num, depth * num);
+            return FilledData(proportion * num, depth * num);
         }
     };
 
-    struct FilledDataUniform
-    {
-        DrawingWindow& window;
-        float** depthBuffer;
-
-        FilledDataUniform() = default;
-        FilledDataUniform(DrawingWindow& window, float** depthBuffer);
-    };
-
     struct TextureData {
-        Colour colour;
         TexturePoint texturePoint;
         glm::vec3 proportion;
         float depth;
 
-        TextureData(Colour  colour, TexturePoint texturePoint, glm::vec3 proportion, float depth);
+        TextureData(TexturePoint texturePoint, glm::vec3 proportion, float depth);
 
         TextureData operator+(const TextureData &other) const;
         TextureData operator-(const TextureData &other) const;
@@ -53,17 +42,17 @@ namespace FragmentData
         template<typename N>
         TextureData operator*(const N num)
         {
-            return TextureData(colour * num, texturePoint * num, proportion * num, depth * num);
+            return TextureData(texturePoint * num, proportion * num, depth * num);
         }
     };
 
-    struct TextureDataUniform
+    struct DataUniform
     {
         DrawingWindow& window;
         float** depthBuffer;
         Material material;
 
-        explicit TextureDataUniform(DrawingWindow &window, float** depthBuffer, const Material& material);
+        explicit DataUniform(DrawingWindow &window, float** depthBuffer, const Material& material);
     };
 }
 

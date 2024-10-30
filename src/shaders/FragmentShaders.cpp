@@ -4,8 +4,8 @@
 
 #include "FragmentShaders.h"
 
-void FragmentShaders::filled(CanvasTriangle triangle, int x, int y,
-                             const FragmentData::FilledDataUniform& uniform, const FragmentData::FilledData& data)
+void FragmentShaders::filled(CanvasTriangle triangle, const int x, const int y,
+                             const FragmentData::DataUniform& uniform, const FragmentData::FilledData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
         x >= 0 && x < uniform.window.width &&
@@ -14,12 +14,12 @@ void FragmentShaders::filled(CanvasTriangle triangle, int x, int y,
     {
         uniform.depthBuffer[y][x] = data.depth;
 
-        uniform.window.setPixelColour(x, y, data.colour.asARGB());
+        uniform.window.setPixelColour(x, y, uniform.material.getColour().asARGB());
     }
 }
 
 void FragmentShaders::rainbow(CanvasTriangle triangle, const int x, const int y,
-                              const FragmentData::FilledDataUniform& uniform,
+                              const FragmentData::DataUniform& uniform,
                               const FragmentData::FilledData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
@@ -35,7 +35,7 @@ void FragmentShaders::rainbow(CanvasTriangle triangle, const int x, const int y,
 }
 
 void FragmentShaders::outline(CanvasTriangle triangle, const int x, const int y,
-                              const FragmentData::FilledDataUniform& uniform,
+                              const FragmentData::DataUniform& uniform,
                               const FragmentData::FilledData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
@@ -47,12 +47,12 @@ void FragmentShaders::outline(CanvasTriangle triangle, const int x, const int y,
     {
         uniform.depthBuffer[y][x] = data.depth;
 
-        uniform.window.setPixelColour(x, y, data.colour.asARGB());
+        uniform.window.setPixelColour(x, y, uniform.material.getColour().asARGB());
     }
 }
 
 void FragmentShaders::depth(CanvasTriangle triangle, const int x, const int y,
-                            const FragmentData::FilledDataUniform& uniform,
+                            const FragmentData::DataUniform& uniform,
                             const FragmentData::FilledData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
@@ -60,7 +60,7 @@ void FragmentShaders::depth(CanvasTriangle triangle, const int x, const int y,
         y >= 0 && y < uniform.window.height &&
         data.depth > uniform.depthBuffer[y][x])
     {
-        auto multiplier = glm::clamp(data.depth, 0.0f, 1.0f) * 255 * 3;
+        const float multiplier = glm::clamp(data.depth, 0.0f, 1.0f) * 255;
 
         uniform.depthBuffer[y][x] = data.depth;
 
@@ -69,7 +69,7 @@ void FragmentShaders::depth(CanvasTriangle triangle, const int x, const int y,
 }
 
 void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y,
-                               const FragmentData::TextureDataUniform& uniform,
+                               const FragmentData::DataUniform& uniform,
                                const FragmentData::TextureData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&

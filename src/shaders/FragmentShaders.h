@@ -15,31 +15,31 @@ struct FragmentShaders
     static void filled(CanvasTriangle triangle,
                        int x,
                        int y,
-                       const FragmentData::FilledDataUniform& uniform,
+                       const FragmentData::DataUniform& uniform,
                        const FragmentData::FilledData& data);
 
     static void rainbow(CanvasTriangle triangle,
                         int x,
                         int y,
-                        const FragmentData::FilledDataUniform& uniform,
+                        const FragmentData::DataUniform& uniform,
                         const FragmentData::FilledData& data);
 
     static void outline(CanvasTriangle triangle,
                         int x,
                         int y,
-                        const FragmentData::FilledDataUniform& uniform,
+                        const FragmentData::DataUniform& uniform,
                         const FragmentData::FilledData& data);
 
     static void depth(CanvasTriangle triangle,
                       int x,
                       int y,
-                      const FragmentData::FilledDataUniform& uniform,
+                      const FragmentData::DataUniform& uniform,
                       const FragmentData::FilledData& data);
 
     static void material(CanvasTriangle triangle,
                          int x,
                          int y,
-                         const FragmentData::TextureDataUniform& uniform,
+                         const FragmentData::DataUniform& uniform,
                          const FragmentData::TextureData& data);
 };
 

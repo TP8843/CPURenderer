@@ -49,3 +49,16 @@
 5	712	1730273912191841314	CMakeFiles/RedNoise.dir/src/RedNoise.cpp.o	711a18068b95ee2
 6	917	1730273912192483606	CMakeFiles/RedNoise.dir/src/renderers/RasterRenderer2.cpp.o	718ace3ab062f85b
 917	1023	1730273913103644690	RedNoise	e97d0a243f58c7ba
+7	593	1730278923324015083	CMakeFiles/RedNoise.dir/src/renderers/RaytracerWrapper.cpp.o	6fed9f384b935d0c
+6	598	1730278923323122208	CMakeFiles/RedNoise.dir/libs/sdw/RayTriangleIntersection.cpp.o	12c31ef0ce0c217c
+6	626	1730278923323681292	CMakeFiles/RedNoise.dir/src/RedNoise.cpp.o	711a18068b95ee2
+7	641	1730278923323873750	CMakeFiles/RedNoise.dir/src/renderers/Raytracer.cpp.o	ada1b8817635d130
+641	686	1730278923958586375	RedNoise	e97d0a243f58c7ba
+6	615	1730282276945879892	CMakeFiles/RedNoise.dir/src/shaders/FragmentShaders.cpp.o	c8a80b6a2f1c5c3b
+5	619	1730282276945337018	CMakeFiles/RedNoise.dir/src/shaders/FragmentData.cpp.o	efe10821aa9ca43a
+6	826	1730282276946059142	CMakeFiles/RedNoise.dir/src/renderers/RasterRenderer2.cpp.o	718ace3ab062f85b
+826	950	1730282277765829334	RedNoise	e97d0a243f58c7ba
+5	504	1730282585086436561	CMakeFiles/RedNoise.dir/src/shaders/FragmentShaders.cpp.o	c8a80b6a2f1c5c3b
+4	526	1730282585086036270	CMakeFiles/RedNoise.dir/src/shaders/FragmentData.cpp.o	efe10821aa9ca43a
+5	682	1730282585086723268	CMakeFiles/RedNoise.dir/src/renderers/RasterRenderer2.cpp.o	718ace3ab062f85b
+683	722	1730282585764159529	RedNoise	e97d0a243f58c7ba

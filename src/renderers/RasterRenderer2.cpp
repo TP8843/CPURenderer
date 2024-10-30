@@ -80,29 +80,28 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
         // Placeholder colour to allow original rasterer to work
         CanvasTriangle canvasTriangle = CanvasTriangle(v1, v2, v3, Colour(255, 255, 255));
 
+        FragmentData::DataUniform uniform = FragmentData::DataUniform(window, depthBuffer, material);
+
+
         if (!material.hasTexture())
         {
-            FragmentData::FilledDataUniform uniform = FragmentData::FilledDataUniform(window, depthBuffer);
-
-            FragmentData::FilledData d1 = { material.getColour(), glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
-            FragmentData::FilledData d2 = { material.getColour(), glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
-            FragmentData::FilledData d3 = { material.getColour(), glm::vec3(0.0f, 0.0f, 1.0f), v3.depth };
+            FragmentData::FilledData d1 = { glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
+            FragmentData::FilledData d2 = { glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
+            FragmentData::FilledData d3 = { glm::vec3(0.0f, 0.0f, 1.0f), v3.depth };
 
             std::array<FragmentData::FilledData, 3> data = { d1, d2, d3 };
 
-            drawTriangle<FragmentData::FilledDataUniform, FragmentData::FilledData>(canvasTriangle, uniform, data, FragmentShaders::filled );
+            drawTriangle<FragmentData::DataUniform, FragmentData::FilledData>(canvasTriangle, uniform, data, FragmentShaders::filled );
         }
         else
         {
-            FragmentData::TextureDataUniform uniform = FragmentData::TextureDataUniform(window, depthBuffer, material);
-
-            FragmentData::TextureData d1 = { material.getColour(), triangle.texturePoints[0] * v1.depth, glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
-            FragmentData::TextureData d2 = { material.getColour(), triangle.texturePoints[1] * v2.depth, glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
-            FragmentData::TextureData d3 = { material.getColour(), triangle.texturePoints[2] * v3.depth, glm::vec3(0.0f, 0.0f, 1.0f), v3.depth };
+            FragmentData::TextureData d1 = { triangle.texturePoints[0] * v1.depth, glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
+            FragmentData::TextureData d2 = { triangle.texturePoints[1] * v2.depth, glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
+            FragmentData::TextureData d3 = { triangle.texturePoints[2] * v3.depth, glm::vec3(0.0f, 0.0f, 1.0f), v3.depth };
 
             std::array<FragmentData::TextureData, 3> data = { d1, d2, d3 };
 
-            drawTriangle<FragmentData::TextureDataUniform, FragmentData::TextureData>(canvasTriangle, uniform, data, FragmentShaders::material );
+            drawTriangle<FragmentData::DataUniform, FragmentData::TextureData>(canvasTriangle, uniform, data, FragmentShaders::material );
         }
     }
 

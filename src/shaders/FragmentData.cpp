@@ -6,14 +6,13 @@
 
 #include <utility>
 
-FragmentData::FilledData::FilledData(Colour colour, const glm::vec3 proportion, const float depth) :
-        colour(std::move(colour)), proportion(proportion), depth(depth)
+FragmentData::FilledData::FilledData(const glm::vec3 proportion, const float depth) :
+        proportion(proportion), depth(depth)
 {}
 
 FragmentData::FilledData FragmentData::FilledData::operator+(const FilledData& other) const
 {
         return {
-                colour + other.colour,
                 proportion + other.proportion,
                 depth + other.depth
         };
@@ -22,23 +21,18 @@ FragmentData::FilledData FragmentData::FilledData::operator+(const FilledData& o
 FragmentData::FilledData FragmentData::FilledData::operator-(const FilledData& other) const
 {
         return {
-                colour - other.colour,
                 proportion - other.proportion,
                 depth - other.depth
         };
 }
 
-FragmentData::FilledDataUniform::FilledDataUniform(DrawingWindow& window, float** depthBuffer) :
-        window(window), depthBuffer(depthBuffer)
-{}
-
-FragmentData::TextureData::TextureData(Colour colour, const TexturePoint texturePoint, const glm::vec3 proportion, const float depth) :
-        colour(std::move(colour)), texturePoint(texturePoint), proportion(proportion), depth(depth)
+FragmentData::TextureData::TextureData(const TexturePoint texturePoint, const glm::vec3 proportion, const float depth) :
+        texturePoint(texturePoint), proportion(proportion), depth(depth)
 {}
 
 FragmentData::TextureData FragmentData::TextureData::operator+(const TextureData &other) const
 {
-        return { colour + other.colour,
+        return {
                 texturePoint + other.texturePoint,
                 proportion + other.proportion,
                 depth + other.depth };
@@ -46,12 +40,11 @@ FragmentData::TextureData FragmentData::TextureData::operator+(const TextureData
 
 FragmentData::TextureData FragmentData::TextureData::operator-(const TextureData &other) const
 {
-        return { colour - other.colour,
-                texturePoint - other.texturePoint,
+        return { texturePoint - other.texturePoint,
                 proportion - other.proportion,
                 depth - other.depth };
 }
 
-FragmentData::TextureDataUniform::TextureDataUniform(DrawingWindow& window, float** depthBuffer, const Material& material) :
+FragmentData::DataUniform::DataUniform(DrawingWindow& window, float** depthBuffer, const Material& material) :
         window(window), depthBuffer(depthBuffer), material(material)
 {}

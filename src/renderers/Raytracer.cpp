@@ -76,13 +76,13 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                 {
                     const auto texturePoints = intersection.second.intersectedTriangle.texturePoints;
 
-                    auto finalTexturePoint = texturePoints[0]
+                    const auto finalTexturePoint = texturePoints[0]
                         + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
                         + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
 
 
-                    window.setPixelColour(i, height - j, material.getColour().asARGB());
-                    // window.setPixelColour(i, window.height - j, (0xFF << 24) + (triangle.material.textureMap.pixels[finalTexturePoint.y * window.width + finalTexturePoint.x] & 0xFFFFFF));
+                    // window.setPixelColour(i, height - j, material.getColour().asARGB());
+                    window.setPixelColour(i, window.height - j, (0xFF << 24) + (material.getPixelTextureColour(finalTexturePoint.x, finalTexturePoint.y) & 0xFFFFFF));
                 }
                 else
                 {
