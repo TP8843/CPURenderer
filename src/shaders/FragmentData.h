@@ -6,9 +6,10 @@
 #define POINTDATA_H
 #include <Colour.h>
 #include <DrawingWindow.h>
-#include <TextureMap.h>
 #include <TexturePoint.h>
 #include <glm/glm.hpp>
+
+#include "../helper/Material.h"
 
 namespace FragmentData
 {
@@ -60,9 +61,9 @@ namespace FragmentData
     {
         DrawingWindow& window;
         float** depthBuffer;
-        TextureMap textureMap;
+        Material material;
 
-        explicit TextureDataUniform(DrawingWindow &window, float** depthBuffer, TextureMap textureMap);
+        explicit TextureDataUniform(DrawingWindow &window, float** depthBuffer, const Material& material);
     };
 }
 

@@ -17,7 +17,7 @@ public:
                                          glm::vec3 rayDirection,
                                          std::vector<ModelTriangle> triangles);
 
-    void renderFrame(DrawingWindow &window);
+    void renderFrame(DrawingWindow &window) const;
 
     Model& model;
     Camera& camera;

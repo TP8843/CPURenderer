@@ -10,13 +10,13 @@
 struct ModelTriangle {
 	std::array<glm::vec3, 3> vertices{};
 	std::array<TexturePoint, 3> texturePoints{};
-	Material material{};
+	std::string material{};
 	glm::vec3 normal{};
 
 	ModelTriangle();
-	ModelTriangle(const glm::vec3 &v0, const glm::vec3 &v1, const glm::vec3 &v2, Material material);
+	ModelTriangle(const glm::vec3 &v0, const glm::vec3 &v1, const glm::vec3 &v2, std::string material);
 	ModelTriangle(const glm::vec3 &v0, const TexturePoint &t0, const glm::vec3 &v1, const TexturePoint &t1,
-							 const glm::vec3 &v2, const TexturePoint &t2, Material material);
+							 const glm::vec3 &v2, const TexturePoint &t2, std::string material);
 
 	friend std::ostream &operator<<(std::ostream &os, const ModelTriangle &triangle);
 };

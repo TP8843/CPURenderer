@@ -2,6 +2,7 @@
 #define RASTERRENDERER2_H
 #include <functional>
 #include <CanvasTriangle.h>
+#include <DrawingWindow.h>
 
 #include "../helper/Camera.h"
 #include "../helper/Interpolation.h"
@@ -22,6 +23,7 @@ public:
 
 private:
     static float** createDepthBuffer(int width, int height);
+    glm::vec3 applyCameraTransformation(glm::vec3 vertex) const;
     CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 vertex, size_t width, size_t height) const;
 
     template <typename Uniform, typename Data>

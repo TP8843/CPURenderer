@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
     auto camera = Camera(glm::vec3(0, 0, 10),
                          glm::mat3(),
                          3,
-                         120);
+                         160);
 
     auto renderer = RasterRenderer2(model, camera);
     auto* rasterWrapper = new RasterWrapper(renderer);

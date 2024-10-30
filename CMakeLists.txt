@@ -73,6 +73,8 @@ add_executable(RedNoise
         src/renderers/RaytracerWrapper.h
         src/renderers/WireframeWrapper.cpp
         src/renderers/WireframeWrapper.h
+        src/helper/MaterialMap.cpp
+        src/helper/MaterialMap.h
 )
 
 if (MSVC)

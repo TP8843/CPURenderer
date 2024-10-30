@@ -1,27 +1,24 @@
-//
-// Created by Thomas Parr on 08/10/2024.
-//
-
 #ifndef OBJECT_H
 #define OBJECT_H
-#include <../../libs/sdw/CanvasPoint.h>
-#include <../../libs/sdw/DrawingWindow.h>
 #include <../../libs/sdw/ModelTriangle.h>
 #include <unordered_map>
 #include <vector>
+
+#include "MaterialMap.h"
 
 class Model {
 public:
     static Model import(const char* objectPath);
 
+    MaterialMap materials;
     std::vector<ModelTriangle> triangles;
 
 private:
     Model() = default;
 
-    explicit Model(const std::vector<ModelTriangle> &triangles);
+    explicit Model(const std::vector<ModelTriangle> &triangles, const MaterialMap& materials);
 
-    static std::unordered_map<std::string, Material> importMaterials(const std::string &path);
+    static MaterialMap importMaterials(const std::string &path);
 };
 
 

@@ -4,15 +4,16 @@
 
 #include <vector>
 #include <fstream>
-#include <unordered_map>
 #include <../../libs/sdw/Utils.h>
 #include <../../libs/sdw/ModelTriangle.h>
 
 #include "Model.h"
 #include "Draw.h"
 #include "Interpolation.h"
+#include "MaterialMap.h"
 
-Model::Model(const std::vector<ModelTriangle>& triangles) : triangles(triangles)
+Model::Model(const std::vector<ModelTriangle>& triangles, const MaterialMap& materials) :
+    triangles(triangles), materials(materials)
 {}
 
 Model Model::import(const char* objectPath)
@@ -20,8 +21,8 @@ Model Model::import(const char* objectPath)
     std::string text;
     std::ifstream ObjectFile(objectPath);
 
-    std::unordered_map<std::string, Material> materialMap;
-    Material currentMaterial;
+    MaterialMap materialMap;
+    std::string currentMaterial;
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> vertexTextures;
     std::vector<ModelTriangle> triangles;
@@ -61,7 +62,7 @@ Model Model::import(const char* objectPath)
         // Material
         if (tokens.at(0) == "usemtl")
         {
-            currentMaterial = materialMap[tokens.at(1)];
+            currentMaterial = tokens.at(1);
         }
 
         // Face
@@ -84,7 +85,9 @@ Model Model::import(const char* objectPath)
                     hasTexture = true;
                     const auto point = vertexTextures[std::stoi(vertexTokens.at(1)) - 1];
 
-                    texturePoints.emplace_back(point.x * currentMaterial.textureMap.width, point.y * currentMaterial.textureMap.height);
+                    texturePoints.emplace_back(
+                        point.x * materialMap.getMaterial(currentMaterial).getTextureWidth(),
+                        point.y * materialMap.getMaterial(currentMaterial).getTextureHeight());
                 }
             }
 
@@ -102,15 +105,24 @@ Model Model::import(const char* objectPath)
         }
     }
 
-    return Model(triangles);
+    return Model(triangles, materialMap);
 }
 
-std::unordered_map<std::string, Material> Model::importMaterials(const std::string &path)
+MaterialMap Model::importMaterials(const std::string &path)
 {
     std::ifstream MaterialFile(path);
     std::string line;
-    std::string currentMaterial;
-    std::unordered_map<std::string, Material> materialMap;
+    std::string currentMaterialName;
+
+    bool materialToStore = false;
+
+    bool hasTexture = false;
+    TextureMap currentTexture;
+
+    bool hasColour = false;
+    Colour currentColour;
+
+    MaterialMap materialMap = MaterialMap();
 
     while(getline(MaterialFile, line))
     {
@@ -118,27 +130,71 @@ std::unordered_map<std::string, Material> Model::importMaterials(const std::stri
 
         if (tokens.at(0) == "newmtl")
         {
-            currentMaterial = tokens.at(1);
+            if (materialToStore)
+            {
+
+                if (hasTexture && hasColour)
+                {
+                    std::cout << "Material " << currentMaterialName << " added colour + texture: " << currentColour << std::endl;
+
+                    materialMap.addMaterial(currentMaterialName, Material(currentColour, currentTexture));
+                }
+                else if (hasTexture)
+                {
+                    materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), currentTexture));
+                }
+                else if (hasColour)
+                {
+                    std::cout << "Material " << currentMaterialName << " added colour: " << currentColour << std::endl;
+                    materialMap.addMaterial(currentMaterialName, Material(currentColour));
+                }
+            }
+
+            materialToStore = false;
+            hasColour = false;
+            hasTexture = false;
+
+            currentMaterialName = tokens.at(1);
         }
 
         if (tokens.at(0) == "Kd")
         {
+            materialToStore = true;
+
             const auto colourValue = Colour(
                 std::stof(tokens.at(1)) * 255,
                 std::stof(tokens.at(2)) * 255,
                 std::stof(tokens.at(3)) * 255);
 
-            materialMap[currentMaterial] = Material(currentMaterial, colourValue);
-            std::cout << "Material " << currentMaterial << " added colour: " << materialMap[currentMaterial].colour << std::endl;
+            hasColour = true;
+            currentColour = colourValue;
         }
 
         if (tokens.at(0) == "map_Kd")
         {
+            materialToStore = true;
+
             const auto& texturePath = tokens.at(1);
             const auto textureMap = TextureMap(texturePath);
 
-            materialMap[currentMaterial].textureMap = textureMap;
-            materialMap[currentMaterial].hasTexture = true;
+            hasTexture = true;
+            currentTexture = textureMap;
+        }
+    }
+
+    if (materialToStore)
+    {
+        if (hasTexture && hasColour)
+        {
+            materialMap.addMaterial(currentMaterialName, Material(currentColour, currentTexture));
+        }
+        else if (hasTexture)
+        {
+            materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), currentTexture));
+        }
+        else if (hasColour)
+        {
+            materialMap.addMaterial(currentMaterialName, Material(currentColour));
         }
     }
 

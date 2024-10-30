@@ -78,9 +78,9 @@ void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y
         data.depth > uniform.depthBuffer[y][x])
     {
         uniform.depthBuffer[y][x] = data.depth;
-        const auto texture = uniform.textureMap.pixels.at(
-            glm::floor(data.texturePoint.y / data.depth) * static_cast<float>(uniform.textureMap.width) + glm::floor(
-                data.texturePoint.x / data.depth));
+        const auto texture = uniform.material.getPixelTextureColour(
+            glm::floor(data.texturePoint.x / data.depth),
+            glm::floor(data.texturePoint.y / data.depth));
 
         uniform.window.setPixelColour(x, y, (0xFF << 24) + (texture & 0xFFFFFF));
     }

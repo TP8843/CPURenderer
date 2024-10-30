@@ -14,6 +14,18 @@ struct TexturePoint {
 	TexturePoint operator-(const TexturePoint &other) const;
 
 	template<typename N>
+	TexturePoint operator+(const N num) const
+	{
+		return TexturePoint(x + num, y + num);
+	}
+
+	template<typename N>
+	TexturePoint operator-(const N num) const
+	{
+		return TexturePoint(x - num, y - num);
+	}
+
+	template<typename N>
 	TexturePoint operator*(const N num) const
 	{
 		return TexturePoint(x * num, y * num);

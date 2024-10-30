@@ -20,7 +20,7 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::
 
     for (int i = 0; i < triangles.size(); i++)
     {
-        const ModelTriangle triangle = triangles[i];
+        const ModelTriangle& triangle = triangles[i];
 
         glm::vec3 e0 = triangle.vertices[1] - triangle.vertices[0];
         glm::vec3 e1 = triangle.vertices[2] - triangle.vertices[0];
@@ -39,6 +39,7 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::
 
             closestIntersection = std::pair<bool, RayTriangleIntersection>(true, RayTriangleIntersection(
                 position,
+                glm::vec2(possibleSolution.y, possibleSolution.z),
                 possibleSolution.x,
                 triangle,
                 i));
@@ -48,25 +49,45 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::
     return closestIntersection;
 }
 
-void Raytracer::renderFrame(DrawingWindow& window)
+void Raytracer::renderFrame(DrawingWindow& window) const
 {
-    for (float j = 0; j < static_cast<float>(window.height); j++)
+    const float width = static_cast<float>(window.width);
+    const float height = static_cast<float>(window.height);
+
+    for (float j = 0; j < height; j++)
     {
-        for (float i = 0; i < static_cast<float>(window.width); i++)
+        for (float i = 0; i < width; i++)
         {
 
             glm::vec3 scenePosition = glm::normalize(glm::vec3(
-                (i - static_cast<float>(window.width) / 2) / static_cast<float>(window.height),
-                (j - static_cast<float>(window.height) / 2) / static_cast<float>(window.height),
-                -camera.focalLength / 4
+                (i - width / 2) / height,
+                (j - height / 2) / height,
+                -1
             ));
 
             std::pair<bool, RayTriangleIntersection> intersection =
-                getClosestIntersection(camera.position, scenePosition, model.triangles);
+                getClosestIntersection(camera.position, camera.rotation * scenePosition, model.triangles);
 
             if (intersection.first)
             {
-                window.setPixelColour(i, window.height - j, intersection.second.intersectedTriangle.material.colour.asARGB());
+                const Material& material = model.materials.getMaterial(intersection.second.intersectedTriangle.material);
+
+                if (material.hasTexture())
+                {
+                    const auto texturePoints = intersection.second.intersectedTriangle.texturePoints;
+
+                    auto finalTexturePoint = texturePoints[0]
+                        + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
+                        + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
+
+
+                    window.setPixelColour(i, height - j, material.getColour().asARGB());
+                    // window.setPixelColour(i, window.height - j, (0xFF << 24) + (triangle.material.textureMap.pixels[finalTexturePoint.y * window.width + finalTexturePoint.x] & 0xFFFFFF));
+                }
+                else
+                {
+                    window.setPixelColour(i, window.height - j, material.getColour().asARGB());
+                }
             }
         }
     }

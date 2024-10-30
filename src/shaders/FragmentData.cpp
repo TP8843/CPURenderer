@@ -52,6 +52,6 @@ FragmentData::TextureData FragmentData::TextureData::operator-(const TextureData
                 depth - other.depth };
 }
 
-FragmentData::TextureDataUniform::TextureDataUniform(DrawingWindow& window, float** depthBuffer, const TextureMap textureMap) :
-        window(window), depthBuffer(depthBuffer), textureMap(textureMap)
+FragmentData::TextureDataUniform::TextureDataUniform(DrawingWindow& window, float** depthBuffer, const Material& material) :
+        window(window), depthBuffer(depthBuffer), material(material)
 {}

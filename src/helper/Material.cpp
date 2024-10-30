@@ -6,12 +6,37 @@
 
 #include <utility>
 
+Colour Material::getColour() const
+{
+        return colour;
+}
+
+bool Material::hasTexture() const
+{
+        return hasTextureBool;
+}
+
+uint32_t Material::getPixelTextureColour(const size_t x, const size_t y) const
+{
+        return texture.pixels[y * texture.width + x];
+}
+
+size_t Material::getTextureWidth() const
+{
+        return texture.width;
+}
+
+size_t Material::getTextureHeight() const
+{
+        return texture.height;
+}
+
 Material::Material() = default;
 
-Material::Material(std::string name, Colour colour):
-        name(std::move(name)), colour(std::move(colour)), hasTexture(false)
+Material::Material(Colour colour):
+        colour(std::move(colour))
 {}
 
-Material::Material(std::string name, Colour colour, TextureMap textureMap) :
-        name(std::move(name)), colour(std::move(colour)), hasTexture(true), textureMap(std::move(textureMap))
+Material::Material(Colour colour, TextureMap texture) :
+        colour(std::move(colour)), hasTextureBool(true), texture(std::move(texture))
 {}

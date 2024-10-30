@@ -8,16 +8,23 @@
 #include <string>
 #include <TextureMap.h>
 
-struct Material {
-    std::string name{};
-    Colour colour{};
-
-    TextureMap textureMap{};
-    bool hasTexture{};
+class Material {
+public:
+    Colour getColour() const;
+    bool hasTexture() const;
+    uint32_t getPixelTextureColour(size_t x, size_t y) const;
+    size_t getTextureWidth() const;
+    size_t getTextureHeight() const;
 
     Material();
-    Material(std::string name, Colour colour);
-    Material(std::string name, Colour colour, TextureMap textureMap);
+    Material(Colour colour);
+    Material(Colour colour, TextureMap texture);
+
+private:
+    Colour colour;
+
+    TextureMap texture;
+    bool hasTextureBool{};
 };
 
 
