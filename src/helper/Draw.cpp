@@ -34,7 +34,9 @@ void Draw::drawLine(DrawingWindow& window, const CanvasPoint& from, const Canvas
             const float proportion = (static_cast<float>(x) - start.x) / (end.x - start.x);
 
             const int y = static_cast<int>(glm::floor(Interpolation::interpolate(start.y, end.y, proportion)));
-            window.setPixelColour(x, y, colourValue);
+
+            if (x < window.width && y < window.height)
+                window.setPixelColour(x, y, colourValue);
         }
     }
     else
@@ -59,7 +61,9 @@ void Draw::drawLine(DrawingWindow& window, const CanvasPoint& from, const Canvas
             const float proportion = (static_cast<float>(y) - start.y) / (end.y - start.y);
 
             const int x = static_cast<int>(glm::floor(Interpolation::interpolate(start.x, end.x, proportion)));
-            window.setPixelColour(x, y, colourValue);
+
+            if (x < window.width && y < window.height)
+                window.setPixelColour(x, y, colourValue);
         }
     }
 }
