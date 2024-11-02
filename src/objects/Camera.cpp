@@ -53,6 +53,8 @@ void Camera::rotateY(const float angle)
 bool Camera::toggleOrbit()
 {
     orbit = !orbit;
+    if (orbit) prevTime = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now().time_since_epoch());
 
     return orbit;
 }
@@ -61,13 +63,21 @@ void Camera::iterateOrbit()
 {
     if (orbit)
     {
+        const std::chrono::milliseconds time = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch());
+
+        const float timeElapsed = (time - prevTime).count() / 1000.0f;
+
         const auto rotationMatrix = glm::mat3(
-       glm::vec3(glm::cos(constants::speed::ORBIT_SPEED), 0, -glm::sin(constants::speed::ORBIT_SPEED)),
+       glm::vec3(glm::cos(constants::speed::ORBIT_SPEED * timeElapsed), 0, -glm::sin(constants::speed::ORBIT_SPEED * timeElapsed)),
        glm::vec3(0, 1, 0),
-       glm::vec3(glm::sin(constants::speed::ORBIT_SPEED), 0, glm::cos(constants::speed::ORBIT_SPEED)));
+       glm::vec3(glm::sin(constants::speed::ORBIT_SPEED * timeElapsed), 0, glm::cos(constants::speed::ORBIT_SPEED * timeElapsed)));
 
         position = rotationMatrix * position;
         lookAt(glm::vec3(0,0,0));
+
+        prevTime = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch());
     }
 }
 

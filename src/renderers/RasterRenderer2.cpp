@@ -28,7 +28,7 @@ void RasterRenderer2::pointCloudRender(DrawingWindow& window) const
 
 void RasterRenderer2::wireframeRender(DrawingWindow& window) const
 {
-    for (const auto& triangle : model.triangles)
+    for (const auto& triangle : model.getPreparedTriangles(camera))
     {
         auto mappedVertices = std::vector<CanvasPoint>();
 

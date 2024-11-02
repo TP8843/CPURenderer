@@ -1,9 +1,4 @@
-//
-// Created by Thomas Parr on 29/10/2024.
-//
-
 #include "Raytracer.h"
-
 #include <glm/glm.hpp>
 
 #include <RayTriangleIntersection.h>

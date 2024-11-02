@@ -22,10 +22,11 @@ public:
 private:
     std::vector<RendererWrapper*> renderers;
     int currentTest = 0;
+    std::chrono::milliseconds prevTime;
 
     RendererWrapper* getCurrentRendererWrapper() const;
 
-    void processKeys() const;
+    void processKeys();
 };
 
 

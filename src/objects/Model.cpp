@@ -91,16 +91,22 @@ Model Model::import(const char* objectPath)
                 }
             }
 
+            // Calculate normal for triangle
+            const glm::vec3 normal = glm::cross(
+                glm::cross(faceVertices.at(0), faceVertices.at(1)),
+                faceVertices.at(2));
+
             if (hasTexture)
             {
                 triangles.emplace_back(faceVertices[0], texturePoints[0],
                                         faceVertices[1], texturePoints[1],
                                         faceVertices[2], texturePoints[2],
+                                        normal,
                                         currentMaterial);
             }
             else
             {
-                triangles.emplace_back(faceVertices[0], faceVertices[1], faceVertices[2], currentMaterial);
+                triangles.emplace_back(faceVertices[0], faceVertices[1], faceVertices[2], normal, currentMaterial);
             }
         }
     }
@@ -121,6 +127,7 @@ std::vector<ModelTriangle> Model::transformTriangles(const Camera& camera, std::
             triangle.texturePoints[1],
             (triangle.vertices[2] - camera.position) * camera.rotation,
             triangle.texturePoints[2],
+            triangle.normal,
             triangle.material));
     }
 
@@ -131,14 +138,10 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
 {
     std::vector<ModelTriangle> filteredTriangles = std::vector<ModelTriangle>(triangles);
 
-    std::cout << "Running clipping algorithm on " << filteredTriangles.size() << " triangles" << std::endl;
-
     for (const auto& clippingPlane : getClippingPlanes())
     {
         std::vector<ModelTriangle> oldFilteredTriangles = filteredTriangles;
         filteredTriangles = std::vector<ModelTriangle>();
-
-        std::cout << "Filtered triangles size: " << filteredTriangles.size() << std::endl;
 
         for (ModelTriangle triangle: oldFilteredTriangles)
         {
@@ -180,6 +183,7 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
                     vertices[0], texturePoints[0],
                     vertices[1], texturePoints[1],
                     vertices[2], texturePoints[2],
+                    triangle.normal,
                     triangle.material));
             }
             // If one vertex outside clipping plane
@@ -197,12 +201,12 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
                 filteredTriangles.emplace_back(ModelTriangle(
                     newV1Vertex, newV1TexturePoint,
                     vertices[1], texturePoints[1],
-                    vertices[2], texturePoints[2], triangle.material));
+                    vertices[2], texturePoints[2], triangle.normal, triangle.material));
 
                 filteredTriangles.emplace_back(ModelTriangle(
                     newV2Vertex, newV2TexturePoint,
                     newV1Vertex, newV1TexturePoint,
-                    vertices[2], texturePoints[2], triangle.material));
+                    vertices[2], texturePoints[2], triangle.normal, triangle.material));
 
             }
             // Check if two vertices outside plane
@@ -218,11 +222,10 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
                     Interpolation::interpolate(texturePoints[1], texturePoints[2], v1prop),
                     vertices[2],
                     texturePoints[2],
+                    triangle.normal,
                     triangle.material));
             }
         }
-
-        std::cout << "Number of triangles after clip: " << filteredTriangles.size() << std::endl;
     }
 
     return filteredTriangles;

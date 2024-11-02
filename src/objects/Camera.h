@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <chrono>
 #include <../../libs/glm-0.9.7.2/glm/glm.hpp>
 
 class Camera
@@ -55,6 +56,7 @@ private:
 
     glm::vec3 initialPosition;
     glm::mat3 initialRotation;
+    std::chrono::milliseconds prevTime;
 };
 
 

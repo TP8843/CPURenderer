@@ -16,9 +16,9 @@ namespace constants
 
     namespace speed
     {
-        constexpr float ROTATION_SPEED = 0.008f;
-        constexpr float ORBIT_SPEED = 0.01f;
-        constexpr float TRANSLATION_SPEED = 0.06f;
+        constexpr float ROTATION_SPEED = 1.2f;
+        constexpr float ORBIT_SPEED = 1.2f;
+        constexpr float TRANSLATION_SPEED = 6.0f;
     }
 
     namespace keyboard

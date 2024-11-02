@@ -13,5 +13,5 @@ float Plane::distanceRelativeToPlane(const glm::vec3& point) const
 
 float Plane::getIntersection(const glm::vec3& p1, const glm::vec3& p2) const
 {
-    return (-distance - glm::dot(normal, p1)) / glm::dot(normal, p2 - p1);
+    return glm::clamp((-distance - glm::dot(normal, p1)) / glm::dot(normal, p2 - p1), 0.0f, 1.0f);
 }
