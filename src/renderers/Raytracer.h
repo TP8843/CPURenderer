@@ -23,7 +23,7 @@ public:
     Camera& camera;
 
 private:
-    static glm::vec3 getIntersectionWithTriangle(glm::vec3 camera, glm::vec3 rayDirection, ModelTriangle triangle);
+    static bool triangleIntersectsPoints(glm::vec3 point, glm::vec3 light, ModelTriangle triangle);
 };
 
 

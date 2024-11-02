@@ -43,6 +43,8 @@ void RasterRenderer2::wireframeRender(DrawingWindow& window) const
 
 void RasterRenderer2::rasterRender(DrawingWindow& window) const
 {
+    std::vector<ModelTriangle> clippedTriangles = model.getPreparedTriangles(camera);
+
     auto** depthBuffer = new float*[window.height];
 
     for (int y = 0; y < window.height; y++)
@@ -54,21 +56,8 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
         }
     }
 
-    for (const auto &triangle : model.triangles)
+    for (const auto &triangle : clippedTriangles)
     {
-        const std::array<glm::vec3, 3> transformedVertices = {
-            applyCameraTransformation(triangle.vertices[0]),
-            applyCameraTransformation(triangle.vertices[1]),
-            applyCameraTransformation(triangle.vertices[2]),
-        };
-
-        if (transformedVertices[0].z > -1.0f &&
-            transformedVertices[1].z > -1.0f &&
-            transformedVertices[2].z > -1.0f)
-        {
-            continue;
-        }
-
         auto mappedVertices = std::vector<CanvasPoint>();
         auto fragmentData = std::vector<FragmentData::FilledData>();
         const auto material = model.materials.getMaterial(triangle.material);
@@ -77,11 +66,10 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
         CanvasPoint v2 = projectVertexOntoCanvasPoint(triangle.vertices[1], window.width, window.height);
         CanvasPoint v3 = projectVertexOntoCanvasPoint(triangle.vertices[2], window.width, window.height);
 
-        // Placeholder colour to allow original rasterer to work
+        // Placeholder colour to allow original raster to work
         CanvasTriangle canvasTriangle = CanvasTriangle(v1, v2, v3, Colour(255, 255, 255));
 
         FragmentData::DataUniform uniform = FragmentData::DataUniform(window, depthBuffer, material);
-
 
         if (!material.hasTexture())
         {
@@ -140,24 +128,18 @@ glm::vec3 RasterRenderer2::applyCameraTransformation(const glm::vec3 vertex) con
 
 CanvasPoint RasterRenderer2::projectVertexOntoCanvasPoint(const glm::vec3 vertex, const size_t width, const size_t height) const
 {
-    // Map model space to camera space
-    glm::vec3 cameraVertexPosition = vertex - camera.position;
-
-    cameraVertexPosition = cameraVertexPosition * camera.rotation;
     float u = 0;
     float v = 0;
-
     float depth = 0;
 
-    if (cameraVertexPosition.z != 0)
+    if (vertex.z != 0)
     {
-        u = camera.imagePlaneScaling * camera.focalLength * (-cameraVertexPosition.x / cameraVertexPosition.z) + (width / 2);
-        v = camera.imagePlaneScaling * camera.focalLength * (cameraVertexPosition.y / cameraVertexPosition.z) + (height / 2);
+        u = camera.imagePlaneScaling * camera.focalLength * (-vertex.x / vertex.z) + (width / 2);
+        v = camera.imagePlaneScaling * camera.focalLength * (vertex.y / vertex.z) + (height / 2);
 
         // Negative due to positive z out the screen
-        depth = -1.0f / cameraVertexPosition.z;
+        depth = -1.0f / vertex.z;
     }
-
 
     return {u, v, depth};
 }

@@ -108,6 +108,131 @@ Model Model::import(const char* objectPath)
     return Model(triangles, materialMap);
 }
 
+std::vector<ModelTriangle> Model::transformTriangles(const Camera& camera, std::vector<ModelTriangle> triangles)
+{
+    std::vector<ModelTriangle> newTriangles = std::vector<ModelTriangle>();
+
+    for (ModelTriangle& triangle : triangles)
+    {
+        newTriangles.emplace_back(ModelTriangle(
+            (triangle.vertices[0] - camera.position) * camera.rotation,
+            triangle.texturePoints[0],
+            (triangle.vertices[1] - camera.position) * camera.rotation,
+            triangle.texturePoints[1],
+            (triangle.vertices[2] - camera.position) * camera.rotation,
+            triangle.texturePoints[2],
+            triangle.material));
+    }
+
+    return newTriangles;
+}
+
+std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> triangles)
+{
+    std::vector<ModelTriangle> filteredTriangles = std::vector<ModelTriangle>(triangles);
+
+    std::cout << "Running clipping algorithm on " << filteredTriangles.size() << " triangles" << std::endl;
+
+    for (const auto& clippingPlane : getClippingPlanes())
+    {
+        std::vector<ModelTriangle> oldFilteredTriangles = filteredTriangles;
+        filteredTriangles = std::vector<ModelTriangle>();
+
+        std::cout << "Filtered triangles size: " << filteredTriangles.size() << std::endl;
+
+        for (ModelTriangle triangle: oldFilteredTriangles)
+        {
+            std::array<glm::vec3, 3> vertices = std::array<glm::vec3, 3>(triangle.vertices);
+            std::array<TexturePoint, 3> texturePoints = std::array<TexturePoint, 3>(triangle.texturePoints);
+
+            std::array<float, 3> distances = {
+                clippingPlane.distanceRelativeToPlane(vertices[0]),
+                clippingPlane.distanceRelativeToPlane(vertices[1]),
+                clippingPlane.distanceRelativeToPlane(vertices[2])
+            };
+
+            // Sort distances into ascending order.
+            // Changing order of vertices doesn't matter as TODO: normal calculated on import
+            if (distances[0] > distances[1])
+            {
+                std::swap(distances[0], distances[1]);
+                std::swap(vertices[0], vertices[1]);
+                std::swap(texturePoints[0], texturePoints[1]);
+            }
+
+            if (distances[1] > distances[2])
+            {
+                std::swap(distances[1], distances[2]);
+                std::swap(vertices[1], vertices[2]);
+                std::swap(texturePoints[1], texturePoints[2]);
+            }
+
+            if (distances[0] > distances[1])
+            {
+                std::swap(distances[0], distances[1]);
+                std::swap(vertices[0], vertices[1]);
+                std::swap(texturePoints[0], texturePoints[1]);
+            }
+
+            if (distances[0] > 0.0f && distances[1] > 0.0f && distances[2] > 0.0f)
+            {
+                filteredTriangles.emplace_back(ModelTriangle(
+                    vertices[0], texturePoints[0],
+                    vertices[1], texturePoints[1],
+                    vertices[2], texturePoints[2],
+                    triangle.material));
+            }
+            // If one vertex outside clipping plane
+            else if (distances[1] > 0.0f && distances[2] > 0.0f)
+            {
+                const float v1prop = clippingPlane.getIntersection(vertices[0], vertices[1]);
+                const float v2prop = clippingPlane.getIntersection(vertices[0], vertices[2]);
+
+                const glm::vec3 newV1Vertex = Interpolation::interpolate(vertices[0], vertices[1], v1prop);
+                const TexturePoint newV1TexturePoint = Interpolation::interpolate(texturePoints[0], texturePoints[1], v1prop);
+
+                const glm::vec3 newV2Vertex = Interpolation::interpolate(vertices[0], vertices[2], v2prop);
+                const TexturePoint newV2TexturePoint = Interpolation::interpolate(texturePoints[0], texturePoints[2], v2prop);
+
+                filteredTriangles.emplace_back(ModelTriangle(
+                    newV1Vertex, newV1TexturePoint,
+                    vertices[1], texturePoints[1],
+                    vertices[2], texturePoints[2], triangle.material));
+
+                filteredTriangles.emplace_back(ModelTriangle(
+                    newV2Vertex, newV2TexturePoint,
+                    newV1Vertex, newV1TexturePoint,
+                    vertices[2], texturePoints[2], triangle.material));
+
+            }
+            // Check if two vertices outside plane
+            else if (distances[2] > 0.0f)
+            {
+                const float v0prop = clippingPlane.getIntersection(vertices[0], vertices[2]);
+                const float v1prop = clippingPlane.getIntersection(vertices[1], vertices[2]);
+
+                filteredTriangles.emplace_back(ModelTriangle(
+                    Interpolation::interpolate(vertices[0], vertices[2], v0prop),
+                    Interpolation::interpolate(texturePoints[0], texturePoints[2], v0prop),
+                    Interpolation::interpolate(vertices[1], vertices[2], v1prop),
+                    Interpolation::interpolate(texturePoints[1], texturePoints[2], v1prop),
+                    vertices[2],
+                    texturePoints[2],
+                    triangle.material));
+            }
+        }
+
+        std::cout << "Number of triangles after clip: " << filteredTriangles.size() << std::endl;
+    }
+
+    return filteredTriangles;
+}
+
+std::vector<ModelTriangle> Model::getPreparedTriangles(const Camera& camera) const
+{
+    return clipTriangles(transformTriangles(camera, triangles));
+}
+
 MaterialMap Model::importMaterials(const std::string &path)
 {
     std::ifstream MaterialFile(path);

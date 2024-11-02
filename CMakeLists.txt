@@ -75,6 +75,8 @@ add_executable(RedNoise
         src/renderers/WireframeWrapper.h
         src/helper/MaterialMap.cpp
         src/helper/MaterialMap.h
+        src/objects/Plane.cpp
+        src/objects/Plane.h
 )
 
 if (MSVC)

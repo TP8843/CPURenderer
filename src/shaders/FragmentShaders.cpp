@@ -7,13 +7,13 @@
 void FragmentShaders::filled(CanvasTriangle triangle, const int x, const int y,
                              const FragmentData::DataUniform& uniform, const FragmentData::FilledData& data)
 {
+
     if (data.depth > 0 && data.depth < 0.7 &&
         x >= 0 && x < uniform.window.width &&
         y >= 0 && y < uniform.window.height &&
         data.depth > uniform.depthBuffer[y][x])
     {
         uniform.depthBuffer[y][x] = data.depth;
-
         uniform.window.setPixelColour(x, y, uniform.material.getColour().asARGB());
     }
 }
@@ -60,7 +60,7 @@ void FragmentShaders::depth(CanvasTriangle triangle, const int x, const int y,
         y >= 0 && y < uniform.window.height &&
         data.depth > uniform.depthBuffer[y][x])
     {
-        const float multiplier = glm::clamp(data.depth, 0.0f, 1.0f) * 255;
+        const float multiplier = glm::clamp(data.depth, 0.0f, 1.0f) * 1000.0f;
 
         uniform.depthBuffer[y][x] = data.depth;
 

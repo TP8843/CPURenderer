@@ -133,12 +133,12 @@ build CMakeFiles/RedNoise.dir/src/helper/Draw.cpp.o: CXX_COMPILER__RedNoise_unsc
   OBJECT_DIR = CMakeFiles/RedNoise.dir
   OBJECT_FILE_DIR = CMakeFiles/RedNoise.dir/src/helper
 
-build CMakeFiles/RedNoise.dir/src/helper/Model.cpp.o: CXX_COMPILER__RedNoise_unscanned_Release /Users/thomasparr/CLionProjects/RedNoise/src/helper/Model.cpp || cmake_object_order_depends_target_RedNoise
-  DEP_FILE = CMakeFiles/RedNoise.dir/src/helper/Model.cpp.o.d
+build CMakeFiles/RedNoise.dir/src/objects/Model.cpp.o: CXX_COMPILER__RedNoise_unscanned_Release /Users/thomasparr/CLionProjects/RedNoise/src/objects/Model.cpp || cmake_object_order_depends_target_RedNoise
+  DEP_FILE = CMakeFiles/RedNoise.dir/src/objects/Model.cpp.o.d
   FLAGS = -O3 -DNDEBUG -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.5 -fcolor-diagnostics -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O3 -march=native -mtune=native
   INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.30.7/include -I/Users/thomasparr/CLionProjects/RedNoise/libs/glm-0.9.7.2 -I/Users/thomasparr/CLionProjects/RedNoise/libs/sdw -isystem /opt/homebrew/Cellar/sdl2/2.30.7/include/SDL2
   OBJECT_DIR = CMakeFiles/RedNoise.dir
-  OBJECT_FILE_DIR = CMakeFiles/RedNoise.dir/src/helper
+  OBJECT_FILE_DIR = CMakeFiles/RedNoise.dir/src/objects
 
 build CMakeFiles/RedNoise.dir/src/tests/InteractiveTest.cpp.o: CXX_COMPILER__RedNoise_unscanned_Release /Users/thomasparr/CLionProjects/RedNoise/src/tests/InteractiveTest.cpp || cmake_object_order_depends_target_RedNoise
   DEP_FILE = CMakeFiles/RedNoise.dir/src/tests/InteractiveTest.cpp.o.d
@@ -175,12 +175,12 @@ build CMakeFiles/RedNoise.dir/src/tests/RasterTest.cpp.o: CXX_COMPILER__RedNoise
   OBJECT_DIR = CMakeFiles/RedNoise.dir
   OBJECT_FILE_DIR = CMakeFiles/RedNoise.dir/src/tests
 
-build CMakeFiles/RedNoise.dir/src/helper/Camera.cpp.o: CXX_COMPILER__RedNoise_unscanned_Release /Users/thomasparr/CLionProjects/RedNoise/src/helper/Camera.cpp || cmake_object_order_depends_target_RedNoise
-  DEP_FILE = CMakeFiles/RedNoise.dir/src/helper/Camera.cpp.o.d
+build CMakeFiles/RedNoise.dir/src/objects/Camera.cpp.o: CXX_COMPILER__RedNoise_unscanned_Release /Users/thomasparr/CLionProjects/RedNoise/src/objects/Camera.cpp || cmake_object_order_depends_target_RedNoise
+  DEP_FILE = CMakeFiles/RedNoise.dir/src/objects/Camera.cpp.o.d
   FLAGS = -O3 -DNDEBUG -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.5 -fcolor-diagnostics -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O3 -march=native -mtune=native
   INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.30.7/include -I/Users/thomasparr/CLionProjects/RedNoise/libs/glm-0.9.7.2 -I/Users/thomasparr/CLionProjects/RedNoise/libs/sdw -isystem /opt/homebrew/Cellar/sdl2/2.30.7/include/SDL2
   OBJECT_DIR = CMakeFiles/RedNoise.dir
-  OBJECT_FILE_DIR = CMakeFiles/RedNoise.dir/src/helper
+  OBJECT_FILE_DIR = CMakeFiles/RedNoise.dir/src/objects
 
 build CMakeFiles/RedNoise.dir/src/shaders/FragmentData.cpp.o: CXX_COMPILER__RedNoise_unscanned_Release /Users/thomasparr/CLionProjects/RedNoise/src/shaders/FragmentData.cpp || cmake_object_order_depends_target_RedNoise
   DEP_FILE = CMakeFiles/RedNoise.dir/src/shaders/FragmentData.cpp.o.d
@@ -245,6 +245,13 @@ build CMakeFiles/RedNoise.dir/src/helper/MaterialMap.cpp.o: CXX_COMPILER__RedNoi
   OBJECT_DIR = CMakeFiles/RedNoise.dir
   OBJECT_FILE_DIR = CMakeFiles/RedNoise.dir/src/helper
 
+build CMakeFiles/RedNoise.dir/src/objects/Plane.cpp.o: CXX_COMPILER__RedNoise_unscanned_Release /Users/thomasparr/CLionProjects/RedNoise/src/objects/Plane.cpp || cmake_object_order_depends_target_RedNoise
+  DEP_FILE = CMakeFiles/RedNoise.dir/src/objects/Plane.cpp.o.d
+  FLAGS = -O3 -DNDEBUG -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.5 -fcolor-diagnostics -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O3 -march=native -mtune=native
+  INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.30.7/include -I/Users/thomasparr/CLionProjects/RedNoise/libs/glm-0.9.7.2 -I/Users/thomasparr/CLionProjects/RedNoise/libs/sdw -isystem /opt/homebrew/Cellar/sdl2/2.30.7/include/SDL2
+  OBJECT_DIR = CMakeFiles/RedNoise.dir
+  OBJECT_FILE_DIR = CMakeFiles/RedNoise.dir/src/objects
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target RedNoise
@@ -253,7 +260,7 @@ build CMakeFiles/RedNoise.dir/src/helper/MaterialMap.cpp.o: CXX_COMPILER__RedNoi
 #############################################
 # Link the executable RedNoise
 
-build RedNoise: CXX_EXECUTABLE_LINKER__RedNoise_Release CMakeFiles/RedNoise.dir/libs/sdw/CanvasPoint.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/CanvasTriangle.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/Colour.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/DrawingWindow.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/ModelTriangle.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/RayTriangleIntersection.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/TextureMap.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/TexturePoint.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/Utils.cpp.o CMakeFiles/RedNoise.dir/src/RedNoise.cpp.o CMakeFiles/RedNoise.dir/src/helper/Interpolation.cpp.o CMakeFiles/RedNoise.dir/src/helper/Draw.cpp.o CMakeFiles/RedNoise.dir/src/helper/Model.cpp.o CMakeFiles/RedNoise.dir/src/tests/InteractiveTest.cpp.o CMakeFiles/RedNoise.dir/src/tests/DrawTests.cpp.o CMakeFiles/RedNoise.dir/src/renderers/RasterRenderer.cpp.o CMakeFiles/RedNoise.dir/src/RenderLoop.cpp.o CMakeFiles/RedNoise.dir/src/tests/RasterTest.cpp.o CMakeFiles/RedNoise.dir/src/helper/Camera.cpp.o CMakeFiles/RedNoise.dir/src/shaders/FragmentData.cpp.o CMakeFiles/RedNoise.dir/src/shaders/FragmentShaders.cpp.o CMakeFiles/RedNoise.dir/src/renderers/RasterRenderer2.cpp.o CMakeFiles/RedNoise.dir/src/helper/Material.cpp.o CMakeFiles/RedNoise.dir/src/renderers/Raytracer.cpp.o CMakeFiles/RedNoise.dir/src/renderers/RasterWrapper.cpp.o CMakeFiles/RedNoise.dir/src/renderers/RaytracerWrapper.cpp.o CMakeFiles/RedNoise.dir/src/renderers/WireframeWrapper.cpp.o CMakeFiles/RedNoise.dir/src/helper/MaterialMap.cpp.o | /opt/homebrew/Cellar/sdl2/2.30.7/lib/libSDL2.dylib
+build RedNoise: CXX_EXECUTABLE_LINKER__RedNoise_Release CMakeFiles/RedNoise.dir/libs/sdw/CanvasPoint.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/CanvasTriangle.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/Colour.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/DrawingWindow.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/ModelTriangle.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/RayTriangleIntersection.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/TextureMap.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/TexturePoint.cpp.o CMakeFiles/RedNoise.dir/libs/sdw/Utils.cpp.o CMakeFiles/RedNoise.dir/src/RedNoise.cpp.o CMakeFiles/RedNoise.dir/src/helper/Interpolation.cpp.o CMakeFiles/RedNoise.dir/src/helper/Draw.cpp.o CMakeFiles/RedNoise.dir/src/objects/Model.cpp.o CMakeFiles/RedNoise.dir/src/tests/InteractiveTest.cpp.o CMakeFiles/RedNoise.dir/src/tests/DrawTests.cpp.o CMakeFiles/RedNoise.dir/src/renderers/RasterRenderer.cpp.o CMakeFiles/RedNoise.dir/src/RenderLoop.cpp.o CMakeFiles/RedNoise.dir/src/tests/RasterTest.cpp.o CMakeFiles/RedNoise.dir/src/objects/Camera.cpp.o CMakeFiles/RedNoise.dir/src/shaders/FragmentData.cpp.o CMakeFiles/RedNoise.dir/src/shaders/FragmentShaders.cpp.o CMakeFiles/RedNoise.dir/src/renderers/RasterRenderer2.cpp.o CMakeFiles/RedNoise.dir/src/helper/Material.cpp.o CMakeFiles/RedNoise.dir/src/renderers/Raytracer.cpp.o CMakeFiles/RedNoise.dir/src/renderers/RasterWrapper.cpp.o CMakeFiles/RedNoise.dir/src/renderers/RaytracerWrapper.cpp.o CMakeFiles/RedNoise.dir/src/renderers/WireframeWrapper.cpp.o CMakeFiles/RedNoise.dir/src/helper/MaterialMap.cpp.o CMakeFiles/RedNoise.dir/src/objects/Plane.cpp.o | /opt/homebrew/Cellar/sdl2/2.30.7/lib/libSDL2.dylib
   FLAGS = -O3 -DNDEBUG -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.5
   LINK_LIBRARIES = -Wl,-rpath,/opt/homebrew/Cellar/sdl2/2.30.7/lib  /opt/homebrew/Cellar/sdl2/2.30.7/lib/libSDL2.dylib
   LINK_PATH = -L/opt/homebrew/Cellar/sdl2/2.30.7/lib

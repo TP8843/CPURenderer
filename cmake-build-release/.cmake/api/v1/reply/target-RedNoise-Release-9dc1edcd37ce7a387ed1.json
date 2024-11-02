@@ -33,19 +33,19 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 115,
+				"line" : 117,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 92,
+				"line" : 94,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 112,
+				"line" : 114,
 				"parent" : 0
 			},
 			{
@@ -173,7 +173,8 @@
 				41,
 				43,
 				45,
-				47
+				47,
+				49
 			]
 		}
 	],
@@ -247,7 +248,8 @@
 				41,
 				43,
 				45,
-				47
+				47,
+				49
 			]
 		},
 		{
@@ -274,7 +276,8 @@
 				42,
 				44,
 				46,
-				48
+				48,
+				50
 			]
 		}
 	],
@@ -365,12 +368,12 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/helper/Model.cpp",
+			"path" : "src/objects/Model.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
-			"path" : "src/helper/Model.h",
+			"path" : "src/objects/Model.h",
 			"sourceGroupIndex" : 1
 		},
 		{
@@ -436,12 +439,12 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/helper/Camera.cpp",
+			"path" : "src/objects/Camera.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
-			"path" : "src/helper/Camera.h",
+			"path" : "src/objects/Camera.h",
 			"sourceGroupIndex" : 1
 		},
 		{
@@ -551,6 +554,17 @@
 		{
 			"backtrace" : 1,
 			"path" : "src/helper/MaterialMap.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/objects/Plane.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/objects/Plane.h",
 			"sourceGroupIndex" : 1
 		}
 	],

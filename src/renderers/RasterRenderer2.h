@@ -36,6 +36,8 @@ private:
                                                  const Uniform&,
                                                  const Data&)> fragmentShader)
     {
+        std::cout << "Drawing triangle to screen " << triangle << std::endl;
+
         auto vertices = std::array<CanvasPoint, 3>(triangle.vertices);
         auto fragmentData = std::array<Data, 3>(verticesData);
 
