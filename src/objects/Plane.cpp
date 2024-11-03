@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 
-Plane::Plane(const glm::vec3& normal, float distance) :
+Plane::Plane(const glm::vec3& normal, const float distance) :
     normal(normal), distance(distance)
 {}
 

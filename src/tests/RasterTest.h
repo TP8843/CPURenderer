@@ -9,7 +9,7 @@
 #include "../renderers/RasterRenderer2.h"
 #include "../renderers/RendererWrapper.h"
 
-class RasterTest : public RenderTest
+class RasterTest final : public RenderTest
 {
 public:
     RasterTest();
@@ -21,7 +21,7 @@ public:
 
 private:
     std::vector<RendererWrapper*> renderers;
-    int currentTest = 0;
+    size_t currentTest = 0;
     std::chrono::milliseconds prevTime;
 
     RendererWrapper* getCurrentRendererWrapper() const;

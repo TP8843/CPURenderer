@@ -8,7 +8,7 @@
 #include "RendererWrapper.h"
 
 
-class RasterWrapper : public RendererWrapper {
+class RasterWrapper final : public RendererWrapper {
 public:
     Camera& getCamera() override;
     Model& getModel() override;

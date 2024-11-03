@@ -14,7 +14,7 @@ public:
     static T interpolate(T from, T to, float proportion)
     {
         return from + (to - from) * proportion;
-    };
+    }
 
     static std::vector<glm::vec3> interpolateThreeElementValues(glm::vec3, glm:: vec3, int);
 };

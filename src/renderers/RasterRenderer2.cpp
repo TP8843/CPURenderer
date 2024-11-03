@@ -47,10 +47,10 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
 
     auto** depthBuffer = new float*[window.height];
 
-    for (int y = 0; y < window.height; y++)
+    for (size_t y = 0; y < window.height; y++)
     {
         depthBuffer[y] = new float[window.width];
-        for (int x = 0; x < window.width; x++)
+        for (size_t x = 0; x < window.width; x++)
         {
             depthBuffer[y][x] = 0.0f;
         }
@@ -93,7 +93,7 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
         }
     }
 
-    for (int y = 0; y < window.height; y++)
+    for (size_t y = 0; y < window.height; y++)
     {
         delete[] depthBuffer[y];
     }

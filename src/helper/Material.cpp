@@ -1,10 +1,4 @@
-//
-// Created by tparr on 28/10/24.
-//
-
 #include "Material.h"
-
-#include <utility>
 
 Colour Material::getColour() const
 {

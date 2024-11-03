@@ -1,11 +1,7 @@
-//
-// Created by tparr on 28/10/24.
-//
-
 #ifndef MATERIAL_H
 #define MATERIAL_H
+
 #include <Colour.h>
-#include <string>
 #include <TextureMap.h>
 
 class Material {
@@ -17,7 +13,7 @@ public:
     size_t getTextureHeight() const;
 
     Material();
-    Material(Colour colour);
+    explicit Material(Colour colour);
     Material(Colour colour, TextureMap texture);
 
 private:

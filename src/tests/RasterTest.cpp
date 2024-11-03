@@ -73,7 +73,7 @@ void RasterTest::processKeys()
     const std::chrono::milliseconds currentTime =
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 
-    const float timeElapsed = (currentTime - prevTime).count() / 1000.0f;
+    const float timeElapsed = static_cast<float>((currentTime - prevTime).count()) / 1000.0f;
 
     // Pedestal camera up
     if (keys[keyboard::PEDESTAL_UP])

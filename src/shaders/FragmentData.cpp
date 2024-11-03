@@ -1,10 +1,4 @@
-//
-// Created by Thomas Parr on 28/10/2024.
-//
-
 #include "FragmentData.h"
-
-#include <utility>
 
 FragmentData::FilledData::FilledData(const glm::vec3 proportion, const float depth) :
         proportion(proportion), depth(depth)

@@ -29,13 +29,13 @@ void Draw::drawLine(DrawingWindow& window, const CanvasPoint& from, const Canvas
             end = to;
         }
 
-        for (int x = glm::floor(start.x); x <= static_cast<int>(glm::floor(end.x)); x++)
+        for (int x = static_cast<int>(glm::floor(start.x)); x <= static_cast<int>(glm::floor(end.x)); x++)
         {
             const float proportion = (static_cast<float>(x) - start.x) / (end.x - start.x);
 
             const int y = static_cast<int>(glm::floor(Interpolation::interpolate(start.y, end.y, proportion)));
 
-            if (x < window.width && y < window.height)
+            if (x < static_cast<int>(window.width) && y < static_cast<int>(window.height))
                 window.setPixelColour(x, y, colourValue);
         }
     }
@@ -56,13 +56,13 @@ void Draw::drawLine(DrawingWindow& window, const CanvasPoint& from, const Canvas
             end = to;
         }
 
-        for (int y = glm::floor(start.y); y <= static_cast<int>(glm::floor(end.y)); y++)
+        for (int y = static_cast<int>(glm::floor(start.y)); y <= static_cast<int>(glm::floor(end.y)); y++)
         {
             const float proportion = (static_cast<float>(y) - start.y) / (end.y - start.y);
 
             const int x = static_cast<int>(glm::floor(Interpolation::interpolate(start.x, end.x, proportion)));
 
-            if (x < window.width && y < window.height)
+            if (x < static_cast<int>(window.width) && y < static_cast<int>(window.height))
                 window.setPixelColour(x, y, colourValue);
         }
     }
@@ -82,7 +82,7 @@ void Draw::drawStrokedTriangle(DrawingWindow& window, const CanvasTriangle& tria
 void Draw::drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle)
 {
     const auto colourValue = triangle.colour.asARGB();
-    std::array<CanvasPoint, 3> vertices =  triangle.vertices;
+    std::array<CanvasPoint, 3> vertices = triangle.vertices;
 
     // Sort triangle based on y value
     if (vertices[0].y > vertices[1].y) std::swap(vertices[0], vertices[1]);
@@ -91,17 +91,25 @@ void Draw::drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& trian
 
     int startVertex = 0;
 
-    for (size_t y = glm::floor(vertices[0].y); y <= static_cast<size_t>(glm::floor(vertices[2].y)); y++)
+    for (auto y = static_cast<size_t>(glm::floor(vertices[0].y)); y <= static_cast<size_t>(glm::floor(vertices[2].y)); y
+         ++)
     {
-        const float rowStartProportion = Interpolation::proportion(vertices[startVertex].y, vertices[startVertex + 1].y, y, 0);
-        float rowStart = Interpolation::interpolate(vertices[startVertex].x, vertices[startVertex + 1].x, rowStartProportion);
+        const float rowStartProportion = Interpolation::proportion(vertices[startVertex].y,
+                                                                   vertices[startVertex + 1].y,
+                                                                   static_cast<float>(y), 0);
 
-        const float rowEndProportion = Interpolation::proportion(vertices[0].y, vertices[2].y, y, 1);
+        float rowStart = Interpolation::interpolate(vertices[startVertex].x,
+                                                    vertices[startVertex + 1].x,
+                                                    rowStartProportion);
+
+        const float rowEndProportion = Interpolation::proportion(vertices[0].y, vertices[2].y,
+                                                                 static_cast<float>(y), 1);
+
         float rowEnd = Interpolation::interpolate(vertices[0].x, vertices[2].x, rowEndProportion);
 
         if (rowStart > rowEnd) std::swap(rowStart, rowEnd);
 
-        for (size_t x = glm::ceil(rowStart); x < static_cast<size_t>(glm::ceil(rowEnd)); x++)
+        for (auto x = static_cast<size_t>(glm::ceil(rowStart)); x < static_cast<size_t>(glm::ceil(rowEnd)); x++)
         {
             window.setPixelColour(x, y, colourValue);
         }
@@ -112,7 +120,7 @@ void Draw::drawFilledTriangle(DrawingWindow& window, const CanvasTriangle& trian
 
 void Draw::drawTexturedTriangle(DrawingWindow& window, const CanvasTriangle& triangle, const TextureMap& texture)
 {
-    auto vertices =  triangle.vertices;
+    auto vertices = triangle.vertices;
 
     // Sort triangle based on y value
     if (vertices[0].y > vertices[1].y) std::swap(vertices[0], vertices[1]);
@@ -121,21 +129,29 @@ void Draw::drawTexturedTriangle(DrawingWindow& window, const CanvasTriangle& tri
 
     int startVertex = 0;
 
-    for (size_t y = glm::floor(vertices[0].y); y <= static_cast<size_t>(glm::floor(vertices[2].y)); y++)
+    for (auto y = static_cast<size_t>(glm::floor(vertices[0].y)); y <= static_cast<size_t>(glm::floor(vertices[2].y)); y
+         ++)
     {
-        const float rowStartProportion = Interpolation::proportion(vertices[startVertex].y, vertices[startVertex + 1].y, y, 0);
-        float rowStart = Interpolation::interpolate(vertices[startVertex].x, vertices[startVertex + 1].x, rowStartProportion);
-        auto textureRowStart = TexturePoint(
-            Interpolation::interpolate(vertices[startVertex].texturePoint.x, vertices[startVertex + 1].texturePoint.x, rowStartProportion),
-            Interpolation::interpolate(vertices[startVertex].texturePoint.y, vertices[startVertex + 1].texturePoint.y, rowStartProportion)
-            );
+        const float rowStartProportion = Interpolation::proportion(vertices[startVertex].y, vertices[startVertex + 1].y,
+                                                                   static_cast<float>(y), 0);
 
-        const float rowEndProportion = Interpolation::proportion(vertices[0].y, vertices[2].y, y, 1);
+        float rowStart = Interpolation::interpolate(vertices[startVertex].x, vertices[startVertex + 1].x,
+                                                    rowStartProportion);
+        auto textureRowStart = TexturePoint(
+            Interpolation::interpolate(vertices[startVertex].texturePoint.x, vertices[startVertex + 1].texturePoint.x,
+                                       rowStartProportion),
+            Interpolation::interpolate(vertices[startVertex].texturePoint.y, vertices[startVertex + 1].texturePoint.y,
+                                       rowStartProportion)
+        );
+
+        const float rowEndProportion = Interpolation::proportion(vertices[0].y, vertices[2].y,
+                                                                 static_cast<float>(y), 1);
+
         float rowEnd = Interpolation::interpolate(vertices[0].x, vertices[2].x, rowEndProportion);
         auto textureRowEnd = TexturePoint(
             Interpolation::interpolate(vertices[0].texturePoint.x, vertices[2].texturePoint.x, rowEndProportion),
             Interpolation::interpolate(vertices[0].texturePoint.y, vertices[2].texturePoint.y, rowEndProportion)
-            );
+        );
 
         if (rowStart > rowEnd)
         {
@@ -143,15 +159,19 @@ void Draw::drawTexturedTriangle(DrawingWindow& window, const CanvasTriangle& tri
             std::swap(textureRowStart, textureRowEnd);
         }
 
-        for (size_t x = glm::ceil(rowStart); x < static_cast<size_t>(glm::ceil(rowEnd)); x++)
+        for (auto x = static_cast<size_t>(glm::ceil(rowStart)); x < static_cast<size_t>(glm::ceil(rowEnd)); x++)
         {
-            const float currentRowProportion = Interpolation::proportion(rowStart, rowEnd, x, 0);
+            const float currentRowProportion = Interpolation::proportion(rowStart, rowEnd,
+                                                                         static_cast<float>(x), 0);
 
             const auto texturePosition = TexturePoint(
                 Interpolation::interpolate(textureRowStart.x, textureRowEnd.x, currentRowProportion),
                 Interpolation::interpolate(textureRowStart.y, textureRowEnd.y, currentRowProportion)
             );
-            const size_t colour = texture.pixels.at(glm::floor(texturePosition.y) * static_cast<float>(texture.width) + glm::floor(texturePosition.x));
+
+            const size_t colour = texture.pixels.at(
+                static_cast<int>(glm::floor(texturePosition.y) * static_cast<float>(texture.width) + glm::floor(texturePosition.x)));
+
             const auto colourValue = (0xFF << 24) + (colour & 0xFFFFFF);
             window.setPixelColour(x, y, colourValue);
         }

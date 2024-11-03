@@ -45,7 +45,7 @@ namespace constants
         constexpr int MAIN_TEST = SDLK_m;
         constexpr int SUB_TEST = SDLK_n;
         constexpr int RAND_TRIANGLE = SDLK_u;
-    };
+    }
 }
 
 #endif //OPTIONS_H

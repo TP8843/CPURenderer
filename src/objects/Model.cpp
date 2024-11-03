@@ -13,8 +13,9 @@
 #include "../helper/MaterialMap.h"
 
 Model::Model(const std::vector<ModelTriangle>& triangles, const MaterialMap& materials) :
-    triangles(triangles), materials(materials)
-{}
+    materials(materials), triangles(triangles)
+{
+}
 
 Model Model::import(const char* objectPath)
 {
@@ -27,7 +28,7 @@ Model Model::import(const char* objectPath)
     std::vector<glm::vec2> vertexTextures;
     std::vector<ModelTriangle> triangles;
 
-    while(getline(ObjectFile, text))
+    while (getline(ObjectFile, text))
     {
         // Split on all spaces
         const auto tokens = split(text, ' ');
@@ -92,17 +93,18 @@ Model Model::import(const char* objectPath)
             }
 
             // Calculate normal for triangle
-            const glm::vec3 normal = glm::cross(
-                glm::cross(faceVertices.at(0), faceVertices.at(1)),
-                faceVertices.at(2));
+            const glm::vec3 normal = glm::normalize(glm::cross(
+                glm::cross(faceVertices.at(1) - faceVertices.at(0),
+                           faceVertices.at(2) - faceVertices.at(1)),
+                faceVertices.at(0) - faceVertices.at(2)));
 
             if (hasTexture)
             {
                 triangles.emplace_back(faceVertices[0], texturePoints[0],
-                                        faceVertices[1], texturePoints[1],
-                                        faceVertices[2], texturePoints[2],
-                                        normal,
-                                        currentMaterial);
+                                       faceVertices[1], texturePoints[1],
+                                       faceVertices[2], texturePoints[2],
+                                       normal,
+                                       currentMaterial);
             }
             else
             {
@@ -143,7 +145,7 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
         std::vector<ModelTriangle> oldFilteredTriangles = filteredTriangles;
         filteredTriangles = std::vector<ModelTriangle>();
 
-        for (ModelTriangle triangle: oldFilteredTriangles)
+        for (ModelTriangle triangle : oldFilteredTriangles)
         {
             std::array<glm::vec3, 3> vertices = std::array<glm::vec3, 3>(triangle.vertices);
             std::array<TexturePoint, 3> texturePoints = std::array<TexturePoint, 3>(triangle.texturePoints);
@@ -193,10 +195,12 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
                 const float v2prop = clippingPlane.getIntersection(vertices[0], vertices[2]);
 
                 const glm::vec3 newV1Vertex = Interpolation::interpolate(vertices[0], vertices[1], v1prop);
-                const TexturePoint newV1TexturePoint = Interpolation::interpolate(texturePoints[0], texturePoints[1], v1prop);
+                const TexturePoint newV1TexturePoint = Interpolation::interpolate(
+                    texturePoints[0], texturePoints[1], v1prop);
 
                 const glm::vec3 newV2Vertex = Interpolation::interpolate(vertices[0], vertices[2], v2prop);
-                const TexturePoint newV2TexturePoint = Interpolation::interpolate(texturePoints[0], texturePoints[2], v2prop);
+                const TexturePoint newV2TexturePoint = Interpolation::interpolate(
+                    texturePoints[0], texturePoints[2], v2prop);
 
                 filteredTriangles.emplace_back(ModelTriangle(
                     newV1Vertex, newV1TexturePoint,
@@ -207,7 +211,6 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
                     newV2Vertex, newV2TexturePoint,
                     newV1Vertex, newV1TexturePoint,
                     vertices[2], texturePoints[2], triangle.normal, triangle.material));
-
             }
             // Check if two vertices outside plane
             else if (distances[2] > 0.0f)
@@ -236,7 +239,7 @@ std::vector<ModelTriangle> Model::getPreparedTriangles(const Camera& camera) con
     return clipTriangles(transformTriangles(camera, triangles));
 }
 
-MaterialMap Model::importMaterials(const std::string &path)
+MaterialMap Model::importMaterials(const std::string& path)
 {
     std::ifstream MaterialFile(path);
     std::string line;
@@ -252,7 +255,7 @@ MaterialMap Model::importMaterials(const std::string &path)
 
     MaterialMap materialMap = MaterialMap();
 
-    while(getline(MaterialFile, line))
+    while (getline(MaterialFile, line))
     {
         const auto tokens = split(line, ' ');
 
@@ -260,11 +263,8 @@ MaterialMap Model::importMaterials(const std::string &path)
         {
             if (materialToStore)
             {
-
                 if (hasTexture && hasColour)
                 {
-                    std::cout << "Material " << currentMaterialName << " added colour + texture: " << currentColour << std::endl;
-
                     materialMap.addMaterial(currentMaterialName, Material(currentColour, currentTexture));
                 }
                 else if (hasTexture)
@@ -273,7 +273,6 @@ MaterialMap Model::importMaterials(const std::string &path)
                 }
                 else if (hasColour)
                 {
-                    std::cout << "Material " << currentMaterialName << " added colour: " << currentColour << std::endl;
                     materialMap.addMaterial(currentMaterialName, Material(currentColour));
                 }
             }

@@ -9,7 +9,7 @@
 #include "RenderTest.h"
 
 
-class DrawTests : public RenderTest {
+class DrawTests final : public RenderTest {
 public:
     static void drawRedNoise(DrawingWindow& window);
     static void drawGreyscaleInterpolation(DrawingWindow& window);

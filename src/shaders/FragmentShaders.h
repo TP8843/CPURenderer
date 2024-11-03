@@ -4,8 +4,8 @@
 
 #ifndef FRAGMENTSHADERS_H
 #define FRAGMENTSHADERS_H
+
 #include <CanvasTriangle.h>
-#include <DrawingWindow.h>
 
 #include "FragmentData.h"
 

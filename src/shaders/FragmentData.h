@@ -1,10 +1,6 @@
-//
-// Created by Thomas Parr on 28/10/2024.
-//
-
 #ifndef POINTDATA_H
 #define POINTDATA_H
-#include <Colour.h>
+
 #include <DrawingWindow.h>
 #include <TexturePoint.h>
 #include <glm/glm.hpp>

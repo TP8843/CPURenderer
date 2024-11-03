@@ -11,7 +11,7 @@ public:
 
     void renderFrame(DrawingWindow& window) override;
 
-    RaytracerWrapper(Raytracer& raytracer);
+    explicit RaytracerWrapper(Raytracer& raytracer);
 
 private:
     Raytracer& raytracer;

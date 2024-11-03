@@ -19,7 +19,7 @@ public:
             Plane(glm::vec3(0, -invSqrt2, -invSqrt2), 0), // Top plane
             Plane(glm::vec3(0, invSqrt2, -invSqrt2), 0), // Bottom plane
         };
-    };
+    }
 
     static Model import(const char* objectPath);
 

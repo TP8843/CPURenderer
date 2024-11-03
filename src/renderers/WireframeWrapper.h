@@ -4,7 +4,7 @@
 #include "RendererWrapper.h"
 
 
-class WireframeWrapper : public RendererWrapper {
+class WireframeWrapper final : public RendererWrapper {
 public:
     Camera& getCamera() override;
     Model& getModel() override;

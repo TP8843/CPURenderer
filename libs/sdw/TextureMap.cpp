@@ -10,7 +10,7 @@ TextureMap::TextureMap(const std::string &filename) {
 	std::getline(inputStream, nextLine);
 	// Skip over any comment lines !
 	while (nextLine.at(0) == '#') std::getline(inputStream, nextLine);
-	auto widthAndHeight = split(nextLine, ' ');
+	const auto widthAndHeight = split(nextLine, ' ');
 	if (widthAndHeight.size() != 2)
 		throw std::invalid_argument("Failed to parse width and height line, line was `" + nextLine + "`");
 
@@ -21,9 +21,9 @@ TextureMap::TextureMap(const std::string &filename) {
 
 	pixels.resize(width * height);
 	for (size_t i = 0; i < width * height; i++) {
-		int red = inputStream.get();
-		int green = inputStream.get();
-		int blue = inputStream.get();
+		const int red = inputStream.get();
+		const int green = inputStream.get();
+		const int blue = inputStream.get();
 		pixels[i] = ((255 << 24) + (red << 16) + (green << 8) + (blue));
 	}
 	inputStream.close();

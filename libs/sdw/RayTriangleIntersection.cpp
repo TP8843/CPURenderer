@@ -4,8 +4,8 @@ RayTriangleIntersection::RayTriangleIntersection() = default;
 RayTriangleIntersection::RayTriangleIntersection(const glm::vec3& point, const glm::vec2& proportions, float distance,
                                                  const ModelTriangle& triangle, size_t index) :
 		intersectionPoint(point),
-		proportions(proportions),
 		distanceFromCamera(distance),
+		proportions(proportions),
 		intersectedTriangle(triangle),
 		triangleIndex(index) {}
 

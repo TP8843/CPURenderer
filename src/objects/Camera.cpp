@@ -11,7 +11,8 @@ Camera::Camera(const glm::vec3 position,
       focalLength(focalLength),
       imagePlaneScaling(imagePlaneScaling),
       initialPosition(glm::vec3(position)),
-      initialRotation(glm::mat3(rotation))
+      initialRotation(glm::mat3(rotation)),
+      prevTime(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()))
 {
 }
 
@@ -66,7 +67,7 @@ void Camera::iterateOrbit()
         const std::chrono::milliseconds time = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch());
 
-        const float timeElapsed = (time - prevTime).count() / 1000.0f;
+        const float timeElapsed = static_cast<float>((time - prevTime).count()) / 1000.0f;
 
         const auto rotationMatrix = glm::mat3(
        glm::vec3(glm::cos(constants::speed::ORBIT_SPEED * timeElapsed), 0, -glm::sin(constants::speed::ORBIT_SPEED * timeElapsed)),

@@ -59,17 +59,17 @@ private:
         }
 
         int startVertex = 0;
-        for (int y = glm::floor(vertices[0].y); y <= static_cast<int>(glm::floor(vertices[2].y)); y++)
+        for (int y = static_cast<int>(glm::floor(vertices[0].y)); y <= static_cast<int>(glm::floor(vertices[2].y)); y++)
         {
             const float rowStartProportion =
                 Interpolation::proportion(vertices[startVertex].y,
                                           vertices[startVertex + 1].y,
-                                          y, 0);
+                                          static_cast<float>(y), 0);
 
             const float rowEndProportion =
                 Interpolation::proportion(vertices[0].y,
                                           vertices[2].y,
-                                          y, 1);
+                                          static_cast<float>(y), 1);
 
             float rowStartX =
                 Interpolation::interpolate(vertices[startVertex].x,
@@ -97,9 +97,9 @@ private:
                 std::swap(rowStartData, rowEndData);
             }
 
-            for (int x = glm::ceil(rowStartX); x < static_cast<int>(glm::ceil(rowEndX)); x++)
+            for (int x = static_cast<int>(glm::ceil(rowStartX)); x < static_cast<int>(glm::ceil(rowEndX)); x++)
             {
-                const float proportion = Interpolation::proportion(rowStartX, rowEndX, x, 0);
+                const float proportion = Interpolation::proportion(rowStartX, rowEndX, static_cast<float>(x), 0);
                 const Data data = Interpolation::interpolate(rowStartData, rowEndData, proportion);
 
                 fragmentShader(triangle, x, y, uniform, data);

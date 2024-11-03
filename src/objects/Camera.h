@@ -56,7 +56,7 @@ private:
 
     glm::vec3 initialPosition;
     glm::mat3 initialRotation;
-    std::chrono::milliseconds prevTime;
+    std::chrono::milliseconds prevTime{};
 };
 
 

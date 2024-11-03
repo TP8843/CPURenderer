@@ -11,10 +11,10 @@ Raytracer::Raytracer(Model& model, Camera& camera) :
 std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::vec3 camera, glm::vec3 rayDirection,
                                                                            std::vector<ModelTriangle> triangles)
 {
-    std::pair<bool, RayTriangleIntersection> closestIntersection =
+    auto closestIntersection =
         std::pair<bool, RayTriangleIntersection>(false, RayTriangleIntersection());
 
-    for (int i = 0; i < triangles.size(); i++)
+    for (size_t i = 0; i < triangles.size(); i++)
     {
         const ModelTriangle& triangle = triangles[i];
 
@@ -52,19 +52,19 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::
 
 void Raytracer::renderFrame(DrawingWindow& window) const
 {
-    const float width = static_cast<float>(window.width);
-    const float height = static_cast<float>(window.height);
+    const auto width = static_cast<float>(window.width);
+    const auto height = static_cast<float>(window.height);
 
     bool hasPreviousLightIntersection = false;
     ModelTriangle previousLightIntersection;
 
-    for (float j = 0; j < height; j++)
+    for (size_t j = 0; j < window.height; j++)
     {
-        for (float i = 0; i < width; i++)
+        for (size_t i = 0; i < window.width; i++)
         {
             glm::vec3 scenePosition = glm::normalize(glm::vec3(
-                (i - width / 2) / height,
-                (j - height / 2 + 1) / height,
+                (static_cast<float>(i) - width / 2) / height,
+                (static_cast<float>(j) - height / 2 + 1) / height,
                 -1
             ));
 
@@ -111,7 +111,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                     }
                 }
 
-                const float colourMultiplier = inShadow * 0.2f + !inShadow * 1.0f;
+                const float colourMultiplier = inShadow ? 0.2f : 1.0f;
 
                 const Material& material = model.materials.
                                                  getMaterial(intersection.second.intersectedTriangle.material);
@@ -125,8 +125,9 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                         + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
 
                     window.setPixelColour(i, window.height - j - 1,
-                                          (material.getPixelTextureColour(finalTexturePoint.x, finalTexturePoint.y) *
-                                              colourMultiplier).asARGB());
+                                          (material.getPixelTextureColour(
+                                              static_cast<int>(finalTexturePoint.x),
+                                              static_cast<int>(finalTexturePoint.y)) * colourMultiplier).asARGB());
                 }
                 else
                 {
