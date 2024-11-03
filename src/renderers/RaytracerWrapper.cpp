@@ -18,3 +18,8 @@ Model& RaytracerWrapper::getModel()
 {
     return raytracer.model;
 }
+
+Light& RaytracerWrapper::getLight()
+{
+    return raytracer.light;
+}

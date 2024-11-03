@@ -3,12 +3,13 @@
 
 #include <RayTriangleIntersection.h>
 
-Raytracer::Raytracer(Model& model, Camera& camera) :
-    model(model), camera(camera)
+Raytracer::Raytracer(Model& model, Camera& camera, Light& light) :
+    model(model), camera(camera), light(light)
 {
 }
 
-std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::vec3 camera, glm::vec3 rayDirection,
+std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::vec3 camera,
+                                                                           glm::vec3 rayDirection,
                                                                            std::vector<ModelTriangle> triangles)
 {
     auto closestIntersection =
@@ -64,7 +65,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
         {
             glm::vec3 scenePosition = glm::normalize(glm::vec3(
                 (static_cast<float>(i) - width / 2) / height,
-                (static_cast<float>(j) - height / 2 + 1) / height,
+                (static_cast<float>(j) - height / 2) / height,
                 -1
             ));
 
@@ -73,8 +74,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
             if (intersection.first)
             {
-                const auto lightPosition = glm::vec3(0, 2.5, 0);
-                const auto lightDisplacement = intersection.second.intersectionPoint - lightPosition;
+                const auto lightDisplacement = intersection.second.intersectionPoint - light.position;
 
                 bool inShadow = false;
 
@@ -82,7 +82,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                 {
                     if (triangleIntersectsPoints(
                         intersection.second.intersectionPoint,
-                        lightPosition,
+                        light.position,
                         previousLightIntersection))
                     {
                         inShadow = true;
@@ -96,7 +96,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                 if (!hasPreviousLightIntersection)
                 {
                     std::pair<bool, RayTriangleIntersection> closestToLight = getClosestIntersection(
-                        lightPosition,
+                        light.position,
                         glm::normalize(lightDisplacement),
                         model.triangles);
 
@@ -111,7 +111,12 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                     }
                 }
 
-                const float colourMultiplier = inShadow ? 0.2f : 1.0f;
+                const float colourMultiplier = inShadow ? 0.2f
+                                                   // Point must be in camera space for specular highlight calculations
+                                                   : light.getMultiplier(camera,
+                                                                         (intersection.second.intersectionPoint
+                                                                             - camera.position) * camera.rotation,
+                                                                         intersection.second.intersectedTriangle.normal);
 
                 const Material& material = model.materials.
                                                  getMaterial(intersection.second.intersectedTriangle.material);
@@ -124,14 +129,14 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                         + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
                         + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
 
-                    window.setPixelColour(i, window.height - j - 1,
+                    window.setPixelColour(i, window.height - j,
                                           (material.getPixelTextureColour(
                                               static_cast<int>(finalTexturePoint.x),
                                               static_cast<int>(finalTexturePoint.y)) * colourMultiplier).asARGB());
                 }
                 else
                 {
-                    window.setPixelColour(i, window.height - j - 1, (material.getColour() * colourMultiplier).asARGB());
+                    window.setPixelColour(i, window.height - j, (material.getColour() * colourMultiplier).asARGB());
                 }
             }
         }

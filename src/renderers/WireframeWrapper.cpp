@@ -18,6 +18,12 @@ Model& WireframeWrapper::getModel()
     return renderer.model;
 }
 
+Light& WireframeWrapper::getLight()
+{
+    auto light = Light(glm::vec3(0, 2, 0), 80.0f);
+    return light;
+}
+
 void WireframeWrapper::renderFrame(DrawingWindow& window)
 {
     renderer.wireframeRender(window);

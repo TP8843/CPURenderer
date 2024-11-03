@@ -77,6 +77,8 @@ add_executable(RedNoise
         src/helper/MaterialMap.h
         src/objects/Plane.cpp
         src/objects/Plane.h
+        src/objects/Light.cpp
+        src/objects/Light.h
 )
 
 if (MSVC)

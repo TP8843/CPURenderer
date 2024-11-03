@@ -134,5 +134,35 @@ void RasterTest::processKeys()
         renderer->getCamera().rotateX(-speed::ROTATION_SPEED * timeElapsed);
     }
 
+    if (keys[keyboard::LIGHT_PEDESTAL_UP])
+    {
+        renderer->getLight().position += glm::vec3(0, speed::LIGHT_TRANSLATION_SPEED * timeElapsed, 0);
+    }
+
+    if (keys[keyboard::LIGHT_PEDESTAL_DOWN])
+    {
+        renderer->getLight().position -= glm::vec3(0, speed::LIGHT_TRANSLATION_SPEED * timeElapsed, 0);
+    }
+
+    if (keys[keyboard::LIGHT_TRUCK_LEFT])
+    {
+        renderer->getLight().position -= glm::vec3(speed::LIGHT_TRANSLATION_SPEED * timeElapsed, 0, 0);
+    }
+
+    if (keys[keyboard::LIGHT_TRUCK_RIGHT])
+    {
+        renderer->getLight().position += glm::vec3(speed::LIGHT_TRANSLATION_SPEED * timeElapsed, 0, 0);
+    }
+
+    if (keys[keyboard::LIGHT_DOLLY_FORWARD])
+    {
+        renderer->getLight().position += glm::vec3(0, 0, speed::LIGHT_TRANSLATION_SPEED * timeElapsed);
+    }
+
+    if (keys[keyboard::LIGHT_DOLLY_BACK])
+    {
+        renderer->getLight().position -= glm::vec3(0, 0, speed::LIGHT_TRANSLATION_SPEED * timeElapsed);
+    }
+
     prevTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 }

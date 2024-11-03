@@ -6,39 +6,50 @@
 #include <glm/glm.hpp>
 
 #include "../helper/Material.h"
+#include "../objects/Light.h"
 
 namespace FragmentData
 {
-    struct FilledData {
+    struct FilledData
+    {
         glm::vec3 proportion;
         float depth;
+        glm::vec3 position3D;
 
-        FilledData(glm::vec3 proportion, float depth);
+        FilledData(glm::vec3 proportion, float depth, glm::vec3 position3D);
 
-        FilledData operator+(const FilledData &other) const;
-        FilledData operator-(const FilledData &other) const;
+        FilledData operator+(const FilledData& other) const;
+        FilledData operator-(const FilledData& other) const;
 
-        template<typename N>
+        template <typename N>
         FilledData operator*(const N num)
         {
-            return FilledData(proportion * num, depth * num);
+            return FilledData(proportion * num, depth * num, position3D * num);
         }
     };
 
-    struct TextureData {
+    struct TextureData
+    {
         TexturePoint texturePoint;
         glm::vec3 proportion;
         float depth;
+        glm::vec3 position3D;
 
-        TextureData(TexturePoint texturePoint, glm::vec3 proportion, float depth);
+        TextureData(TexturePoint texturePoint,
+                    glm::vec3 proportion,
+                    float depth, glm::vec3
+                    position3D);
 
-        TextureData operator+(const TextureData &other) const;
-        TextureData operator-(const TextureData &other) const;
+        TextureData operator+(const TextureData& other) const;
+        TextureData operator-(const TextureData& other) const;
 
-        template<typename N>
+        template <typename N>
         TextureData operator*(const N num)
         {
-            return TextureData(texturePoint * num, proportion * num, depth * num);
+            return TextureData(texturePoint * num,
+                               proportion * num,
+                               depth * num,
+                               position3D * num);
         }
     };
 
@@ -46,9 +57,17 @@ namespace FragmentData
     {
         DrawingWindow& window;
         float** depthBuffer;
-        Material material;
+        Material& material;
+        Camera& camera;
+        Light& light;
+        glm::vec3 normal;
 
-        explicit DataUniform(DrawingWindow &window, float** depthBuffer, const Material& material);
+        explicit DataUniform(DrawingWindow& window,
+                             float** depthBuffer,
+                             Material& material,
+                             Camera& camera,
+                             Light& light,
+                             const glm::vec3& normal);
     };
 }
 

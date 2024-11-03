@@ -7,14 +7,16 @@
 void FragmentShaders::filled(CanvasTriangle triangle, const int x, const int y,
                              const FragmentData::DataUniform& uniform, const FragmentData::FilledData& data)
 {
-
     if (data.depth > 0 && data.depth < 0.7 &&
         x >= 0 && x < uniform.window.width &&
         y >= 0 && y < uniform.window.height &&
         data.depth > uniform.depthBuffer[y][x])
     {
+        const float multiplier =
+            uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, uniform.normal);
+
         uniform.depthBuffer[y][x] = data.depth;
-        uniform.window.setPixelColour(x, y, uniform.material.getColour().asARGB());
+        uniform.window.setPixelColour(x, y, (uniform.material.getColour() * multiplier).asARGB());
     }
 }
 
@@ -28,7 +30,6 @@ void FragmentShaders::rainbow(CanvasTriangle triangle, const int x, const int y,
         data.depth > uniform.depthBuffer[y][x])
     {
         uniform.depthBuffer[y][x] = data.depth;
-
         uniform.window.setPixelColour(
             x, y, Colour(data.proportion[0] * 255, data.proportion[1] * 255, data.proportion[2] * 255).asARGB());
     }
@@ -77,10 +78,15 @@ void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y
         y >= 0 && y < uniform.window.height &&
         data.depth > uniform.depthBuffer[y][x])
     {
+        const float multiplier =
+            uniform.light.getMultiplier(uniform.camera,
+                                                   data.position3D / data.depth,
+                                                   uniform.normal);
+
         uniform.depthBuffer[y][x] = data.depth;
-        const auto texture = uniform.material.getPixelTextureColour(
+        const auto texture = (uniform.material.getPixelTextureColour(
             glm::floor(data.texturePoint.x / data.depth),
-            glm::floor(data.texturePoint.y / data.depth)).asARGB();
+            glm::floor(data.texturePoint.y / data.depth)) * multiplier).asARGB();
 
         uniform.window.setPixelColour(x, y, texture);
     }

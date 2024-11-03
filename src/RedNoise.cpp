@@ -18,12 +18,13 @@ int main(int argc, char* argv[])
                          glm::mat3(),
                          3,
                          160);
+    auto light = Light(glm::vec3(0, 2, 0), 1.0f);
 
-    auto renderer = RasterRenderer2(model, camera);
+    auto renderer = RasterRenderer2(model, camera, light);
     auto* rasterWrapper = new RasterWrapper(renderer);
     auto* wireframeWrapper = new WireframeWrapper(renderer);
 
-    auto raytracer = Raytracer(model, camera);
+    auto raytracer = Raytracer(model, camera, light);
     auto* raytracerWrapper = new RaytracerWrapper(raytracer);
 
     auto* rasterTest = new RasterTest();

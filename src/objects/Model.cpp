@@ -94,9 +94,8 @@ Model Model::import(const char* objectPath)
 
             // Calculate normal for triangle
             const glm::vec3 normal = glm::normalize(glm::cross(
-                glm::cross(faceVertices.at(1) - faceVertices.at(0),
-                           faceVertices.at(2) - faceVertices.at(1)),
-                faceVertices.at(0) - faceVertices.at(2)));
+                    faceVertices.at(0) - faceVertices.at(1),
+                    faceVertices.at(2) - faceVertices.at(0)));
 
             if (hasTexture)
             {

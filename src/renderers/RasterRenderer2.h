@@ -7,12 +7,13 @@
 #include "../objects/Camera.h"
 #include "../helper/Interpolation.h"
 #include "../objects/Model.h"
+#include "../objects/Light.h"
 
 // Electric Boogaloo
 class RasterRenderer2
 {
 public:
-    RasterRenderer2(Model& model, Camera& camera);
+    RasterRenderer2(Model& model, Camera& camera, Light& light);
 
     void pointCloudRender(DrawingWindow& window) const;
     void wireframeRender(DrawingWindow& window) const;
@@ -20,6 +21,7 @@ public:
 
     Model& model;
     Camera& camera;
+    Light& light;
 
 private:
     static float** createDepthBuffer(int width, int height);

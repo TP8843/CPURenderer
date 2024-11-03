@@ -1,7 +1,3 @@
-//
-// Created by Thomas Parr on 29/10/2024.
-//
-
 #include "RasterWrapper.h"
 
 RasterWrapper::RasterWrapper(RasterRenderer2& renderer) :
@@ -21,4 +17,9 @@ Camera& RasterWrapper::getCamera()
 Model& RasterWrapper::getModel()
 {
     return renderer.model;
+}
+
+Light& RasterWrapper::getLight()
+{
+    return renderer.light;
 }

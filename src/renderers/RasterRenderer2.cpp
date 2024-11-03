@@ -9,8 +9,8 @@
 #include "../shaders/FragmentShaders.h"
 #include "../shaders/FragmentData.h"
 
-RasterRenderer2::RasterRenderer2(Model& model, Camera& camera) :
-        model(model), camera(camera)
+RasterRenderer2::RasterRenderer2(Model& model, Camera& camera, Light& light) :
+        model(model), camera(camera), light(light)
 {}
 
 void RasterRenderer2::pointCloudRender(DrawingWindow& window) const
@@ -58,9 +58,8 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
 
     for (const auto &triangle : clippedTriangles)
     {
-        auto mappedVertices = std::vector<CanvasPoint>();
         auto fragmentData = std::vector<FragmentData::FilledData>();
-        const auto material = model.materials.getMaterial(triangle.material);
+        Material& material = model.materials.getMaterial(triangle.material);
 
         CanvasPoint v1 = projectVertexOntoCanvasPoint(triangle.vertices[0], window.width, window.height);
         CanvasPoint v2 = projectVertexOntoCanvasPoint(triangle.vertices[1], window.width, window.height);
@@ -69,13 +68,13 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
         // Placeholder colour to allow original raster to work
         CanvasTriangle canvasTriangle = CanvasTriangle(v1, v2, v3, Colour(255, 255, 255));
 
-        FragmentData::DataUniform uniform = FragmentData::DataUniform(window, depthBuffer, material);
+        FragmentData::DataUniform uniform = FragmentData::DataUniform(window, depthBuffer, material, camera, light, triangle.normal);
 
         if (!material.hasTexture())
         {
-            FragmentData::FilledData d1 = { glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
-            FragmentData::FilledData d2 = { glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
-            FragmentData::FilledData d3 = { glm::vec3(0.0f, 0.0f, 1.0f), v3.depth };
+            FragmentData::FilledData d1 = { glm::vec3(1.0f, 0.0f, 0.0f), v1.depth, triangle.vertices[0] * v1.depth };
+            FragmentData::FilledData d2 = { glm::vec3(0.0f, 1.0f, 0.0f), v2.depth, triangle.vertices[1] * v2.depth };
+            FragmentData::FilledData d3 = { glm::vec3(0.0f, 0.0f, 1.0f), v3.depth, triangle.vertices[2] * v3.depth };
 
             std::array<FragmentData::FilledData, 3> data = { d1, d2, d3 };
 
@@ -83,9 +82,9 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
         }
         else
         {
-            FragmentData::TextureData d1 = { triangle.texturePoints[0] * v1.depth, glm::vec3(1.0f, 0.0f, 0.0f), v1.depth };
-            FragmentData::TextureData d2 = { triangle.texturePoints[1] * v2.depth, glm::vec3(0.0f, 1.0f, 0.0f), v2.depth };
-            FragmentData::TextureData d3 = { triangle.texturePoints[2] * v3.depth, glm::vec3(0.0f, 0.0f, 1.0f), v3.depth };
+            FragmentData::TextureData d1 = { triangle.texturePoints[0] * v1.depth, glm::vec3(1.0f, 0.0f, 0.0f), v1.depth, triangle.vertices[0] * v1.depth };
+            FragmentData::TextureData d2 = { triangle.texturePoints[1] * v2.depth, glm::vec3(0.0f, 1.0f, 0.0f), v2.depth, triangle.vertices[1] * v2.depth };
+            FragmentData::TextureData d3 = { triangle.texturePoints[2] * v3.depth, glm::vec3(0.0f, 0.0f, 1.0f), v3.depth, triangle.vertices[2] * v3.depth };
 
             std::array<FragmentData::TextureData, 3> data = { d1, d2, d3 };
 
