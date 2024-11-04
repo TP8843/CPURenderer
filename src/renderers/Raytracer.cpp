@@ -65,7 +65,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
         {
             glm::vec3 scenePosition = glm::normalize(glm::vec3(
                 (static_cast<float>(i) - width / 2) / height,
-                (static_cast<float>(j) - height / 2) / height,
+                (static_cast<float>(j) + 1 - height / 2) / height,
                 -1
             ));
 
@@ -129,14 +129,14 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                         + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
                         + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
 
-                    window.setPixelColour(i, window.height - j,
+                    window.setPixelColour(i, window.height - j - 1,
                                           (material.getPixelTextureColour(
                                               static_cast<int>(finalTexturePoint.x),
                                               static_cast<int>(finalTexturePoint.y)) * colourMultiplier).asARGB());
                 }
                 else
                 {
-                    window.setPixelColour(i, window.height - j, (material.getColour() * colourMultiplier).asARGB());
+                    window.setPixelColour(i, window.height - j - 1, (material.getColour() * colourMultiplier).asARGB());
                 }
             }
         }

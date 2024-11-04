@@ -12,6 +12,12 @@
 
 struct FragmentShaders
 {
+    static void prePass(CanvasTriangle triangle,
+                        int x,
+                        int y,
+                        const FragmentData::PrePassUniform& uniform,
+                        const FragmentData::PrePassData& data);
+
     static void filled(CanvasTriangle triangle,
                        int x,
                        int y,

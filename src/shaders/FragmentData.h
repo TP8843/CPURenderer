@@ -53,6 +53,22 @@ namespace FragmentData
         }
     };
 
+    struct PrePassData
+    {
+        float depth;
+
+        explicit PrePassData(float depth);
+
+        PrePassData operator+(const PrePassData& other) const;
+        PrePassData operator-(const PrePassData& other) const;
+
+        template <typename N>
+        PrePassData operator*(const N num)
+        {
+            return PrePassData(depth * num);
+        }
+    };
+
     struct DataUniform
     {
         DrawingWindow& window;
@@ -68,6 +84,15 @@ namespace FragmentData
                              Camera& camera,
                              Light& light,
                              const glm::vec3& normal);
+    };
+
+    struct PrePassUniform
+    {
+        float** depthBuffer;
+        size_t width;
+        size_t height;
+
+        PrePassUniform(float** depthBuffer, const size_t& width, const size_t& height);
     };
 }
 

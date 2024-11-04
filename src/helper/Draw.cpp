@@ -35,7 +35,7 @@ void Draw::drawLine(DrawingWindow& window, const CanvasPoint& from, const Canvas
 
             const int y = static_cast<int>(glm::floor(Interpolation::interpolate(start.y, end.y, proportion)));
 
-            if (x < static_cast<int>(window.width) && y < static_cast<int>(window.height))
+            if (x >= 0 && y >= 0 && x < static_cast<int>(window.width) && y < static_cast<int>(window.height))
                 window.setPixelColour(x, y, colourValue);
         }
     }
@@ -62,7 +62,7 @@ void Draw::drawLine(DrawingWindow& window, const CanvasPoint& from, const Canvas
 
             const int x = static_cast<int>(glm::floor(Interpolation::interpolate(start.x, end.x, proportion)));
 
-            if (x < static_cast<int>(window.width) && y < static_cast<int>(window.height))
+            if (x >= 0 && y >= 0 && x < static_cast<int>(window.width) && y < static_cast<int>(window.height))
                 window.setPixelColour(x, y, colourValue);
         }
     }

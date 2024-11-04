@@ -53,6 +53,21 @@ FragmentData::TextureData FragmentData::TextureData::operator-(const TextureData
     };
 }
 
+FragmentData::PrePassData::PrePassData(const float depth) :
+    depth(depth)
+{
+}
+
+FragmentData::PrePassData FragmentData::PrePassData::operator+(const PrePassData& other) const
+{
+    return PrePassData(depth + other.depth);
+}
+
+FragmentData::PrePassData FragmentData::PrePassData::operator-(const PrePassData& other) const
+{
+    return PrePassData(depth - other.depth);
+}
+
 FragmentData::DataUniform::DataUniform(DrawingWindow& window,
                                        float** depthBuffer,
                                        Material& material,
@@ -65,5 +80,10 @@ FragmentData::DataUniform::DataUniform(DrawingWindow& window,
     camera(camera),
     light(light),
     normal(normal)
+{
+}
+
+FragmentData::PrePassUniform::PrePassUniform(float** depthBuffer, const size_t& width, const size_t& height) :
+    depthBuffer(depthBuffer), width(width), height(height)
 {
 }

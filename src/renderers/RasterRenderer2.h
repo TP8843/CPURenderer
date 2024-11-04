@@ -24,22 +24,22 @@ public:
     Light& light;
 
 private:
-    static float** createDepthBuffer(int width, int height);
+    float** generateDepthBuffer(const std::vector<ModelTriangle>& triangles, size_t width, size_t height) const;
     glm::vec3 applyCameraTransformation(glm::vec3 vertex) const;
     CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 vertex, size_t width, size_t height) const;
 
     template <typename Uniform, typename Data>
     static void drawTriangle(CanvasTriangle triangle,
                              Uniform uniform,
-                             std::array<Data, 3> verticesData,
+                             std::array<Data, 3> fragmentData,
                              std::function<void (CanvasTriangle,
                                                  int,
                                                  int,
                                                  const Uniform&,
                                                  const Data&)> fragmentShader)
     {
-        auto vertices = std::array<CanvasPoint, 3>(triangle.vertices);
-        auto fragmentData = std::array<Data, 3>(verticesData);
+        auto vertices = triangle.vertices;
+        // auto fragmentData = std::array<Data, 3>(verticesData);
 
         // Sort triangles based on y value
         if (vertices[0].y > vertices[1].y)

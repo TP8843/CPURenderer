@@ -13,7 +13,7 @@ public:
     static std::vector<Plane> getClippingPlanes()
     {
         return{
-            Plane(glm::vec3(0, 0, -1), -1), // Near plane
+            Plane(glm::vec3(0, 0, -1), 1), // Near plane
             Plane(glm::vec3(invSqrt2, 0, -invSqrt2), 0), // Left plane
             Plane(glm::vec3(-invSqrt2, 0, -invSqrt2), 0), // Right plane
             Plane(glm::vec3(0, -invSqrt2, -invSqrt2), 0), // Top plane
