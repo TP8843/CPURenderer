@@ -24,8 +24,8 @@ float Light::calculateMultiplier(const glm::vec3 lightPosition, const float inte
 
     constexpr float ambientIntensity = 0.2f;
 
-    const float diffuseIntensity = glm::min((glm::dot(normal, normalizedLightDisplacement)) /
-        (1.0f + (1.0f * glm::pow(glm::length(lightDisplacement), 1.0f))), 1.0f);
+    const float diffuseIntensity = glm::clamp((glm::dot(normal, normalizedLightDisplacement)) /
+        (1.0f + (1.0f * glm::pow(glm::length(lightDisplacement), 1.0f))), 0.0f, 1.0f);
 
     return glm::clamp(ambientIntensity + intensity * (diffuseIntensity + specularIntensity), 0.0f,  1.0f);
 }
