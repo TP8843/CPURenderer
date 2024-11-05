@@ -22,43 +22,43 @@ struct FragmentShaders
                        int x,
                        int y,
                        const FragmentData::DataUniform& uniform,
-                       const FragmentData::FilledData& data);
+                       const FragmentData::Data& data);
 
     static void filledPhong(CanvasTriangle triangle,
-                     int x,
-                     int y,
-                     const FragmentData::DataUniform& uniform,
-                     const FragmentData::FilledData& data);
+                            int x,
+                            int y,
+                            const FragmentData::DataUniform& uniform,
+                            const FragmentData::Data& data);
 
     static void rainbow(CanvasTriangle triangle,
                         int x,
                         int y,
                         const FragmentData::DataUniform& uniform,
-                        const FragmentData::FilledData& data);
+                        const FragmentData::Data& data);
 
     static void outline(CanvasTriangle triangle,
                         int x,
                         int y,
                         const FragmentData::DataUniform& uniform,
-                        const FragmentData::FilledData& data);
+                        const FragmentData::Data& data);
 
     static void depth(CanvasTriangle triangle,
                       int x,
                       int y,
                       const FragmentData::DataUniform& uniform,
-                      const FragmentData::FilledData& data);
+                      const FragmentData::Data& data);
 
     static void material(CanvasTriangle triangle,
                          int x,
                          int y,
                          const FragmentData::DataUniform& uniform,
-                         const FragmentData::TextureData& data);
+                         const FragmentData::Data& data);
 
     static void materialPhong(CanvasTriangle triangle,
                      int x,
                      int y,
                      const FragmentData::DataUniform& uniform,
-                     const FragmentData::TextureData& data);
+                     const FragmentData::Data& data);
 };
 
 

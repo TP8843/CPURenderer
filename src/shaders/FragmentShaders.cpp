@@ -22,7 +22,7 @@ void FragmentShaders::prePass(CanvasTriangle triangle,
 void FragmentShaders::filled(CanvasTriangle triangle,
                              const int x, const int y,
                              const FragmentData::DataUniform& uniform,
-                             const FragmentData::FilledData& data)
+                             const FragmentData::Data& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
         x >= 0 && x < uniform.window.width &&
@@ -30,7 +30,7 @@ void FragmentShaders::filled(CanvasTriangle triangle,
         data.depth == uniform.depthBuffer[y][x])
     {
         const float multiplier =
-            uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, uniform.normal);
+            uniform.light.getMultiplier(uniform.camera, data.point.position / data.depth, uniform.normal);
 
         uniform.window.setPixelColour(x, y, (uniform.material.getColour() * multiplier).asARGB());
     }
@@ -39,7 +39,7 @@ void FragmentShaders::filled(CanvasTriangle triangle,
 void FragmentShaders::filledPhong(CanvasTriangle triangle,
                              const int x, const int y,
                              const FragmentData::DataUniform& uniform,
-                             const FragmentData::FilledData& data)
+                             const FragmentData::Data& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
         x >= 0 && x < uniform.window.width &&
@@ -47,7 +47,10 @@ void FragmentShaders::filledPhong(CanvasTriangle triangle,
         data.depth == uniform.depthBuffer[y][x])
     {
         const float multiplier =
-            uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, data.normal / data.depth);
+            uniform.light.getMultiplier(
+                uniform.camera,
+                data.point.position / data.depth,
+                data.point.normal / data.depth);
 
         uniform.window.setPixelColour(x, y, (uniform.material.getColour() * multiplier).asARGB());
     }
@@ -55,7 +58,7 @@ void FragmentShaders::filledPhong(CanvasTriangle triangle,
 
 void FragmentShaders::rainbow(CanvasTriangle triangle, const int x, const int y,
                               const FragmentData::DataUniform& uniform,
-                              const FragmentData::FilledData& data)
+                              const FragmentData::Data& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
         x >= 0 && x < uniform.window.width &&
@@ -69,7 +72,7 @@ void FragmentShaders::rainbow(CanvasTriangle triangle, const int x, const int y,
 
 void FragmentShaders::outline(CanvasTriangle triangle, const int x, const int y,
                               const FragmentData::DataUniform& uniform,
-                              const FragmentData::FilledData& data)
+                              const FragmentData::Data& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
         x >= 0 && x < uniform.window.width &&
@@ -84,7 +87,7 @@ void FragmentShaders::outline(CanvasTriangle triangle, const int x, const int y,
 
 void FragmentShaders::depth(CanvasTriangle triangle, const int x, const int y,
                             const FragmentData::DataUniform& uniform,
-                            const FragmentData::FilledData& data)
+                            const FragmentData::Data& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
         x >= 0 && x < uniform.window.width &&
@@ -99,7 +102,7 @@ void FragmentShaders::depth(CanvasTriangle triangle, const int x, const int y,
 
 void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y,
                                const FragmentData::DataUniform& uniform,
-                               const FragmentData::TextureData& data)
+                               const FragmentData::Data& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
         x >= 0 && x < uniform.window.width &&
@@ -108,19 +111,19 @@ void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y
     {
         const float multiplier =
             uniform.light.getMultiplier(uniform.camera,
-                                        data.position3D / data.depth,
+                                        data.point.position / data.depth,
                                         uniform.normal);
 
         const auto texture = (uniform.material.getPixelTextureColour(
-            glm::floor(data.texturePoint.x / data.depth),
-            glm::floor(data.texturePoint.y / data.depth)) * multiplier).asARGB();
+            glm::floor(data.point.texturePoint.x / data.depth),
+            glm::floor(data.point.texturePoint.y / data.depth)) * multiplier).asARGB();
 
         uniform.window.setPixelColour(x, y, texture);
     }
 }
 
 void FragmentShaders::materialPhong(CanvasTriangle triangle, int x, int y, const FragmentData::DataUniform& uniform,
-    const FragmentData::TextureData& data)
+    const FragmentData::Data& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
     x >= 0 && x < uniform.window.width &&
@@ -129,12 +132,12 @@ void FragmentShaders::materialPhong(CanvasTriangle triangle, int x, int y, const
     {
         const float multiplier =
             uniform.light.getMultiplier(uniform.camera,
-                                        data.position3D / data.depth,
-                                        data.normal / data.depth);
+                                        data.point.position / data.depth,
+                                        data.point.normal / data.depth);
 
         const auto texture = (uniform.material.getPixelTextureColour(
-            glm::floor(data.texturePoint.x / data.depth),
-            glm::floor(data.texturePoint.y / data.depth)) * multiplier).asARGB();
+            glm::floor(data.point.texturePoint.x / data.depth),
+            glm::floor(data.point.texturePoint.y / data.depth)) * multiplier).asARGB();
 
         uniform.window.setPixelColour(x, y, texture);
     }

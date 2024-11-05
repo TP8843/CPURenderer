@@ -21,10 +21,14 @@ public:
         };
     }
 
+    Model(const std::vector<ModelTriangle>& triangles, const MaterialMap& materials, float scale);
+
     static Model import(const char* objectPath, float scale);
 
+    std::vector<ModelTriangle> transformTriangles() const;
+
     // Transforms all triangles into camera space
-    static std::vector<ModelTriangle> transformTriangles(const Camera& camera, std::vector<ModelTriangle> triangles);
+    static std::vector<ModelTriangle> toCameraSpace(const Camera& camera, std::vector<ModelTriangle> triangles) ;
 
     // Transforms to camera space and clips to view
     static std::vector<ModelTriangle> clipTriangles(std::vector<ModelTriangle> triangles);

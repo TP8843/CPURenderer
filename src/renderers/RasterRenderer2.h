@@ -39,7 +39,6 @@ private:
                                                  const Data&)> fragmentShader)
     {
         auto vertices = triangle.vertices;
-        // auto fragmentData = std::array<Data, 3>(verticesData);
 
         // Sort triangles based on y value
         if (vertices[0].y > vertices[1].y)
@@ -102,9 +101,9 @@ private:
             for (int x = static_cast<int>(glm::ceil(rowStartX)); x < static_cast<int>(glm::ceil(rowEndX)); x++)
             {
                 const float proportion = Interpolation::proportion(rowStartX, rowEndX, static_cast<float>(x), 0);
-                const Data data = Interpolation::interpolate(rowStartData, rowEndData, proportion);
 
-                fragmentShader(triangle, x, y, uniform, data);
+                fragmentShader(triangle, x, y, uniform,
+                    Interpolation::interpolate(rowStartData, rowEndData, proportion));
             }
 
             if (y == static_cast<int>(vertices[1].y)) startVertex++;

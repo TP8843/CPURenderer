@@ -2,37 +2,19 @@
 
 ModelTriangle::ModelTriangle() = default;
 
-ModelTriangle::ModelTriangle(const glm::vec3& v0,
-                             const glm::vec3& v1,
-                             const glm::vec3& v2,
+ModelTriangle::ModelTriangle(ModelPoint v0,
+                             ModelPoint v1,
+                             ModelPoint v2,
                              const glm::vec3& normal,
                              std::string material) :
-    vertices({{v0, v1, v2}}), texturePoints(), material(std::move(material)), normal(normal)
-{
-}
-
-ModelTriangle::ModelTriangle(const glm::vec3& v0, const TexturePoint& t0,
-                             const glm::vec3& v1, const TexturePoint& t1,
-                             const glm::vec3& v2, const TexturePoint& t2,
-                             const glm::vec3& normal,
-                             std::string material) :
-    vertices({{v0, v1, v2}}), texturePoints({t0, t1, t2}), material(std::move(material)), normal(normal)
-{
-}
-
-ModelTriangle::ModelTriangle(const glm::vec3& v0, const TexturePoint& t0, const glm::vec3& n0,
-                             const glm::vec3& v1, const TexturePoint& t1, const glm::vec3& n1,
-                             const glm::vec3& v2, const TexturePoint& t2, const glm::vec3& n2,
-                             const glm::vec3& normal, std::string material) :
-    vertices({{v0, v1, v2}}), texturePoints({t0, t1, t2}),
-    material(std::move(material)), normal(normal), vertexNormals({n0, n1, n2})
+    vertices({{v0, v1, v2}}), material(std::move(material)), normal(normal)
 {
 }
 
 std::ostream& operator<<(std::ostream& os, const ModelTriangle& triangle)
 {
-    os << "(" << triangle.vertices[0].x << ", " << triangle.vertices[0].y << ", " << triangle.vertices[0].z << ")\n";
-    os << "(" << triangle.vertices[1].x << ", " << triangle.vertices[1].y << ", " << triangle.vertices[1].z << ")\n";
-    os << "(" << triangle.vertices[2].x << ", " << triangle.vertices[2].y << ", " << triangle.vertices[2].z << ")\n";
+    os << "(" << triangle.vertices[0].position.x << ", " << triangle.vertices[0].position.y << ", " << triangle.vertices[0].position.z << ")\n";
+    os << "(" << triangle.vertices[1].position.x << ", " << triangle.vertices[1].position.y << ", " << triangle.vertices[1].position.z << ")\n";
+    os << "(" << triangle.vertices[2].position.x << ", " << triangle.vertices[2].position.y << ", " << triangle.vertices[2].position.z << ")\n";
     return os;
 }

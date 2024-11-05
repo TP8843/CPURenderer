@@ -18,7 +18,7 @@ void RasterRenderer::pointCloudRender(DrawingWindow& window) const
     {
         for (const auto vertex : triangle.vertices)
         {
-            const auto mappedVertex = projectVertexOntoCanvasPoint(window, vertex);
+            const auto mappedVertex = projectVertexOntoCanvasPoint(window, vertex.position);
 
             window.setPixelColour(static_cast<int>(mappedVertex.x), static_cast<int>(mappedVertex.y), 0xFFFFFFFF);
         }
@@ -33,7 +33,7 @@ void RasterRenderer::wireframeRender(DrawingWindow& window) const
 
         for (const auto vertex : triangle.vertices)
         {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex));
+            mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex.position));
         }
 
         Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2], Colour(255, 255, 255)));
@@ -59,7 +59,7 @@ void RasterRenderer::rasterRender(DrawingWindow& window) const
 
         for (const auto vertex : triangle.vertices)
         {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex));
+            mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex.position));
         }
 
         drawDepthAwareFilledTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2],

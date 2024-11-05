@@ -13,12 +13,12 @@ int main(int argc, char* argv[])
 {
     auto renderLoop = RenderLoop();
 
-    auto model = Model::import("bunny.obj", 20.0f);
+    auto model = Model::import("textured-cornell-box.obj", 1.0f);
     auto camera = Camera(glm::vec3(0, 0, 10),
                          glm::mat3(),
                          3,
                          160);
-    auto light = Light(glm::vec3(0, 2, 0), 2.0f);
+    auto light = Light(glm::vec3(0, 2.0f, 0), 2.0f);
 
     auto renderer = RasterRenderer2(model, camera, light);
     auto* rasterWrapper = new RasterWrapper(renderer);
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     renderLoop.addTest(interactiveTest);
 
 
-    DrawTests* drawTests = new DrawTests();
+    auto* drawTests = new DrawTests();
     renderLoop.addTest(drawTests);
 
     renderLoop.run();

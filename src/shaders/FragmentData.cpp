@@ -1,61 +1,27 @@
 #include "FragmentData.h"
 
-FragmentData::FilledData::FilledData(const glm::vec3 proportion,
+FragmentData::Data::Data(const glm::vec3 proportion,
                                      const float depth,
-                                     const glm::vec3 position3D,
-                                     const glm::vec3 normal) :
-    proportion(proportion), depth(depth), position3D(position3D), normal(normal)
+                                     const ModelPoint& point) :
+    proportion(proportion), depth(depth), point(point)
 {
 }
 
-FragmentData::FilledData FragmentData::FilledData::operator+(const FilledData& other) const
+FragmentData::Data FragmentData::Data::operator+(const Data& other) const
 {
     return {
         proportion + other.proportion,
         depth + other.depth,
-        position3D + other.position3D,
-        normal + other.normal
+        point + other.point
     };
 }
 
-FragmentData::FilledData FragmentData::FilledData::operator-(const FilledData& other) const
+FragmentData::Data FragmentData::Data::operator-(const Data& other) const
 {
     return {
         proportion - other.proportion,
         depth - other.depth,
-        position3D - other.position3D,
-        normal - other.normal
-    };
-}
-
-FragmentData::TextureData::TextureData(const TexturePoint texturePoint,
-                                       const glm::vec3 proportion,
-                                       const float depth,
-                                       const glm::vec3 position3D,
-                                       const glm::vec3 normal) :
-    texturePoint(texturePoint), proportion(proportion), depth(depth), position3D(position3D), normal(normal)
-{
-}
-
-FragmentData::TextureData FragmentData::TextureData::operator+(const TextureData& other) const
-{
-    return {
-        texturePoint + other.texturePoint,
-        proportion + other.proportion,
-        depth + other.depth,
-        position3D + other.position3D,
-        normal + other.normal
-    };
-}
-
-FragmentData::TextureData FragmentData::TextureData::operator-(const TextureData& other) const
-{
-    return {
-        texturePoint - other.texturePoint,
-        proportion - other.proportion,
-        depth - other.depth,
-        position3D - other.position3D,
-        normal + other.normal,
+        point - other.point
     };
 }
 

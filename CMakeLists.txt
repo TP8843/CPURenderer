@@ -79,6 +79,8 @@ add_executable(RedNoise
         src/objects/Plane.h
         src/objects/Light.cpp
         src/objects/Light.h
+        src/helper/ModelPoint.cpp
+        src/helper/ModelPoint.h
 )
 
 if (MSVC)

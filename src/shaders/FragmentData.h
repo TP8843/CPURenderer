@@ -6,54 +6,26 @@
 #include <glm/glm.hpp>
 
 #include "../helper/Material.h"
+#include "../helper/ModelPoint.h"
 #include "../objects/Light.h"
 
 namespace FragmentData
 {
-    struct FilledData
+    struct Data
     {
         glm::vec3 proportion;
         float depth;
-        glm::vec3 position3D;
-        glm::vec3 normal;
+        ModelPoint point;
 
-        FilledData(glm::vec3 proportion, float depth, glm::vec3 position3D, glm::vec3 normal);
+        Data(glm::vec3 proportion, float depth, const ModelPoint& point);
 
-        FilledData operator+(const FilledData& other) const;
-        FilledData operator-(const FilledData& other) const;
-
-        template <typename N>
-        FilledData operator*(const N num)
-        {
-            return FilledData(proportion * num, depth * num, position3D * num, normal * num);
-        }
-    };
-
-    struct TextureData
-    {
-        TexturePoint texturePoint;
-        glm::vec3 proportion;
-        float depth;
-        glm::vec3 position3D;
-        glm::vec3 normal;
-
-        TextureData(TexturePoint texturePoint,
-                    glm::vec3 proportion,
-                    float depth,
-                    glm::vec3 position3D,
-                    glm::vec3 normal);
-
-        TextureData operator+(const TextureData& other) const;
-        TextureData operator-(const TextureData& other) const;
+        Data operator+(const Data& other) const;
+        Data operator-(const Data& other) const;
 
         template <typename N>
-        TextureData operator*(const N num)
+        Data operator*(const N num)
         {
-            return TextureData(texturePoint * num,
-                               proportion * num,
-                               depth * num,
-                               position3D * num,
-                               normal * num);
+            return Data(proportion * num, depth * num, point * num);
         }
     };
 
