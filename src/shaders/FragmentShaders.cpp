@@ -36,6 +36,23 @@ void FragmentShaders::filled(CanvasTriangle triangle,
     }
 }
 
+void FragmentShaders::filledPhong(CanvasTriangle triangle,
+                             const int x, const int y,
+                             const FragmentData::DataUniform& uniform,
+                             const FragmentData::FilledData& data)
+{
+    if (data.depth > 0 && data.depth < 0.7 &&
+        x >= 0 && x < uniform.window.width &&
+        y >= 0 && y < uniform.window.height &&
+        data.depth == uniform.depthBuffer[y][x])
+    {
+        const float multiplier =
+            uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, data.normal / data.depth);
+
+        uniform.window.setPixelColour(x, y, (uniform.material.getColour() * multiplier).asARGB());
+    }
+}
+
 void FragmentShaders::rainbow(CanvasTriangle triangle, const int x, const int y,
                               const FragmentData::DataUniform& uniform,
                               const FragmentData::FilledData& data)
@@ -93,6 +110,27 @@ void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y
             uniform.light.getMultiplier(uniform.camera,
                                         data.position3D / data.depth,
                                         uniform.normal);
+
+        const auto texture = (uniform.material.getPixelTextureColour(
+            glm::floor(data.texturePoint.x / data.depth),
+            glm::floor(data.texturePoint.y / data.depth)) * multiplier).asARGB();
+
+        uniform.window.setPixelColour(x, y, texture);
+    }
+}
+
+void FragmentShaders::materialPhong(CanvasTriangle triangle, int x, int y, const FragmentData::DataUniform& uniform,
+    const FragmentData::TextureData& data)
+{
+    if (data.depth > 0 && data.depth < 0.7 &&
+    x >= 0 && x < uniform.window.width &&
+    y >= 0 && y < uniform.window.height &&
+    data.depth == uniform.depthBuffer[y][x])
+    {
+        const float multiplier =
+            uniform.light.getMultiplier(uniform.camera,
+                                        data.position3D / data.depth,
+                                        data.normal / data.depth);
 
         const auto texture = (uniform.material.getPixelTextureColour(
             glm::floor(data.texturePoint.x / data.depth),

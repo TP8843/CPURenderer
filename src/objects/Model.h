@@ -21,7 +21,7 @@ public:
         };
     }
 
-    static Model import(const char* objectPath);
+    static Model import(const char* objectPath, float scale);
 
     // Transforms all triangles into camera space
     static std::vector<ModelTriangle> transformTriangles(const Camera& camera, std::vector<ModelTriangle> triangles);
@@ -34,13 +34,14 @@ public:
 
     MaterialMap materials;
     std::vector<ModelTriangle> triangles;
+    float scale;
 
 private:
     Model() = default;
 
     explicit Model(const std::vector<ModelTriangle> &triangles, const MaterialMap& materials);
 
-    static MaterialMap importMaterials(const std::string &path);
+    static MaterialMap importMaterials(MaterialMap& materialMap, const std::string& path);
 };
 
 

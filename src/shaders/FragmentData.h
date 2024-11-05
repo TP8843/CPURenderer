@@ -15,8 +15,9 @@ namespace FragmentData
         glm::vec3 proportion;
         float depth;
         glm::vec3 position3D;
+        glm::vec3 normal;
 
-        FilledData(glm::vec3 proportion, float depth, glm::vec3 position3D);
+        FilledData(glm::vec3 proportion, float depth, glm::vec3 position3D, glm::vec3 normal);
 
         FilledData operator+(const FilledData& other) const;
         FilledData operator-(const FilledData& other) const;
@@ -24,7 +25,7 @@ namespace FragmentData
         template <typename N>
         FilledData operator*(const N num)
         {
-            return FilledData(proportion * num, depth * num, position3D * num);
+            return FilledData(proportion * num, depth * num, position3D * num, normal * num);
         }
     };
 
@@ -34,11 +35,13 @@ namespace FragmentData
         glm::vec3 proportion;
         float depth;
         glm::vec3 position3D;
+        glm::vec3 normal;
 
         TextureData(TexturePoint texturePoint,
                     glm::vec3 proportion,
-                    float depth, glm::vec3
-                    position3D);
+                    float depth,
+                    glm::vec3 position3D,
+                    glm::vec3 normal);
 
         TextureData operator+(const TextureData& other) const;
         TextureData operator-(const TextureData& other) const;
@@ -49,7 +52,8 @@ namespace FragmentData
             return TextureData(texturePoint * num,
                                proportion * num,
                                depth * num,
-                               position3D * num);
+                               position3D * num,
+                               normal * num);
         }
     };
 

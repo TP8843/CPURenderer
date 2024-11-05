@@ -111,12 +111,19 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                     }
                 }
 
+                const std::array<glm::vec3, 3> vectorNormals = intersection.second.intersectedTriangle.vertexNormals;
+
+                const glm::vec3 normal = vectorNormals[0]
+                        + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
+                        + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
+
+
                 const float colourMultiplier = inShadow ? 0.2f
                                                    // Point must be in camera space for specular highlight calculations
                                                    : light.getMultiplier(camera,
                                                                          (intersection.second.intersectionPoint
                                                                              - camera.position) * camera.rotation,
-                                                                         intersection.second.intersectedTriangle.normal);
+                                                                         normal);
 
                 const Material& material = model.materials.
                                                  getMaterial(intersection.second.intersectedTriangle.material);

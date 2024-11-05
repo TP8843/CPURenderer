@@ -64,28 +64,39 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
 
         if (!material.hasTexture())
         {
-            FragmentData::FilledData d0 = {glm::vec3(1.0f, 0.0f, 0.0f), v0.depth, triangle.vertices[0] * v0.depth};
-            FragmentData::FilledData d1 = {glm::vec3(0.0f, 1.0f, 0.0f), v1.depth, triangle.vertices[1] * v1.depth};
-            FragmentData::FilledData d2 = {glm::vec3(0.0f, 0.0f, 1.0f), v2.depth, triangle.vertices[2] * v2.depth};
+            FragmentData::FilledData d0 = {glm::vec3(1.0f, 0.0f, 0.0f),
+                v0.depth,
+                triangle.vertices.at(0) * v0.depth,
+                triangle.vertexNormals.at(0) * v0.depth};
+
+            FragmentData::FilledData d1 = {glm::vec3(0.0f, 1.0f, 0.0f),
+                v1.depth,
+                triangle.vertices.at(1) * v1.depth,
+            triangle.vertexNormals.at(1) * v1.depth};
+
+            FragmentData::FilledData d2 = {glm::vec3(0.0f, 0.0f, 1.0f),
+                v2.depth,
+                triangle.vertices.at(2) * v2.depth,
+            triangle.vertexNormals.at(2) * v2.depth};
 
             std::array<FragmentData::FilledData, 3> data = {d0, d1, d2};
 
             drawTriangle<FragmentData::DataUniform, FragmentData::FilledData>(
-                canvasTriangle, uniform, data, FragmentShaders::filled);
+                canvasTriangle, uniform, data, FragmentShaders::filledPhong);
         }
         else
         {
             FragmentData::TextureData d1 = {
                 triangle.texturePoints[0] * v0.depth, glm::vec3(1.0f, 0.0f, 0.0f), v0.depth,
-                triangle.vertices[0] * v0.depth
+                triangle.vertices[0] * v0.depth, triangle.vertexNormals.at(0) * v0.depth
             };
             FragmentData::TextureData d2 = {
                 triangle.texturePoints[1] * v1.depth, glm::vec3(0.0f, 1.0f, 0.0f), v1.depth,
-                triangle.vertices[1] * v1.depth
+                triangle.vertices[1] * v1.depth, triangle.vertexNormals.at(1) * v1.depth
             };
             FragmentData::TextureData d3 = {
                 triangle.texturePoints[2] * v2.depth, glm::vec3(0.0f, 0.0f, 1.0f), v2.depth,
-                triangle.vertices[2] * v2.depth
+                triangle.vertices[2] * v2.depth, triangle.vertexNormals.at(2) * v2.depth
             };
 
             std::array<FragmentData::TextureData, 3> data = {d1, d2, d3};
