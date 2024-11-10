@@ -18,8 +18,19 @@ Model Model::import(const char* objectPath, const float scale)
     std::string text;
     std::ifstream ObjectFile(objectPath);
 
+    auto pathString = std::string(objectPath);
+#ifdef OS_Windows
+    const auto pathSeparator = "\\"
+#else
+    const auto pathSeparator = "/";
+#endif
+
+    const auto lastSlashPos = pathString.find_last_of("/\\");
+    std::string parentPath = (std::string::npos == lastSlashPos)
+    ? "" : pathString.substr(0, lastSlashPos);
+
     MaterialMap materialMap = MaterialMap();
-    materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 1.0f));
+    materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 256.0f));
     std::string currentMaterial = "Backup";
 
     std::vector<glm::vec3> vertices;
@@ -41,7 +52,8 @@ Model Model::import(const char* objectPath, const float scale)
         // Import materials
         if (tokens.at(0) == "mtllib")
         {
-            materialMap = importMaterials(materialMap, tokens[1]);
+            std::cout << parentPath + tokens[1] << std::endl;
+            materialMap = importMaterials(materialMap, parentPath + pathSeparator + tokens[1]);
         }
 
         // Vertex
@@ -309,7 +321,7 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
 
     IlluminationModel illuminationModel = FLAT;
 
-    float specularStrength = 1.0f;
+    float specularStrength = 256.0f;
 
     while (getline(MaterialFile, line))
     {
@@ -340,7 +352,7 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
 
             currentMaterialName = tokens.at(1);
             illuminationModel = FLAT;
-            specularStrength = 1.0f;
+            specularStrength = 256.0f;
         }
 
         // Colour for diffuse lighting

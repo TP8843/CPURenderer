@@ -42,8 +42,8 @@ float Material::getColourAtPointInCameraSpace(
     const auto reflectedDirection = normalisedLightDisplacement
         - 2.0f * normal * glm::dot(normalisedLightDisplacement, normal);
 
-    const float specularIntensity = static_cast<float>(glm::pow(
-    glm::max(glm::dot(glm::normalize(-point), glm::normalize(reflectedDirection)), 0.0f), 256));
+    const float specularIntensity = glm::pow(
+        glm::max(glm::dot(glm::normalize(-point), glm::normalize(reflectedDirection)), 0.0f), specularStrength);
 
     constexpr float ambientIntensity = 0.2f;
 
@@ -56,11 +56,11 @@ float Material::getColourAtPointInCameraSpace(
 Material::Material() = default;
 
 Material::Material(Colour colour, const IlluminationModel illuminationModel,
-                   float specularStrength): colour(std::move(colour)), illuminationModel(illuminationModel),
-                                            specularStrength(specularStrength) {
+                   const float specularStrength): colour(std::move(colour)), illuminationModel(illuminationModel),
+                                                  specularStrength(specularStrength) {
 }
 
-Material::Material(Colour colour, const IlluminationModel illuminationModel, float specularStrength,
+Material::Material(Colour colour, const IlluminationModel illuminationModel, const float specularStrength,
                    TextureMap texture) : colour(std::move(colour)), illuminationModel(illuminationModel),
                                          specularStrength(specularStrength), texture(std::move(texture)),
                                          hasTextureBool(true) {
