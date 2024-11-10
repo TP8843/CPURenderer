@@ -135,7 +135,7 @@ Model Model::import(const char* objectPath, const float scale)
     // Add vertex normals to all triangles
     for (int i = 0; i < triangleVertexIndices.size(); i++)
     {
-        std::vector<int> vertexIndices = triangleVertexIndices.at(i);
+        const std::vector<int>& vertexIndices = triangleVertexIndices.at(i);
 
         for (int j = 0; j < vertexIndices.size(); j++)
         {
@@ -151,12 +151,12 @@ Model Model::import(const char* objectPath, const float scale)
 
 std::vector<ModelTriangle> Model::transformTriangles(const Camera& camera, std::vector<ModelTriangle> triangles)
 {
-    std::vector<ModelTriangle> newTriangles = std::vector<ModelTriangle>();
-    const glm::mat3 normalRotation = glm::transpose(glm::inverse(camera.rotation));
+    auto newTriangles = std::vector<ModelTriangle>();
+    const glm::mat3 normalRotation = camera.getNormalRotationMatrix();
 
     for (ModelTriangle& triangle : triangles)
     {
-        newTriangles.emplace_back(ModelTriangle(
+        newTriangles.emplace_back(
             (triangle.vertices[0] - camera.position) * camera.rotation,
             triangle.texturePoints[0],
             triangle.vertexNormals[0] * normalRotation,
@@ -167,7 +167,7 @@ std::vector<ModelTriangle> Model::transformTriangles(const Camera& camera, std::
             triangle.texturePoints[2],
             triangle.vertexNormals[2] * normalRotation,
             triangle.normal * normalRotation,
-            triangle.material));
+            triangle.material);
     }
 
     return newTriangles;

@@ -117,16 +117,16 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                         + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
                         + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
 
-
-                const float colourMultiplier = inShadow ? 0.2f
-                                                   // Point must be in camera space for specular highlight calculations
-                                                   : light.getMultiplier(camera,
-                                                                         (intersection.second.intersectionPoint
-                                                                             - camera.position) * camera.rotation,
-                                                                         normal * glm::transpose(glm::inverse(camera.rotation)));
-
                 const Material& material = model.materials.
                                                  getMaterial(intersection.second.intersectedTriangle.material);
+
+                const float colourMultiplier = inShadow ? 0.2f
+                    // Point must be in camera space for specular highlight calculations
+                    : material.getColourAtPointInCameraSpace(
+                        camera,
+                        light,
+                        (intersection.second.intersectionPoint - camera.position) * camera.rotation,
+                        normal * camera.getNormalRotationMatrix());
 
                 if (material.hasTexture())
                 {

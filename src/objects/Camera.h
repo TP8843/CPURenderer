@@ -12,6 +12,9 @@ public:
            float focalLength,
            float imagePlaneScaling);
 
+    // Get the rotation matrix for any normals
+    glm::mat3 getNormalRotationMatrix() const;
+
     // Move camera by given vector along rotated axis
     void translateRelative(glm::vec3 translation);
 

@@ -25,8 +25,14 @@ void FragmentShaders::filled(CanvasTriangle triangle,
         y >= 0 && y < uniform.window.height &&
         data.depth == uniform.depthBuffer[y][x])
     {
-        const float multiplier =
-            uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, uniform.normal);
+        // const float multiplier =
+        //     uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, uniform.normal);
+
+        const float multiplier = uniform.material.getColourAtPointInCameraSpace(
+            uniform.camera,
+            uniform.light,
+            data.position3D / data.depth,
+            uniform.normal);
 
         uniform.window.setPixelColour(x, y, (uniform.material.getColour() * multiplier).asARGB());
     }
@@ -42,8 +48,14 @@ void FragmentShaders::filledPhong(CanvasTriangle triangle,
         y >= 0 && y < uniform.window.height &&
         data.depth == uniform.depthBuffer[y][x])
     {
-        const float multiplier =
-            uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, data.normal / data.depth);
+        // const float multiplier =
+        //     uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, data.normal / data.depth);
+
+        const float multiplier = uniform.material.getColourAtPointInCameraSpace(
+            uniform.camera,
+            uniform.light,
+            data.position3D / data.depth,
+            data.normal / data.depth);
 
         uniform.window.setPixelColour(x, y, (uniform.material.getColour() * multiplier).asARGB());
     }
@@ -102,10 +114,16 @@ void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y
         y >= 0 && y < uniform.window.height &&
         data.depth == uniform.depthBuffer[y][x])
     {
-        const float multiplier =
-            uniform.light.getMultiplier(uniform.camera,
-                                        data.position3D / data.depth,
-                                        uniform.normal);
+        // const float multiplier =
+        //     uniform.light.getMultiplier(uniform.camera,
+        //                                 data.position3D / data.depth,
+        //                                 uniform.normal);
+
+        const float multiplier = uniform.material.getColourAtPointInCameraSpace(
+                uniform.camera,
+                uniform.light,
+                data.position3D / data.depth,
+                uniform.normal);
 
         const auto texture = (uniform.material.getPixelTextureColour(
             glm::floor(data.texturePoint.x / data.depth),
@@ -123,10 +141,16 @@ void FragmentShaders::materialPhong(CanvasTriangle triangle, int x, int y, const
     y >= 0 && y < uniform.window.height &&
     data.depth == uniform.depthBuffer[y][x])
     {
-        const float multiplier =
-            uniform.light.getMultiplier(uniform.camera,
-                                        data.position3D / data.depth,
-                                        data.normal / data.depth);
+        // const float multiplier =
+        //     uniform.light.getMultiplier(uniform.camera,
+        //                                 data.position3D / data.depth,
+        //                                 data.normal / data.depth);
+
+        const float multiplier = uniform.material.getColourAtPointInCameraSpace(
+            uniform.camera,
+            uniform.light,
+            data.position3D / data.depth,
+            data.normal / data.depth);
 
         const auto texture = (uniform.material.getPixelTextureColour(
             glm::floor(data.texturePoint.x / data.depth),

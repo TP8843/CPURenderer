@@ -16,6 +16,11 @@ Camera::Camera(const glm::vec3 position,
 {
 }
 
+glm::mat3 Camera::getNormalRotationMatrix() const
+{
+    return glm::transpose(glm::inverse(rotation));
+}
+
 // Translate taking into account camera rotation
 void Camera::translateRelative(const glm::vec3 translation)
 {
