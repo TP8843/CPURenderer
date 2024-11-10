@@ -1,7 +1,3 @@
-//
-// Created by Thomas Parr on 08/10/2024.
-//
-
 #include <vector>
 #include <fstream>
 #include <../../libs/sdw/Utils.h>
@@ -10,7 +6,7 @@
 #include "Model.h"
 #include "../helper/Draw.h"
 #include "../helper/Interpolation.h"
-#include "../helper/MaterialMap.h"
+#include "./materials/MaterialMap.h"
 
 Model::Model(const std::vector<ModelTriangle>& triangles, const MaterialMap& materials) :
     materials(materials), triangles(triangles)
@@ -23,13 +19,15 @@ Model Model::import(const char* objectPath, const float scale)
     std::ifstream ObjectFile(objectPath);
 
     MaterialMap materialMap = MaterialMap();
-    materialMap.addMaterial("Backup", Material(Colour(255, 255, 255)));
+    materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 1.0f));
     std::string currentMaterial = "Backup";
 
     std::vector<glm::vec3> vertices;
 
-    // Stores the total of the adjacent face normals and the number of adjacent faces
+    // Stores the total of the adjacent face normals and the number of adjacent faces (vertex normal total, number of normals)
     std::vector<std::pair<glm::vec3, float>> vertexNormalTotals;
+
+    // The vertices for each triangle
     std::vector<std::vector<int>> triangleVertexIndices;
 
     std::vector<glm::vec2> vertexTextures;
@@ -147,8 +145,6 @@ Model Model::import(const char* objectPath, const float scale)
             triangles[i].vertexNormals[j] = vertexNormal;
         }
     }
-
-    std::cout << "Vertex normal for [0, 0]: " << triangles.at(0).vertexNormals[0].x << ", " << triangles.at(0).vertexNormals[0].y << ", " << triangles.at(0).vertexNormals[0].z << std::endl;
 
     return Model(triangles, materialMap);
 }
@@ -310,25 +306,30 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
     bool hasColour = false;
     Colour currentColour;
 
+    IlluminationModel illuminationModel = FLAT;
+
+    float specularStrength = 1.0f;
+
     while (getline(MaterialFile, line))
     {
         const auto tokens = split(line, ' ');
 
+        // Defines a new material
         if (tokens.at(0) == "newmtl")
         {
             if (materialToStore)
             {
                 if (hasTexture && hasColour)
                 {
-                    materialMap.addMaterial(currentMaterialName, Material(currentColour, currentTexture));
+                    materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, specularStrength, currentTexture));
                 }
                 else if (hasTexture)
                 {
-                    materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), currentTexture));
+                    materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), illuminationModel, specularStrength, currentTexture));
                 }
                 else if (hasColour)
                 {
-                    materialMap.addMaterial(currentMaterialName, Material(currentColour));
+                    materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, specularStrength));
                 }
             }
 
@@ -337,21 +338,31 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
             hasTexture = false;
 
             currentMaterialName = tokens.at(1);
+            illuminationModel = FLAT;
+            specularStrength = 1.0f;
         }
 
+        // Colour for diffuse lighting
         if (tokens.at(0) == "Kd")
         {
             materialToStore = true;
 
             const auto colourValue = Colour(
-                std::stof(tokens.at(1)) * 255,
-                std::stof(tokens.at(2)) * 255,
-                std::stof(tokens.at(3)) * 255);
+                static_cast<int>(glm::round(std::stof(tokens.at(1)) * 255.0f)),
+                static_cast<int>(glm::round(std::stof(tokens.at(2)) * 255.0f)),
+                static_cast<int>(glm::round(std::stof(tokens.at(3)) * 255.0f)));
 
             hasColour = true;
             currentColour = colourValue;
         }
 
+        // Strength of specular highlights
+        if (tokens.at(0) == "Ns")
+        {
+            specularStrength = std::stof(tokens.at(1));
+        }
+
+        // Location of texture map
         if (tokens.at(0) == "map_Kd")
         {
             materialToStore = true;
@@ -362,21 +373,33 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
             hasTexture = true;
             currentTexture = textureMap;
         }
+
+        // Illumination type (UNSHADED, FLAT, PHONG)
+        if (tokens.at(0) == "illum")
+        {
+            switch (std::stoi(tokens.at(1)))
+            {
+                case 0: illuminationModel = UNSHADED;
+                case 1: illuminationModel = FLAT;
+                case 2: illuminationModel = PHONG;
+                default: illuminationModel = FLAT;
+            }
+        }
     }
 
     if (materialToStore)
     {
         if (hasTexture && hasColour)
         {
-            materialMap.addMaterial(currentMaterialName, Material(currentColour, currentTexture));
+            materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, specularStrength, currentTexture));
         }
         else if (hasTexture)
         {
-            materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), currentTexture));
+            materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), illuminationModel, specularStrength, currentTexture));
         }
         else if (hasColour)
         {
-            materialMap.addMaterial(currentMaterialName, Material(currentColour));
+            materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, specularStrength));
         }
     }
 

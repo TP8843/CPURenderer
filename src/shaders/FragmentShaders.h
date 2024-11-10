@@ -1,7 +1,3 @@
-//
-// Created by Thomas Parr on 28/10/2024.
-//
-
 #ifndef FRAGMENTSHADERS_H
 #define FRAGMENTSHADERS_H
 

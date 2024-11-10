@@ -62,8 +62,8 @@ add_executable(RedNoise
         src/shaders/FragmentShaders.h
         src/renderers/RasterRenderer2.cpp
         src/renderers/RasterRenderer2.h
-        src/helper/Material.cpp
-        src/helper/Material.h
+        src/objects/materials/Material.cpp
+        src/objects/materials/Material.h
         src/renderers/Raytracer.cpp
         src/renderers/Raytracer.h
         src/renderers/RendererWrapper.h
@@ -73,12 +73,13 @@ add_executable(RedNoise
         src/renderers/RaytracerWrapper.h
         src/renderers/WireframeWrapper.cpp
         src/renderers/WireframeWrapper.h
-        src/helper/MaterialMap.cpp
-        src/helper/MaterialMap.h
+        src/objects/materials/MaterialMap.cpp
+        src/objects/materials/MaterialMap.h
         src/objects/Plane.cpp
         src/objects/Plane.h
         src/objects/Light.cpp
         src/objects/Light.h
+        src/objects/materials/IlluminationModel.h
 )
 
 if (MSVC)

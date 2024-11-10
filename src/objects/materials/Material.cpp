@@ -5,6 +5,11 @@ Colour Material::getColour() const
         return colour;
 }
 
+IlluminationModel Material::getIlluminationModel() const
+{
+        return illuminationModel;
+}
+
 bool Material::hasTexture() const
 {
         return hasTextureBool;
@@ -33,10 +38,10 @@ size_t Material::getTextureHeight() const
 
 Material::Material() = default;
 
-Material::Material(Colour colour):
-        colour(std::move(colour))
+Material::Material(Colour colour, const IlluminationModel illuminationModel, float specularStrength):
+        colour(std::move(colour)), illuminationModel(illuminationModel), specularStrength(specularStrength)
 {}
 
-Material::Material(Colour colour, TextureMap texture) :
-        colour(std::move(colour)), texture(std::move(texture)), hasTextureBool(true)
+Material::Material(Colour colour, const IlluminationModel illuminationModel, float specularStrength, TextureMap texture) :
+        colour(std::move(colour)), illuminationModel(illuminationModel), specularStrength(specularStrength), texture(std::move(texture)), hasTextureBool(true)
 {}

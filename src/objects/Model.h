@@ -5,7 +5,7 @@
 
 #include "Camera.h"
 #include "Plane.h"
-#include "../helper/MaterialMap.h"
+#include "./materials/MaterialMap.h"
 
 class Model {
 public:
@@ -34,7 +34,7 @@ public:
 
     MaterialMap materials;
     std::vector<ModelTriangle> triangles;
-    float scale;
+    float scale = 1.0;
 
 private:
     Model() = default;
@@ -43,7 +43,6 @@ private:
 
     static MaterialMap importMaterials(MaterialMap& materialMap, const std::string& path);
 };
-
 
 
 #endif //OBJECT_H

@@ -5,7 +5,7 @@
 #include <TexturePoint.h>
 #include <glm/glm.hpp>
 
-#include "../helper/Material.h"
+#include "../objects/materials/Material.h"
 #include "../objects/Light.h"
 
 namespace FragmentData
