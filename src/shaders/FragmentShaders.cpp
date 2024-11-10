@@ -25,8 +25,6 @@ void FragmentShaders::filled(CanvasTriangle triangle,
         y >= 0 && y < uniform.window.height &&
         data.depth == uniform.depthBuffer[y][x])
     {
-        // const float multiplier =
-        //     uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, uniform.normal);
 
         const float multiplier = uniform.material.getColourAtPointInCameraSpace(
             uniform.camera,
@@ -48,8 +46,6 @@ void FragmentShaders::filledPhong(CanvasTriangle triangle,
         y >= 0 && y < uniform.window.height &&
         data.depth == uniform.depthBuffer[y][x])
     {
-        // const float multiplier =
-        //     uniform.light.getMultiplier(uniform.camera, data.position3D / data.depth, data.normal / data.depth);
 
         const float multiplier = uniform.material.getColourAtPointInCameraSpace(
             uniform.camera,
@@ -61,7 +57,8 @@ void FragmentShaders::filledPhong(CanvasTriangle triangle,
     }
 }
 
-void FragmentShaders::rainbow(CanvasTriangle triangle, const int x, const int y,
+void FragmentShaders::rainbow(CanvasTriangle triangle,
+                              const int x, const int y,
                               const FragmentData::DataUniform& uniform,
                               const FragmentData::FilledData& data)
 {
@@ -75,7 +72,8 @@ void FragmentShaders::rainbow(CanvasTriangle triangle, const int x, const int y,
     }
 }
 
-void FragmentShaders::outline(CanvasTriangle triangle, const int x, const int y,
+void FragmentShaders::outline(CanvasTriangle triangle,
+                              const int x, const int y,
                               const FragmentData::DataUniform& uniform,
                               const FragmentData::FilledData& data)
 {
@@ -90,7 +88,8 @@ void FragmentShaders::outline(CanvasTriangle triangle, const int x, const int y,
     }
 }
 
-void FragmentShaders::depth(CanvasTriangle triangle, const int x, const int y,
+void FragmentShaders::depth(CanvasTriangle triangle,
+                            const int x, const int y,
                             const FragmentData::DataUniform& uniform,
                             const FragmentData::FilledData& data)
 {
@@ -105,7 +104,8 @@ void FragmentShaders::depth(CanvasTriangle triangle, const int x, const int y,
     }
 }
 
-void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y,
+void FragmentShaders::material(CanvasTriangle triangle,
+                               const int x, const int y,
                                const FragmentData::DataUniform& uniform,
                                const FragmentData::TextureData& data)
 {
@@ -114,10 +114,6 @@ void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y
         y >= 0 && y < uniform.window.height &&
         data.depth == uniform.depthBuffer[y][x])
     {
-        // const float multiplier =
-        //     uniform.light.getMultiplier(uniform.camera,
-        //                                 data.position3D / data.depth,
-        //                                 uniform.normal);
 
         const float multiplier = uniform.material.getColourAtPointInCameraSpace(
                 uniform.camera,
@@ -133,18 +129,16 @@ void FragmentShaders::material(CanvasTriangle triangle, const int x, const int y
     }
 }
 
-void FragmentShaders::materialPhong(CanvasTriangle triangle, int x, int y, const FragmentData::DataUniform& uniform,
-    const FragmentData::TextureData& data)
+void FragmentShaders::materialPhong(CanvasTriangle triangle,
+                                    const int x, const int y,
+                                    const FragmentData::DataUniform& uniform,
+                                    const FragmentData::TextureData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
     x >= 0 && x < uniform.window.width &&
     y >= 0 && y < uniform.window.height &&
     data.depth == uniform.depthBuffer[y][x])
     {
-        // const float multiplier =
-        //     uniform.light.getMultiplier(uniform.camera,
-        //                                 data.position3D / data.depth,
-        //                                 data.normal / data.depth);
 
         const float multiplier = uniform.material.getColourAtPointInCameraSpace(
             uniform.camera,

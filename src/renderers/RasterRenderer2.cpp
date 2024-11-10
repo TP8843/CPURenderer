@@ -102,7 +102,7 @@ void RasterRenderer2::rasterRender(DrawingWindow& window) const
             std::array<FragmentData::TextureData, 3> data = {d1, d2, d3};
 
             drawTriangle<FragmentData::DataUniform, FragmentData::TextureData>(
-                canvasTriangle, uniform, data, FragmentShaders::material);
+                canvasTriangle, uniform, data, FragmentShaders::materialPhong);
         }
     }
 
