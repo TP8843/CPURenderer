@@ -55,7 +55,7 @@ FragmentData::TextureData FragmentData::TextureData::operator-(const TextureData
         proportion - other.proportion,
         depth - other.depth,
         position3D - other.position3D,
-        normal + other.normal,
+        normal - other.normal,
     };
 }
 

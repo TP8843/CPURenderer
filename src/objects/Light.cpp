@@ -8,7 +8,7 @@ float Light::getMultiplier(const Camera& camera, const glm::vec3 point, const gl
 {
     const auto transformedLight = (position - camera.position) * camera.rotation;
 
-    return calculateMultiplier(transformedLight, intensity, point, normal * camera.rotation);
+    return calculateMultiplier(transformedLight, intensity, point, normal);
 }
 
 float Light::calculateMultiplier(const glm::vec3 lightPosition, const float intensity, const glm::vec3 point, const glm::vec3 normal)

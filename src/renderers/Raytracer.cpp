@@ -123,7 +123,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                                                    : light.getMultiplier(camera,
                                                                          (intersection.second.intersectionPoint
                                                                              - camera.position) * camera.rotation,
-                                                                         normal);
+                                                                         normal * glm::transpose(glm::inverse(camera.rotation)));
 
                 const Material& material = model.materials.
                                                  getMaterial(intersection.second.intersectedTriangle.material);

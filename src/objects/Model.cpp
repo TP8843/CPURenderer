@@ -152,20 +152,21 @@ Model Model::import(const char* objectPath, const float scale)
 std::vector<ModelTriangle> Model::transformTriangles(const Camera& camera, std::vector<ModelTriangle> triangles)
 {
     std::vector<ModelTriangle> newTriangles = std::vector<ModelTriangle>();
+    const glm::mat3 normalRotation = glm::transpose(glm::inverse(camera.rotation));
 
     for (ModelTriangle& triangle : triangles)
     {
         newTriangles.emplace_back(ModelTriangle(
             (triangle.vertices[0] - camera.position) * camera.rotation,
             triangle.texturePoints[0],
-            triangle.vertexNormals[0] * camera.rotation,
+            triangle.vertexNormals[0] * normalRotation,
             (triangle.vertices[1] - camera.position) * camera.rotation,
             triangle.texturePoints[1],
-            triangle.vertexNormals[1] * camera.rotation,
+            triangle.vertexNormals[1] * normalRotation,
             (triangle.vertices[2] - camera.position) * camera.rotation,
             triangle.texturePoints[2],
-            triangle.vertexNormals[2] * camera.rotation,
-            triangle.normal,
+            triangle.vertexNormals[2] * normalRotation,
+            triangle.normal * normalRotation,
             triangle.material));
     }
 
