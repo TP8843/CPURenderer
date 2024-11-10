@@ -1,3 +1,4 @@
+#include <utility>
 #include <vector>
 #include <fstream>
 #include <../../libs/sdw/Utils.h>
@@ -8,8 +9,8 @@
 #include "../helper/Interpolation.h"
 #include "./materials/MaterialMap.h"
 
-Model::Model(const std::vector<ModelTriangle>& triangles, const MaterialMap& materials) :
-    materials(materials), triangles(triangles)
+Model::Model(const std::vector<ModelTriangle>& triangles, MaterialMap  materials) :
+    materials(std::move(materials)), triangles(triangles)
 {
 }
 
@@ -19,18 +20,13 @@ Model Model::import(const char* objectPath, const float scale)
     std::ifstream ObjectFile(objectPath);
 
     auto pathString = std::string(objectPath);
-#ifdef OS_Windows
-    const auto pathSeparator = "\\"
-#else
-    const auto pathSeparator = "/";
-#endif
 
     const auto lastSlashPos = pathString.find_last_of("/\\");
     std::string parentPath = (std::string::npos == lastSlashPos)
     ? "" : pathString.substr(0, lastSlashPos);
 
     MaterialMap materialMap = MaterialMap();
-    materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 256.0f));
+    materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 32.0f));
     std::string currentMaterial = "Backup";
 
     std::vector<glm::vec3> vertices;
@@ -52,6 +48,12 @@ Model Model::import(const char* objectPath, const float scale)
         // Import materials
         if (tokens.at(0) == "mtllib")
         {
+#ifdef OS_Windows
+            const auto pathSeparator = "\\"
+ #else
+            const auto pathSeparator = "/";
+#endif
+
             std::cout << parentPath + tokens[1] << std::endl;
             materialMap = importMaterials(materialMap, parentPath + pathSeparator + tokens[1]);
         }
@@ -66,7 +68,7 @@ Model Model::import(const char* objectPath, const float scale)
 
             vertices.emplace_back(v);
 
-            vertexNormalTotals.emplace_back(std::pair<glm::vec3, float>(glm::vec3(0, 0, 0), 0));
+            vertexNormalTotals.emplace_back(glm::vec3(0, 0, 0), 0);
         }
 
         // Texture Points
@@ -109,8 +111,8 @@ Model Model::import(const char* objectPath, const float scale)
                     const auto point = vertexTextures[std::stoi(vertexTokens.at(1)) - 1];
 
                     texturePoints.emplace_back(
-                        point.x * materialMap.getMaterial(currentMaterial).getTextureWidth(),
-                        point.y * materialMap.getMaterial(currentMaterial).getTextureHeight());
+                        point.x * static_cast<float>(materialMap.getMaterial(currentMaterial).getTextureWidth()),
+                        point.y * static_cast<float>(materialMap.getMaterial(currentMaterial).getTextureHeight()));
                 }
             }
 
@@ -187,14 +189,14 @@ std::vector<ModelTriangle> Model::transformTriangles(const Camera& camera, std::
 
 std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> triangles)
 {
-    std::vector<ModelTriangle> filteredTriangles = std::vector<ModelTriangle>(triangles);
+    auto filteredTriangles = std::vector<ModelTriangle>(std::move(triangles));
 
     for (const auto& clippingPlane : getClippingPlanes())
     {
         std::vector<ModelTriangle> oldFilteredTriangles = filteredTriangles;
         filteredTriangles = std::vector<ModelTriangle>();
 
-        for (ModelTriangle triangle : oldFilteredTriangles)
+        for (const ModelTriangle& triangle : oldFilteredTriangles)
         {
             std::array<glm::vec3, 3> vertices = std::array<glm::vec3, 3>(triangle.vertices);
             std::array<TexturePoint, 3> texturePoints = std::array<TexturePoint, 3>(triangle.texturePoints);
@@ -234,12 +236,12 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
 
             if (distances[0] > 0.0f && distances[1] > 0.0f && distances[2] > 0.0f)
             {
-                filteredTriangles.emplace_back(ModelTriangle(
+                filteredTriangles.emplace_back(
                     vertices[0], texturePoints[0], vertexNormals[0],
                     vertices[1], texturePoints[1], vertexNormals[1],
                     vertices[2], texturePoints[2], vertexNormals[2],
                     triangle.normal,
-                    triangle.material));
+                    triangle.material);
             }
             // If one vertex outside clipping plane
             else if (distances[1] > 0.0f && distances[2] > 0.0f)
@@ -263,17 +265,17 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
                 const glm::vec3 newV2VertexNormal = Interpolation::interpolate(
                     vertexNormals[0], vertexNormals[2], v2prop);
 
-                filteredTriangles.emplace_back(ModelTriangle(
+                filteredTriangles.emplace_back(
                     newV1Vertex, newV1TexturePoint, newV1VertexNormal,
                     vertices[1], texturePoints[1], vertexNormals[1],
                     vertices[2], texturePoints[2], vertexNormals[2],
-                    triangle.normal, triangle.material));
+                    triangle.normal, triangle.material);
 
-                filteredTriangles.emplace_back(ModelTriangle(
+                filteredTriangles.emplace_back(
                     newV2Vertex, newV2TexturePoint, newV2VertexNormal,
                     newV1Vertex, newV1TexturePoint, newV1VertexNormal,
                     vertices[2], texturePoints[2], vertexNormals[2],
-                    triangle.normal, triangle.material));
+                    triangle.normal, triangle.material);
             }
             // Check if two vertices outside plane
             else if (distances[2] > 0.0f)
@@ -281,7 +283,7 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
                 const float v0prop = clippingPlane.getIntersection(vertices[0], vertices[2]);
                 const float v1prop = clippingPlane.getIntersection(vertices[1], vertices[2]);
 
-                filteredTriangles.emplace_back(ModelTriangle(
+                filteredTriangles.emplace_back(
                     Interpolation::interpolate(vertices[0], vertices[2], v0prop),
                     Interpolation::interpolate(texturePoints[0], texturePoints[2], v0prop),
                     Interpolation::interpolate(vertexNormals[0], vertexNormals[2], v0prop),
@@ -292,7 +294,7 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
                     texturePoints[2],
                     vertexNormals[2],
                     triangle.normal,
-                    triangle.material));
+                    triangle.material);
             }
         }
     }
@@ -321,7 +323,7 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
 
     IlluminationModel illuminationModel = FLAT;
 
-    float specularStrength = 256.0f;
+    float specularStrength = 32.0f;
 
     while (getline(MaterialFile, line))
     {
@@ -352,7 +354,7 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
 
             currentMaterialName = tokens.at(1);
             illuminationModel = FLAT;
-            specularStrength = 256.0f;
+            specularStrength = 32.0f;
         }
 
         // Colour for diffuse lighting

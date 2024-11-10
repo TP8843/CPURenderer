@@ -39,7 +39,7 @@ public:
 private:
     Model() = default;
 
-    explicit Model(const std::vector<ModelTriangle> &triangles, const MaterialMap& materials);
+    explicit Model(const std::vector<ModelTriangle> &triangles, MaterialMap  materials);
 
     static MaterialMap importMaterials(MaterialMap& materialMap, const std::string& path);
 };
