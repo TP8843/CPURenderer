@@ -1,13 +1,13 @@
 #include "FragmentShaders.h"
 
-void FragmentShaders::prePass(CanvasTriangle triangle,
+void FragmentShaders::prePass(const CanvasTriangle& _,
                               const int x, const int y,
                               const FragmentData::PrePassUniform& uniform,
                               const FragmentData::PrePassData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
-    x >= 0 && x < uniform.width &&
-    y >= 0 && y < uniform.height &&
+    x >= 0 && x < static_cast<int>(uniform.width) &&
+    y >= 0 && y < static_cast<int>(uniform.height) &&
     data.depth > uniform.depthBuffer[y][x])
     {
         uniform.depthBuffer[y][x] = data.depth;
@@ -15,14 +15,14 @@ void FragmentShaders::prePass(CanvasTriangle triangle,
 }
 
 
-void FragmentShaders::filled(CanvasTriangle triangle,
+void FragmentShaders::filled(const CanvasTriangle& _,
                              const int x, const int y,
                              const FragmentData::DataUniform& uniform,
                              const FragmentData::FilledData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
-        x >= 0 && x < uniform.window.width &&
-        y >= 0 && y < uniform.window.height &&
+        x >= 0 && x < static_cast<int>(uniform.window.width) &&
+        y >= 0 && y < static_cast<int>(uniform.window.height) &&
         data.depth == uniform.depthBuffer[y][x])
     {
 
@@ -36,14 +36,14 @@ void FragmentShaders::filled(CanvasTriangle triangle,
     }
 }
 
-void FragmentShaders::filledPhong(CanvasTriangle triangle,
+void FragmentShaders::filledPhong(const CanvasTriangle& _,
                              const int x, const int y,
                              const FragmentData::DataUniform& uniform,
                              const FragmentData::FilledData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
-        x >= 0 && x < uniform.window.width &&
-        y >= 0 && y < uniform.window.height &&
+        x >= 0 && x < static_cast<int>(uniform.window.width) &&
+        y >= 0 && y < static_cast<int>(uniform.window.height) &&
         data.depth == uniform.depthBuffer[y][x])
     {
 
@@ -57,14 +57,14 @@ void FragmentShaders::filledPhong(CanvasTriangle triangle,
     }
 }
 
-void FragmentShaders::rainbow(CanvasTriangle triangle,
+void FragmentShaders::rainbow(const CanvasTriangle& _,
                               const int x, const int y,
                               const FragmentData::DataUniform& uniform,
                               const FragmentData::FilledData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
-        x >= 0 && x < uniform.window.width &&
-        y >= 0 && y < uniform.window.height &&
+        x >= 0 && x < static_cast<int>(uniform.window.width) &&
+        y >= 0 && y < static_cast<int>(uniform.window.height) &&
         data.depth == uniform.depthBuffer[y][x])
     {
         uniform.window.setPixelColour(
@@ -72,14 +72,14 @@ void FragmentShaders::rainbow(CanvasTriangle triangle,
     }
 }
 
-void FragmentShaders::outline(CanvasTriangle triangle,
+void FragmentShaders::outline(const CanvasTriangle& _,
                               const int x, const int y,
                               const FragmentData::DataUniform& uniform,
                               const FragmentData::FilledData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
-        x >= 0 && x < uniform.window.width &&
-        y >= 0 && y < uniform.window.height &&
+        x >= 0 && x < static_cast<int>(uniform.window.width) &&
+        y >= 0 && y < static_cast<int>(uniform.window.height) &&
         data.depth == uniform.depthBuffer[y][x]
         && glm::min(data.proportion[0], glm::min(data.proportion[1], data.proportion[2])) < 0.5 * data.depth
     )
@@ -88,14 +88,14 @@ void FragmentShaders::outline(CanvasTriangle triangle,
     }
 }
 
-void FragmentShaders::depth(CanvasTriangle triangle,
+void FragmentShaders::depth(const CanvasTriangle& _,
                             const int x, const int y,
                             const FragmentData::DataUniform& uniform,
                             const FragmentData::FilledData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
-        x >= 0 && x < uniform.window.width &&
-        y >= 0 && y < uniform.window.height &&
+        x >= 0 && x < static_cast<int>(uniform.window.width) &&
+        y >= 0 && y < static_cast<int>(uniform.window.height) &&
         data.depth == uniform.depthBuffer[y][x])
     {
         const float multiplier = glm::clamp(data.depth, 0.0f, 1.0f) * 1000.0f;
@@ -104,14 +104,14 @@ void FragmentShaders::depth(CanvasTriangle triangle,
     }
 }
 
-void FragmentShaders::material(CanvasTriangle triangle,
+void FragmentShaders::material(const CanvasTriangle& _,
                                const int x, const int y,
                                const FragmentData::DataUniform& uniform,
                                const FragmentData::TextureData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
-        x >= 0 && x < uniform.window.width &&
-        y >= 0 && y < uniform.window.height &&
+        x >= 0 && x < static_cast<int>(uniform.window.width) &&
+        y >= 0 && y < static_cast<int>(uniform.window.height) &&
         data.depth == uniform.depthBuffer[y][x])
     {
 
@@ -129,14 +129,14 @@ void FragmentShaders::material(CanvasTriangle triangle,
     }
 }
 
-void FragmentShaders::materialPhong(CanvasTriangle triangle,
+void FragmentShaders::materialPhong(const CanvasTriangle& _,
                                     const int x, const int y,
                                     const FragmentData::DataUniform& uniform,
                                     const FragmentData::TextureData& data)
 {
     if (data.depth > 0 && data.depth < 0.7 &&
-    x >= 0 && x < uniform.window.width &&
-    y >= 0 && y < uniform.window.height &&
+    x >= 0 && x < static_cast<int>(uniform.window.width) &&
+    y >= 0 && y < static_cast<int>(uniform.window.height) &&
     data.depth == uniform.depthBuffer[y][x])
     {
 
@@ -147,8 +147,8 @@ void FragmentShaders::materialPhong(CanvasTriangle triangle,
             data.normal / data.depth);
 
         const auto texture = (uniform.material.getPixelTextureColour(
-            glm::round(data.texturePoint.x / data.depth),
-            glm::round(data.texturePoint.y / data.depth)) * multiplier).asARGB();
+            static_cast<size_t>(glm::round(data.texturePoint.x / data.depth)),
+            static_cast<size_t>(glm::round(data.texturePoint.y / data.depth))) * multiplier).asARGB();
 
         uniform.window.setPixelColour(x, y, texture);
     }

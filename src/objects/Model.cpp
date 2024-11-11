@@ -327,6 +327,7 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
 
     bool hasTexture = false;
     TextureMap currentTexture;
+    std::string currentTextureFilename;
 
     bool hasColour = false;
     Colour currentColour;
@@ -350,11 +351,11 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
             {
                 if (hasTexture && hasColour)
                 {
-                    materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, specularStrength, currentTexture));
+                    materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, specularStrength, folderPath + currentTextureFilename));
                 }
                 else if (hasTexture)
                 {
-                    materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), illuminationModel, specularStrength, currentTexture));
+                    materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), illuminationModel, specularStrength, folderPath + currentTextureFilename));
                 }
                 else if (hasColour)
                 {
@@ -396,6 +397,8 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
         {
             materialToStore = true;
 
+            currentTextureFilename = tokens.at(1);
+
             const auto& texturePath = tokens.at(1);
             const auto textureMap = TextureMap(folderPath + texturePath);
 
@@ -420,11 +423,11 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
     {
         if (hasTexture && hasColour)
         {
-            materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, specularStrength, currentTexture));
+            materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, specularStrength, folderPath + currentTextureFilename));
         }
         else if (hasTexture)
         {
-            materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), illuminationModel, specularStrength, currentTexture));
+            materialMap.addMaterial(currentMaterialName, Material(Colour(255, 255, 255), illuminationModel, specularStrength, folderPath + currentTextureFilename));
         }
         else if (hasColour)
         {

@@ -32,7 +32,7 @@ private:
     static void drawTriangle(CanvasTriangle triangle,
                              Uniform uniform,
                              std::array<Data, 3> fragmentData,
-                             std::function<void (CanvasTriangle,
+                             std::function<void (const CanvasTriangle&,
                                                  int,
                                                  int,
                                                  const Uniform&,

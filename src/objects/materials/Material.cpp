@@ -1,40 +1,51 @@
 #include "Material.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../../libs/stb_image.h"
 
-Colour Material::getColour() const {
+Colour Material::getColour() const
+{
     return colour;
 }
 
-IlluminationModel Material::getIlluminationModel() const {
+IlluminationModel Material::getIlluminationModel() const
+{
     return illuminationModel;
 }
 
-bool Material::hasTexture() const {
+bool Material::hasTexture() const
+{
     return hasTextureBool;
 }
 
-Colour Material::getPixelTextureColour(const size_t x, const size_t y) const {
-    const uint32_t rawColour = texture.pixels[y * texture.width + x];
+Colour Material::getPixelTextureColour(const size_t x, const size_t y) const
+{
+    if (x >= textureWidth || y >= textureHeight)
+        return {0, 0, 0};
+
+    const int startingPosition = (textureWidth * y + x) * charsPerPixel;
 
     return {
-        static_cast<int>(rawColour & 0xFF),
-        static_cast<int>(rawColour >> 8 & 0xFF),
-        static_cast<int>(rawColour >> 16 & 0xFF)
+        static_cast<int>(texture[startingPosition + 0]),
+        static_cast<int>(texture[startingPosition + 1]),
+        static_cast<int>(texture[startingPosition + 2]),
     };
 }
 
-size_t Material::getTextureWidth() const {
-    return texture.width;
+size_t Material::getTextureWidth() const
+{
+    return textureWidth;
 }
 
-size_t Material::getTextureHeight() const {
-    return texture.height;
+size_t Material::getTextureHeight() const
+{
+    return textureHeight;
 }
 
 float Material::getColourAtPointInCameraSpace(
-                                 const Camera &camera,
-                                 const Light &light,
-                                 const glm::vec3 &point,
-                                 const glm::vec3 &normal) const
+    const Camera& camera,
+    const Light& light,
+    const glm::vec3& point,
+    const glm::vec3& normal) const
 {
     const auto lightDisplacement = point - light.getPositionInCameraSpace(camera);
     const auto normalisedLightDisplacement = glm::normalize(lightDisplacement);
@@ -53,23 +64,39 @@ float Material::getColourAtPointInCameraSpace(
     if (glm::dot(point, normal) > 0.0f)
     {
         diffuseIntensity = glm::clamp((glm::dot(normal, normalisedLightDisplacement)) /
-            (1.0f + 1.0f * glm::pow(glm::length(lightDisplacement), 2.0f)), 0.0f, 1.0f);
+                                      (1.0f + 1.0f * glm::pow(glm::length(lightDisplacement), 2.0f)), 0.0f, 1.0f);
     }
 
     const float total = ambientIntensity + light.intensity * (diffuseIntensity + specularIntensity);
 
-    return glm::clamp(total / (1 + total), 0.0f,  1.0f);
+    return glm::clamp(total / (1 + total), 0.0f, 1.0f);
 }
 
 Material::Material() = default;
 
-Material::Material(Colour colour, const IlluminationModel illuminationModel,
-                   const float specularStrength): colour(std::move(colour)), illuminationModel(illuminationModel),
-                                                  specularStrength(specularStrength) {
+Material::Material(Colour colour,
+                   const IlluminationModel illuminationModel,
+                   const float specularStrength) :
+    colour(std::move(colour)),
+    illuminationModel(illuminationModel),
+    specularStrength(specularStrength)
+{
 }
 
-Material::Material(Colour colour, const IlluminationModel illuminationModel, const float specularStrength,
-                   TextureMap texture) : colour(std::move(colour)), illuminationModel(illuminationModel),
-                                         specularStrength(specularStrength), texture(std::move(texture)),
-                                         hasTextureBool(true) {
+Material::Material(const Colour& colour,
+                   const IlluminationModel illuminationModel,
+                   const float specularStrength,
+                   const std::string& texturePath) :
+    colour(colour),
+    illuminationModel(illuminationModel),
+    specularStrength(specularStrength),
+    hasTextureBool(true)
+{
+    std::cout << "Attempting to load texture from " << texturePath << std::endl;
+
+    texture = stbi_load(texturePath.c_str(),
+                         &textureWidth,
+                         &textureHeight,
+                         nullptr,
+                         STBI_rgb_alpha);
 }

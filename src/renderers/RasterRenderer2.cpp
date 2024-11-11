@@ -1,7 +1,3 @@
-//
-// Created by Thomas Parr on 28/10/2024.
-//
-
 #include "RasterRenderer2.h"
 
 #include "../objects/Camera.h"

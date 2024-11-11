@@ -4,8 +4,6 @@
 #include <Colour.h>
 #include <TextureMap.h>
 
-#include "../../libs/stb_image.h"
-
 #include "IlluminationModel.h"
 #include "../Camera.h"
 #include "../Light.h"
@@ -25,15 +23,19 @@ public:
                            const glm::vec3 &normal) const;
 
     Material();
-    explicit Material(Colour colour, IlluminationModel illuminationModel, float specularStrength);
-    Material(Colour colour, IlluminationModel illuminationModel, float specularStrength, TextureMap texture);
+    Material(Colour colour, IlluminationModel illuminationModel, float specularStrength);
+    Material(const Colour& colour, IlluminationModel illuminationModel, float specularStrength, const std::string& texturePath);
 
 private:
+    static constexpr int charsPerPixel = 4;
+
     Colour colour;
     IlluminationModel illuminationModel = FLAT;
     float specularStrength = 1.0f;
 
-    TextureMap texture;
+    int textureWidth = 0;
+    int textureHeight = 0;
+    unsigned char* texture;
     bool hasTextureBool{};
 };
 

@@ -8,49 +8,49 @@
 
 struct FragmentShaders
 {
-    static void prePass(CanvasTriangle triangle,
+    static void prePass(const CanvasTriangle& triangle,
                         int x,
                         int y,
                         const FragmentData::PrePassUniform& uniform,
                         const FragmentData::PrePassData& data);
 
-    static void filled(CanvasTriangle triangle,
+    static void filled(const CanvasTriangle& triangle,
                        int x,
                        int y,
                        const FragmentData::DataUniform& uniform,
                        const FragmentData::FilledData& data);
 
-    static void filledPhong(CanvasTriangle triangle,
+    static void filledPhong(const CanvasTriangle& triangle,
                      int x,
                      int y,
                      const FragmentData::DataUniform& uniform,
                      const FragmentData::FilledData& data);
 
-    static void rainbow(CanvasTriangle triangle,
+    static void rainbow(const CanvasTriangle& triangle,
                         int x,
                         int y,
                         const FragmentData::DataUniform& uniform,
                         const FragmentData::FilledData& data);
 
-    static void outline(CanvasTriangle triangle,
+    static void outline(const CanvasTriangle& triangle,
                         int x,
                         int y,
                         const FragmentData::DataUniform& uniform,
                         const FragmentData::FilledData& data);
 
-    static void depth(CanvasTriangle triangle,
+    static void depth(const CanvasTriangle& triangle,
                       int x,
                       int y,
                       const FragmentData::DataUniform& uniform,
                       const FragmentData::FilledData& data);
 
-    static void material(CanvasTriangle triangle,
+    static void material(const CanvasTriangle& triangle,
                          int x,
                          int y,
                          const FragmentData::DataUniform& uniform,
                          const FragmentData::TextureData& data);
 
-    static void materialPhong(CanvasTriangle triangle,
+    static void materialPhong(const CanvasTriangle& triangle,
                      int x,
                      int y,
                      const FragmentData::DataUniform& uniform,
