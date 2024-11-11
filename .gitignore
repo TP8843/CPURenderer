@@ -46,3 +46,4 @@ _deps
 
 ### Ninja
 cmake-build-debug
+cmake-build-release
