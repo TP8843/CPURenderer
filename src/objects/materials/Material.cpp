@@ -56,9 +56,9 @@ float Material::getColourAtPointInCameraSpace(
             (1.0f + 1.0f * glm::pow(glm::length(lightDisplacement), 2.0f)), 0.0f, 1.0f);
     }
 
-    const float total = ambientIntensity + light.intensity * ( diffuseIntensity + specularIntensity);
+    const float total = ambientIntensity + light.intensity * (diffuseIntensity + specularIntensity);
 
-    return glm::clamp(total, 0.0f,  1.0f);
+    return glm::clamp(total / (1 + total), 0.0f,  1.0f);
 }
 
 Material::Material() = default;

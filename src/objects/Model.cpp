@@ -26,8 +26,8 @@ Model Model::import(const char* objectPath, const float scale)
     ? "" : pathString.substr(0, lastSlashPos);
 
     MaterialMap materialMap = MaterialMap();
-    materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 32.0f));
     std::string currentMaterial = "Backup";
+    bool loadedMaterialFile = false;
 
     std::vector<glm::vec3> vertices;
 
@@ -42,6 +42,10 @@ Model Model::import(const char* objectPath, const float scale)
 
     while (getline(ObjectFile, text))
     {
+        // Remove Windows carriage return. From https://stackoverflow.com/questions/2528995/remove-r-from-a-string-in-c
+        if (!text.empty() && text[text.size() - 1] == '\r')
+            text.erase(text.size() - 1);
+
         // Split on all spaces
         const auto tokens = split(text, ' ');
 
@@ -55,7 +59,8 @@ Model Model::import(const char* objectPath, const float scale)
 #endif
 
             std::cout << parentPath + tokens[1] << std::endl;
-            materialMap = importMaterials(materialMap, parentPath + pathSeparator + tokens[1]);
+            materialMap = importMaterials(materialMap,  parentPath + pathSeparator + tokens[1], parentPath + pathSeparator);
+            loadedMaterialFile = true;
         }
 
         // Vertex
@@ -158,6 +163,11 @@ Model Model::import(const char* objectPath, const float scale)
 
             triangles[i].vertexNormals[j] = vertexNormal;
         }
+    }
+
+    if (!loadedMaterialFile)
+    {
+        materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 32.0f));
     }
 
     return Model(triangles, materialMap);
@@ -307,11 +317,11 @@ std::vector<ModelTriangle> Model::getPreparedTriangles(const Camera& camera) con
     return clipTriangles(transformTriangles(camera, triangles));
 }
 
-MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& path)
+MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& path, const std::string& folderPath)
 {
     std::ifstream MaterialFile(path);
     std::string line;
-    std::string currentMaterialName;
+    std::string currentMaterialName = "Backup";
 
     bool materialToStore = false;
 
@@ -327,6 +337,10 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
 
     while (getline(MaterialFile, line))
     {
+        // Remove Windows carriage return. From https://stackoverflow.com/questions/2528995/remove-r-from-a-string-in-c
+        if (!line.empty() && line[line.size() - 1] == '\r')
+            line.erase(line.size() - 1);
+
         const auto tokens = split(line, ' ');
 
         // Defines a new material
@@ -383,7 +397,7 @@ MaterialMap Model::importMaterials(MaterialMap& materialMap, const std::string& 
             materialToStore = true;
 
             const auto& texturePath = tokens.at(1);
-            const auto textureMap = TextureMap(texturePath);
+            const auto textureMap = TextureMap(folderPath + texturePath);
 
             hasTexture = true;
             currentTexture = textureMap;

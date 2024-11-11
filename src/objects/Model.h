@@ -34,14 +34,17 @@ public:
 
     MaterialMap materials;
     std::vector<ModelTriangle> triangles;
+
     float scale = 1.0;
+    glm::vec3 translation = glm::vec3(0, 0, 0);
+    glm::mat3 rotation = glm::mat3(1);
 
 private:
     Model() = default;
 
     explicit Model(const std::vector<ModelTriangle> &triangles, MaterialMap  materials);
 
-    static MaterialMap importMaterials(MaterialMap& materialMap, const std::string& path);
+    static MaterialMap importMaterials(MaterialMap &materialMap, const std::string &path, const std::string &folderPath);
 };
 
 

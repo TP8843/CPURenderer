@@ -4,6 +4,8 @@
 #include <Colour.h>
 #include <TextureMap.h>
 
+#include "../../libs/stb_image.h"
+
 #include "IlluminationModel.h"
 #include "../Camera.h"
 #include "../Light.h"

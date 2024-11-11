@@ -80,6 +80,9 @@ add_executable(RedNoise
         src/objects/Light.cpp
         src/objects/Light.h
         src/objects/materials/IlluminationModel.h
+        src/objects/Transformation.cpp
+        src/objects/Transformation.h
+        libs/stb_image.h
 )
 
 if (MSVC)

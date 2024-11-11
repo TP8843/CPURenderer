@@ -122,8 +122,8 @@ void FragmentShaders::material(CanvasTriangle triangle,
                 uniform.normal);
 
         const auto texture = (uniform.material.getPixelTextureColour(
-            glm::floor(data.texturePoint.x / data.depth),
-            glm::floor(data.texturePoint.y / data.depth)) * multiplier).asARGB();
+            glm::round(data.texturePoint.x / data.depth),
+            glm::round(data.texturePoint.y / data.depth)) * multiplier).asARGB();
 
         uniform.window.setPixelColour(x, y, texture);
     }
@@ -147,8 +147,8 @@ void FragmentShaders::materialPhong(CanvasTriangle triangle,
             data.normal / data.depth);
 
         const auto texture = (uniform.material.getPixelTextureColour(
-            glm::floor(data.texturePoint.x / data.depth),
-            glm::floor(data.texturePoint.y / data.depth)) * multiplier).asARGB();
+            glm::round(data.texturePoint.x / data.depth),
+            glm::round(data.texturePoint.y / data.depth)) * multiplier).asARGB();
 
         uniform.window.setPixelColour(x, y, texture);
     }
