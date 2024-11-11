@@ -43,8 +43,6 @@ private:
     Model() = default;
 
     explicit Model(const std::vector<ModelTriangle> &triangles, MaterialMap  materials);
-
-    static MaterialMap importMaterials(MaterialMap &materialMap, const std::string &path, const std::string &folderPath);
 };
 
 

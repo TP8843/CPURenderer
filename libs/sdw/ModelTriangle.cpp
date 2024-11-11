@@ -7,7 +7,7 @@ ModelTriangle::ModelTriangle(const glm::vec3& v0,
                              const glm::vec3& v2,
                              const glm::vec3& normal,
                              std::string material) :
-    vertices({{v0, v1, v2}}), texturePoints(), material(std::move(material)), normal(normal)
+    vertices({{v0, v1, v2}}), texturePoints(), vertexNormals(), material(std::move(material)), normal(normal), customNormals(false)
 {
 }
 
@@ -16,7 +16,17 @@ ModelTriangle::ModelTriangle(const glm::vec3& v0, const TexturePoint& t0,
                              const glm::vec3& v2, const TexturePoint& t2,
                              const glm::vec3& normal,
                              std::string material) :
-    vertices({{v0, v1, v2}}), texturePoints({t0, t1, t2}), material(std::move(material)), normal(normal)
+    vertices({{v0, v1, v2}}), texturePoints({t0, t1, t2}), vertexNormals(),
+material(std::move(material)), normal(normal), customNormals(false)
+{
+}
+
+ModelTriangle::ModelTriangle(const glm::vec3 &v0, const glm::vec3 &n0,
+    const glm::vec3 &v1, const glm::vec3 &n1,
+    const glm::vec3 &v2, const glm::vec3 &n2,
+    const glm::vec3 &normal, std::string material) :
+    vertices({{v0, v1, v2}}),
+    vertexNormals({n0, n1, n2}), material(std::move(material)), normal(normal), customNormals(true)
 {
 }
 
@@ -25,7 +35,7 @@ ModelTriangle::ModelTriangle(const glm::vec3& v0, const TexturePoint& t0, const 
                              const glm::vec3& v2, const TexturePoint& t2, const glm::vec3& n2,
                              const glm::vec3& normal, std::string material) :
     vertices({{v0, v1, v2}}), texturePoints({t0, t1, t2}),
-    material(std::move(material)), normal(normal), vertexNormals({n0, n1, n2})
+    vertexNormals({n0, n1, n2}), material(std::move(material)), normal(normal), customNormals(true)
 {
 }
 

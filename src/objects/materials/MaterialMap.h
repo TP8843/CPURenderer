@@ -1,7 +1,3 @@
-//
-// Created by Thomas Parr on 30/10/2024.
-//
-
 #ifndef MATERIALMAP_H
 #define MATERIALMAP_H
 #include <unordered_map>
@@ -11,10 +7,16 @@
 
 class MaterialMap {
 public:
-    void addMaterial(std::string name, Material material);
+    void addMaterial(const std::string& name, const Material& material);
     Material& getMaterial(const std::string& name);
 
     MaterialMap();
+
+    static constexpr float defaultShininess = 32.0f;
+    static std::string defaultName() { return "Backup"; }
+    static constexpr IlluminationModel defaultIlluminationModel = FLAT;
+
+    static MaterialMap import(MaterialMap& materialMap, const std::string& filePath, const std::string& folderPath);
 
 private:
     std::unordered_map<std::string, Material> materials;

@@ -138,8 +138,8 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
                     window.setPixelColour(i, window.height - j - 1,
                                           (material.getPixelTextureColour(
-                                              static_cast<int>(finalTexturePoint.x),
-                                              static_cast<int>(finalTexturePoint.y)) * colourMultiplier).asARGB());
+                                               static_cast<int>(finalTexturePoint.x),
+                                               static_cast<int>(finalTexturePoint.y)) * colourMultiplier).asARGB());
                 }
                 else
                 {

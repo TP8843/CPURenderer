@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 {
     auto renderLoop = RenderLoop();
 
-    auto model = Model::import("../models/textured-cornell-box.obj", 1.f);
+    auto model = Model::import("../models/sponza/sponza.obj", 0.1f);
     auto camera = Camera(glm::vec3(0, 0, 10),
                          glm::mat3(),
                          1,

@@ -13,7 +13,7 @@ public:
     Colour getColour() const;
     IlluminationModel getIlluminationModel() const;
     bool hasTexture() const;
-    Colour getPixelTextureColour(size_t x, size_t y) const;
+    Colour getPixelTextureColour(int x, int y) const;
     size_t getTextureWidth() const;
     size_t getTextureHeight() const;
 

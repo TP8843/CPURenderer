@@ -17,10 +17,13 @@ bool Material::hasTexture() const
     return hasTextureBool;
 }
 
-Colour Material::getPixelTextureColour(const size_t x, const size_t y) const
+Colour Material::getPixelTextureColour(const int x, const int y) const
 {
-    if (x >= textureWidth || y >= textureHeight)
+    if (x < 0 || x >= textureWidth || y < 0 || y >= textureHeight)
+    {
+        std::cout << "Texture out of bounds at (" << x << "," << y << ")" << std::endl;
         return {0, 0, 0};
+    }
 
     const int startingPosition = (textureWidth * y + x) * charsPerPixel;
 
