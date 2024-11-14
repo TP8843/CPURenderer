@@ -9,8 +9,7 @@ class Camera
 public:
     Camera(glm::vec3 position,
            const glm::mat3& rotation,
-           float focalLength,
-           float imagePlaneScaling);
+           float focalLength);
 
     // Get the rotation matrix for any normals
     glm::mat3 getNormalRotationMatrix() const;
@@ -48,7 +47,6 @@ public:
     glm::vec3 position;
     glm::mat3 rotation;
     float focalLength;
-    float imagePlaneScaling;
 
 private:
     // True if camera is orbiting

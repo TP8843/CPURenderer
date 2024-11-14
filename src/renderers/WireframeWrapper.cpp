@@ -4,7 +4,7 @@
 
 #include "WireframeWrapper.h"
 
-WireframeWrapper::WireframeWrapper(RasterRenderer2& renderer) :
+WireframeWrapper::WireframeWrapper(RasterRenderer& renderer) :
     renderer(renderer)
 {}
 

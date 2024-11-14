@@ -6,11 +6,8 @@
 #include "./helper/Draw.h"
 #include "helper/constants.h"
 
-#define WIDTH 640
-#define HEIGHT 480
-
-RenderLoop::RenderLoop()
-    : window(DrawingWindow(WIDTH, HEIGHT, false)),
+RenderLoop::RenderLoop(const int width, const int height)
+    : window(DrawingWindow(width, height, false)),
       currentTest(0),
       tests(std::vector<RenderTest*>())
 {

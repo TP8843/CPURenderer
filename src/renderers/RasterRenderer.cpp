@@ -1,14 +1,12 @@
 #include "RasterRenderer.h"
 
-#include <CanvasTriangle.h>
-
+#include "../objects/Camera.h"
 #include "../helper/Draw.h"
-#include "../helper/Interpolation.h"
+#include "../shaders/FragmentShaders.h"
+#include "../shaders/FragmentData.h"
 
-RasterRenderer::RasterRenderer(Model& model,
-                               Camera& camera)
-    : model(model),
-      camera(camera)
+RasterRenderer::RasterRenderer(Model& model, Camera& camera, Light& light) :
+    model(model), camera(camera), light(light)
 {
 }
 
@@ -18,7 +16,7 @@ void RasterRenderer::pointCloudRender(DrawingWindow& window) const
     {
         for (const auto vertex : triangle.vertices)
         {
-            const auto mappedVertex = projectVertexOntoCanvasPoint(window, vertex);
+            const auto mappedVertex = projectVertexOntoCanvasPoint(vertex, window.width, window.height);
 
             window.setPixelColour(static_cast<int>(mappedVertex.x), static_cast<int>(mappedVertex.y), 0xFFFFFFFF);
         }
@@ -27,44 +25,81 @@ void RasterRenderer::pointCloudRender(DrawingWindow& window) const
 
 void RasterRenderer::wireframeRender(DrawingWindow& window) const
 {
-    for (const auto& triangle : model.triangles)
+    for (const auto& triangle : model.getRasterPreparedTriangles(camera))
     {
         auto mappedVertices = std::vector<CanvasPoint>();
 
         for (const auto vertex : triangle.vertices)
         {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex));
+            mappedVertices.push_back(projectVertexOntoCanvasPoint(vertex, window.width, window.height));
         }
 
-        Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2], Colour(255, 255, 255)));
+        Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2],
+                                                         Colour(255, 255, 255)));
     }
 }
 
 void RasterRenderer::rasterRender(DrawingWindow& window) const
 {
-    auto** depthBuffer = new float*[window.height];
+    std::vector<ModelTriangle> clippedTriangles = model.getRasterPreparedTriangles(camera);
 
-    for (size_t y = 0; y < window.height; y++)
+    // Pre pass to pre calculate depth values to avoid multiple shader calls per pixel.
+    auto** depthBuffer = generateDepthBuffer(clippedTriangles, window.width, window.height);
+
+    for (const auto& triangle : clippedTriangles)
     {
-        depthBuffer[y] = new float[window.width];
-        for (size_t x = 0; x < window.width; x++)
+        Material& material = model.materials.getMaterial(triangle.material);
+
+        CanvasPoint v0 = projectVertexOntoCanvasPoint(triangle.vertices[0], window.width, window.height);
+        CanvasPoint v1 = projectVertexOntoCanvasPoint(triangle.vertices[1], window.width, window.height);
+        CanvasPoint v2 = projectVertexOntoCanvasPoint(triangle.vertices[2], window.width, window.height);
+
+        // Placeholder colour to allow original raster to work
+        const auto canvasTriangle = CanvasTriangle(v0, v1, v2, Colour());
+        const auto uniform = FragmentData::DataUniform(window, depthBuffer, material, camera, light, triangle.normal);
+
+        if (!material.hasTexture())
         {
-            depthBuffer[y][x] = 0.0f;
+            FragmentData::FilledData d0 = {glm::vec3(1.0f, 0.0f, 0.0f),
+                v0.depth,
+                triangle.vertices.at(0) * v0.depth,
+                triangle.vertexNormals.at(0) * v0.depth};
+
+            FragmentData::FilledData d1 = {glm::vec3(0.0f, 1.0f, 0.0f),
+                v1.depth,
+                triangle.vertices.at(1) * v1.depth,
+            triangle.vertexNormals.at(1) * v1.depth};
+
+            FragmentData::FilledData d2 = {glm::vec3(0.0f, 0.0f, 1.0f),
+                v2.depth,
+                triangle.vertices.at(2) * v2.depth,
+            triangle.vertexNormals.at(2) * v2.depth};
+
+            std::array<FragmentData::FilledData, 3> data = {d0, d1, d2};
+
+            drawTriangle<FragmentData::DataUniform, FragmentData::FilledData>(
+                canvasTriangle, uniform, data, FragmentShaders::filledPhong);
         }
-    }
-
-    for (const auto& triangle : model.triangles)
-    {
-        auto mappedVertices = std::vector<CanvasPoint>();
-
-        for (const auto vertex : triangle.vertices)
+        else
         {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(window, vertex));
-        }
+            FragmentData::TextureData d1 = {
+                triangle.texturePoints[0] * v0.depth, glm::vec3(1.0f, 0.0f, 0.0f), v0.depth,
+                triangle.vertices[0] * v0.depth, triangle.vertexNormals.at(0) * v0.depth
+            };
+            FragmentData::TextureData d2 = {
+                triangle.texturePoints[1] * v1.depth, glm::vec3(0.0f, 1.0f, 0.0f), v1.depth,
+                triangle.vertices[1] * v1.depth, triangle.vertexNormals.at(1) * v1.depth
+            };
+            FragmentData::TextureData d3 = {
+                triangle.texturePoints[2] * v2.depth, glm::vec3(0.0f, 0.0f, 1.0f), v2.depth,
+                triangle.vertices[2] * v2.depth, triangle.vertexNormals.at(2) * v2.depth
+            };
 
-        drawDepthAwareFilledTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2],
-                                                            model.materials.getMaterial(triangle.material).getColour()),
-                                     depthBuffer);
+            std::array<FragmentData::TextureData, 3> data = {d1, d2, d3};
+
+            drawTriangle<FragmentData::DataUniform, FragmentData::TextureData>(
+                canvasTriangle, uniform, data, FragmentShaders::materialPhong);
+        }
     }
 
     for (size_t y = 0; y < window.height; y++)
@@ -74,80 +109,70 @@ void RasterRenderer::rasterRender(DrawingWindow& window) const
     delete[] depthBuffer;
 }
 
-CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(const DrawingWindow& window, const glm::vec3 vertexPosition) const
+float** RasterRenderer::generateDepthBuffer(const std::vector<ModelTriangle>& triangles, const size_t width, const size_t height) const
 {
-    // Map model space to camera space
-    glm::vec3 cameraVertexPosition = vertexPosition - camera.position;
+    auto** depthBuffer = new float*[height];
 
-    cameraVertexPosition = cameraVertexPosition * camera.rotation;
-    float u = 0;
-    float v = 0;
-
-    float depth = 0;
-
-    if (cameraVertexPosition.z != 0)
+    for (size_t y = 0; y < height; y++)
     {
-        u = camera.imagePlaneScaling * camera.focalLength * (-cameraVertexPosition.x / cameraVertexPosition.z)
-            + (static_cast<float>(window.width) / 2);
-
-        v = camera.imagePlaneScaling * camera.focalLength * (cameraVertexPosition.y / cameraVertexPosition.z)
-            + (static_cast<float>(window.height) / 2);
-
-        // Negative due to positive z out the screen
-        depth = -1.0f / cameraVertexPosition.z;
+        depthBuffer[y] = new float[width];
+        for (size_t x = 0; x < width; x++)
+        {
+            depthBuffer[y][x] = 0.0f;
+        }
     }
 
+    const auto prePassUniform = FragmentData::PrePassUniform(depthBuffer, width, height);
+    const auto placeholderColour = Colour();
 
-    return {u, v, depth};
+    // Pre pass to get final closest depths using a much faster shader
+    for (const auto& triangle : triangles)
+    {
+        const auto canvasTriangle = CanvasTriangle(
+            projectVertexOntoCanvasPoint(triangle.vertices[0], width, height),
+            projectVertexOntoCanvasPoint(triangle.vertices[1], width, height),
+            projectVertexOntoCanvasPoint(triangle.vertices[2], width, height),
+            placeholderColour
+        );
+
+        const std::array<FragmentData::PrePassData, 3> data = {
+            FragmentData::PrePassData(canvasTriangle.vertices[0].depth),
+            FragmentData::PrePassData(canvasTriangle.vertices[1].depth),
+            FragmentData::PrePassData(canvasTriangle.vertices[2].depth)
+        };
+
+        drawTriangle<FragmentData::PrePassUniform, FragmentData::PrePassData>(
+            canvasTriangle, prePassUniform, data, FragmentShaders::prePass);
+    }
+
+    return depthBuffer;
 }
 
-void RasterRenderer::drawDepthAwareFilledTriangle(DrawingWindow& window, const CanvasTriangle& triangle,
-                                                  float** depthBuffer)
+glm::vec3 RasterRenderer::applyCameraTransformation(const glm::vec3 vertex) const
 {
-    const auto colourValue = (255 << 24) + (triangle.colour.red << 16) + (triangle.colour.green << 8) + triangle.colour.blue;
-    auto vertices = std::array<CanvasPoint, 3>(triangle.vertices);
+    // Map model space to camera space
+    glm::vec3 cameraVertexPosition = vertex - camera.position;
 
-    // Sort triangle based on y value
-    if (vertices[0].y > vertices[1].y) std::swap(vertices[0], vertices[1]);
-    if (vertices[1].y > vertices[2].y) std::swap(vertices[1], vertices[2]);
-    if (vertices[0].y > vertices[1].y) std::swap(vertices[0], vertices[1]);
+    cameraVertexPosition = cameraVertexPosition * camera.rotation;
 
-    int startVertex = 0;
+    return cameraVertexPosition;
+}
 
-    for (int y = static_cast<int>(glm::floor(vertices[0].y)); y <= static_cast<int>(glm::floor(vertices[2].y)); y++)
+CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(const glm::vec3 vertex, const size_t width,
+                                                          const size_t height) const
+{
+    float u = 0;
+    float v = 0;
+    float depth = 0;
+
+    if (vertex.z != 0)
     {
-        const float rowStartProportion = Interpolation::proportion(vertices[startVertex].y, vertices[startVertex + 1].y,
-                                                                   static_cast<float>(y), 0);
-        float rowStartX = Interpolation::interpolate(vertices[startVertex].x, vertices[startVertex + 1].x,
-                                                                rowStartProportion);
-        float rowStartZ = Interpolation::interpolate(vertices[startVertex].depth,
-                                                                vertices[startVertex + 1].depth, rowStartProportion);
+        u = height * camera.focalLength * (-vertex.x / vertex.z) + (static_cast<float>(width) / 2);
+        v = height * camera.focalLength * (vertex.y / vertex.z) + (static_cast<float>(height) / 2);
 
-        const float rowEndProportion = Interpolation::proportion(vertices[0].y, vertices[2].y, static_cast<float>(y), 1);
-        float rowEndX = Interpolation::interpolate(vertices[0].x, vertices[2].x, rowEndProportion);
-        float rowEndZ = Interpolation::interpolate(vertices[0].depth, vertices[2].depth, rowEndProportion);
-
-        if (rowStartX > rowEndX)
-        {
-            std::swap(rowStartX, rowEndX);
-            std::swap(rowStartZ, rowEndZ);
-        }
-
-        for (int x = static_cast<int>(glm::ceil(rowStartX)); x < static_cast<int>(glm::ceil(rowEndX)); x++)
-        {
-            const float proportion = Interpolation::proportion(rowStartX, rowEndX, static_cast<float>(x), 0);
-            const float zInv = Interpolation::interpolate(rowStartZ, rowEndZ, proportion);
-
-            if (zInv > 0 && zInv < 0.7 &&
-                x >= 0 && x < static_cast<int>(window.width) &&
-                y >= 0 && y < static_cast<int>(window.height) &&
-                zInv > depthBuffer[y][x])
-            {
-                depthBuffer[y][x] = zInv;
-                window.setPixelColour(x, y, colourValue);
-            }
-        }
-
-        if (y == static_cast<int>(vertices[1].y)) startVertex++;
+        // Negative due to positive z out the screen
+        depth = -1.0f / vertex.z;
     }
+
+    return {u, v, depth};
 }

@@ -1,6 +1,6 @@
 #ifndef WIREFRAMEWRAPPER_H
 #define WIREFRAMEWRAPPER_H
-#include "RasterRenderer2.h"
+#include "RasterRenderer.h"
 #include "RendererWrapper.h"
 
 
@@ -12,10 +12,10 @@ public:
 
     void renderFrame(DrawingWindow& window) override;
 
-    explicit WireframeWrapper(RasterRenderer2& renderer);
+    explicit WireframeWrapper(RasterRenderer& renderer);
 
 private:
-    RasterRenderer2& renderer;
+    RasterRenderer& renderer;
 };
 
 

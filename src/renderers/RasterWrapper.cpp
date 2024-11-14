@@ -1,6 +1,6 @@
 #include "RasterWrapper.h"
 
-RasterWrapper::RasterWrapper(RasterRenderer2& renderer) :
+RasterWrapper::RasterWrapper(RasterRenderer& renderer) :
     renderer(renderer)
 {}
 

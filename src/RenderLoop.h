@@ -8,7 +8,7 @@
 
 class RenderLoop {
 public:
-    RenderLoop();
+    RenderLoop(int width, int height);
     void run();
     void addTest(RenderTest *test);
 

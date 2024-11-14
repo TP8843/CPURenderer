@@ -4,12 +4,10 @@
 
 Camera::Camera(const glm::vec3 position,
                const glm::mat3& rotation,
-               const float focalLength,
-               const float imagePlaneScaling)
+               const float focalLength)
     : position(position),
       rotation(rotation),
       focalLength(focalLength),
-      imagePlaneScaling(imagePlaneScaling),
       initialPosition(glm::vec3(position)),
       initialRotation(glm::mat3(rotation)),
       prevTime(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()))

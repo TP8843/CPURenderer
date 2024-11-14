@@ -46,8 +46,6 @@ add_executable(RedNoise
         src/tests/InteractiveTest.h
         src/tests/DrawTests.cpp
         src/tests/DrawTests.h
-        src/renderers/RasterRenderer.cpp
-        src/renderers/RasterRenderer.h
         src/tests/RenderTest.h
         src/RenderLoop.cpp
         src/RenderLoop.h
@@ -60,8 +58,8 @@ add_executable(RedNoise
         src/shaders/FragmentData.h
         src/shaders/FragmentShaders.cpp
         src/shaders/FragmentShaders.h
-        src/renderers/RasterRenderer2.cpp
-        src/renderers/RasterRenderer2.h
+        src/renderers/RasterRenderer.cpp
+        src/renderers/RasterRenderer.h
         src/objects/materials/Material.cpp
         src/objects/materials/Material.h
         src/renderers/Raytracer.cpp

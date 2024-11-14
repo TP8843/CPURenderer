@@ -48,8 +48,6 @@ public:
     glm::mat3 rotation = glm::mat3(1);
 
 private:
-    Model() = default;
-
     explicit Model(const std::vector<ModelTriangle>& triangles,
                    MaterialMap materials,
                    Transformation& transformation);

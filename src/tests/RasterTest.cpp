@@ -1,7 +1,7 @@
 #include "RasterTest.h"
 
 #include "../helper/constants.h"
-#include "../renderers/RasterRenderer2.h"
+#include "../renderers/RasterRenderer.h"
 
 using namespace constants;
 

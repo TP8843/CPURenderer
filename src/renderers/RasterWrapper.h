@@ -4,7 +4,7 @@
 
 #ifndef RASTERWRAPPER_H
 #define RASTERWRAPPER_H
-#include "RasterRenderer2.h"
+#include "RasterRenderer.h"
 #include "RendererWrapper.h"
 
 
@@ -16,10 +16,10 @@ public:
 
     void renderFrame(DrawingWindow& window) override;
 
-    explicit RasterWrapper(RasterRenderer2& renderer);
+    explicit RasterWrapper(RasterRenderer& renderer);
 
 private:
-    RasterRenderer2& renderer;
+    RasterRenderer& renderer;
 };
 
 

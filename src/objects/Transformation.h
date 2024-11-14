@@ -20,13 +20,23 @@ struct Transformation {
     // Reset position to initial state
     void reset();
 
+    // Look at location
+    void lookAt(glm::vec3 location);
+
     // Translate relative to world
     void translateAbsolute(const glm::vec3& translation);
 
     // Translate relative to current rotation
     void translateRelative(const glm::vec3& translation);
 
-    // Rotation operations
+    // Rotate camera relative to scene using rotation matrix
+    void rotate(const glm::mat3& newRotation);
+
+    // Rotate around x-axis by given angle (radians)
+    void rotateX(float angle);
+
+    // Rotate around y-axis by given angle (radians)
+    void rotateY(float angle);
 
     Transformation operator+(const Transformation &other) const;
     Transformation operator-(const Transformation &other) const;

@@ -6,7 +6,7 @@
 #define RASTERTEST_H
 
 #include "RenderTest.h"
-#include "../renderers/RasterRenderer2.h"
+#include "../renderers/RasterRenderer.h"
 #include "../renderers/RendererWrapper.h"
 
 class RasterTest final : public RenderTest
