@@ -25,7 +25,7 @@ void RasterRenderer2::pointCloudRender(DrawingWindow& window) const
 
 void RasterRenderer2::wireframeRender(DrawingWindow& window) const
 {
-    for (const auto& triangle : model.getPreparedTriangles(camera))
+    for (const auto& triangle : model.getRasterPreparedTriangles(camera))
     {
         auto mappedVertices = std::vector<CanvasPoint>();
 
@@ -41,7 +41,7 @@ void RasterRenderer2::wireframeRender(DrawingWindow& window) const
 
 void RasterRenderer2::rasterRender(DrawingWindow& window) const
 {
-    std::vector<ModelTriangle> clippedTriangles = model.getPreparedTriangles(camera);
+    std::vector<ModelTriangle> clippedTriangles = model.getRasterPreparedTriangles(camera);
 
     // Pre pass to pre calculate depth values to avoid multiple shader calls per pixel.
     auto** depthBuffer = generateDepthBuffer(clippedTriangles, window.width, window.height);

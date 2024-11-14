@@ -67,6 +67,8 @@ void Raytracer::renderFrame(DrawingWindow& window) const
     bool hasPreviousLightIntersection = false;
     int previousLightIntersection;
 
+    auto transformedTriangles = model.getTransformedTriangles();
+
     for (size_t j = 0; j < window.height; j++)
     {
         for (size_t i = 0; i < window.width; i++)
@@ -78,12 +80,10 @@ void Raytracer::renderFrame(DrawingWindow& window) const
             ));
 
             std::pair<bool, RayTriangleIntersection> intersection =
-                getClosestIntersection(camera.position, camera.rotation * scenePosition, model.triangles);
+                getClosestIntersection(camera.position, camera.rotation * scenePosition, transformedTriangles);
 
             if (intersection.first)
             {
-                const auto lightDisplacement = intersection.second.intersectionPoint - light.position;
-
                 bool inShadow = false;
 
                 if (hasPreviousLightIntersection)
@@ -91,7 +91,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                     if (triangleIntersectsPoints(
                         intersection.second.intersectionPoint,
                         light.position,
-                        model.triangles.at(previousLightIntersection)))
+                        transformedTriangles.at(previousLightIntersection)))
                     {
                         inShadow = true;
                     }
@@ -103,17 +103,8 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
                 if (!hasPreviousLightIntersection)
                 {
-                    // std::pair<bool, RayTriangleIntersection> closestToLight = getClosestIntersection(
-                    //     light.position,
-                    //     glm::normalize(lightDisplacement),
-                    //     model.triangles);
-                    //
-                    // inShadow = closestToLight.first
-                    //     && glm::length(lightDisplacement) - closestToLight.second.distanceFromCamera > 0.00000000000002f
-                    //     && closestToLight.second.triangleIndex != intersection.second.triangleIndex;
-
                     auto lightIntersection=
-                        trianglesIntersectsPoints(intersection.second.intersectionPoint, light.position, intersection.second.triangleIndex, model.triangles);
+                        trianglesIntersectsPoints(intersection.second.intersectionPoint, light.position, intersection.second.triangleIndex, transformedTriangles);
 
                     inShadow = lightIntersection.first;
 

@@ -10,21 +10,18 @@
 #include "../helper/StringHelpers.h"
 #include "./materials/MaterialMap.h"
 
-Model::Model(const std::vector<ModelTriangle> &triangles, MaterialMap materials) : materials(std::move(materials)),
-    triangles(triangles) {
+Model::Model(const std::vector<ModelTriangle> &triangles, MaterialMap materials, Transformation& transformation) :
+    materials(std::move(materials)),
+    triangles(triangles),
+    transformation(transformation)
+{
 }
 
-Model Model::import(const char *objectPath, const float scale) {
+Model Model::import(const char *objectPath, Transformation& transformation) {
     std::string text;
     std::ifstream ObjectFile(objectPath);
 
     auto pathString = std::string(objectPath);
-
-    // const auto lastSlashPos = pathString.find_last_of("/\\");
-    // std::string parentPath = (std::string::npos == lastSlashPos)
-    //                              ? ""
-    //                              : pathString.substr(0, lastSlashPos);
-
     const std::string parentPath = StringHelpers::getFolderPath(pathString);
 
     MaterialMap materialMap = MaterialMap();
@@ -58,9 +55,9 @@ Model Model::import(const char *objectPath, const float scale) {
         // Vertex
         if (tokens.at(0) == "v") {
             const auto v = glm::vec3(
-                scale * std::stof(tokens.at(1)),
-                scale * std::stof(tokens.at(2)),
-                scale * std::stof(tokens.at(3)));
+                std::stof(tokens.at(1)),
+                std::stof(tokens.at(2)),
+                std::stof(tokens.at(3)));
 
             vertices.emplace_back(v);
 
@@ -210,10 +207,34 @@ Model Model::import(const char *objectPath, const float scale) {
         materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 32.0f));
     }
 
-    return Model(triangles, materialMap);
+    return Model(triangles, materialMap, transformation);
 }
 
-std::vector<ModelTriangle> Model::transformTriangles(const Camera &camera, std::vector<ModelTriangle> triangles) {
+std::vector<ModelTriangle> Model::getTransformedTriangles() const
+{
+    auto newTriangles = std::vector<ModelTriangle>();
+    const glm::mat3 normalRotation = transformation.getNormalRotationMatrix();
+
+    for (const ModelTriangle &triangle : triangles)
+    {
+        newTriangles.emplace_back(
+            transformation.transformPoint(triangle.vertices[0]),
+            triangle.texturePoints[0],
+            triangle.vertexNormals[0] * normalRotation,
+            transformation.transformPoint(triangle.vertices[1]),
+            triangle.texturePoints[1],
+            triangle.vertexNormals[1] * normalRotation,
+            transformation.transformPoint(triangle.vertices[2]),
+            triangle.texturePoints[2],
+            triangle.vertexNormals[2] * normalRotation,
+            triangle.normal * normalRotation,
+            triangle.material);
+    }
+
+    return newTriangles;
+}
+
+std::vector<ModelTriangle> Model::mapToCameraSpace(const Camera &camera, std::vector<ModelTriangle> triangles) {
     auto newTriangles = std::vector<ModelTriangle>();
     const glm::mat3 normalRotation = camera.getNormalRotationMatrix();
 
@@ -341,6 +362,6 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
     return filteredTriangles;
 }
 
-std::vector<ModelTriangle> Model::getPreparedTriangles(const Camera &camera) const {
-    return clipTriangles(transformTriangles(camera, triangles));
+std::vector<ModelTriangle> Model::getRasterPreparedTriangles(const Camera &camera) const {
+    return clipTriangles(mapToCameraSpace(camera, getTransformedTriangles()));
 }

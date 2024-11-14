@@ -13,7 +13,10 @@ int main(int argc, char* argv[])
 {
     auto renderLoop = RenderLoop();
 
-    auto model = Model::import("../models/textured-cornell-box.obj", 1.f);
+    auto transformation = Transformation();
+    transformation.scale = 1.f;
+    transformation.position = glm::vec3(0, 2, 0);
+    auto model = Model::import("../models/textured-cornell-box.obj", transformation);
     auto camera = Camera(glm::vec3(0, 0, 10),
                          glm::mat3(),
                          1,
