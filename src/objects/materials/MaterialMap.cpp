@@ -1,5 +1,7 @@
 #include "MaterialMap.h"
 
+#include "../../helper/StringHelpers.h"
+
 void MaterialMap::addMaterial(const std::string& name, const Material& material)
 {
     materials.emplace(name, material);
@@ -14,9 +16,9 @@ MaterialMap::MaterialMap() :
     materials(std::unordered_map<std::string, Material>())
 {}
 
-MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &filePath, const std::string &folderPath)
+MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &folderPath, const std::string &file)
 {
-    std::ifstream MaterialFile(filePath);
+    std::ifstream MaterialFile(StringHelpers::concatFolderFile(folderPath, file));
     std::string line;
     std::string currentMaterialName = defaultName();
 
@@ -31,9 +33,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fil
     float shininess = defaultShininess;
 
     while (getline(MaterialFile, line)) {
-        // Remove Windows carriage return. From https://stackoverflow.com/questions/2528995/remove-r-from-a-string-in-c
-        if (!line.empty() && line[line.size() - 1] == '\r')
-            line.erase(line.size() - 1);
+        line = StringHelpers::trimLine(line);
 
         const auto tokens = split(line, ' ');
 
@@ -43,11 +43,11 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fil
                 if (hasTexture && hasColour) {
                     materialMap.addMaterial(currentMaterialName,
                                             Material(currentColour, illuminationModel, shininess,
-                                                     folderPath + currentTextureFilename));
+                                                     StringHelpers::concatFolderFile(folderPath, currentTextureFilename)));
                 } else if (hasTexture) {
                     materialMap.addMaterial(currentMaterialName,
                                             Material(Colour(255, 255, 255), illuminationModel, shininess,
-                                                     folderPath + currentTextureFilename));
+                                                     StringHelpers::concatFolderFile(folderPath, currentTextureFilename)));
                 } else if (hasColour) {
                     materialMap.addMaterial(currentMaterialName,
                                             Material(currentColour, illuminationModel, shininess));
@@ -86,9 +86,6 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fil
             materialToStore = true;
 
             currentTextureFilename = tokens.at(1);
-
-            const auto &texturePath = tokens.at(1);
-
             hasTexture = true;
         }
 
@@ -107,11 +104,11 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fil
         if (hasTexture && hasColour) {
             materialMap.addMaterial(currentMaterialName,
                                     Material(currentColour, illuminationModel, shininess,
-                                             folderPath + currentTextureFilename));
+                                             StringHelpers::concatFolderFile(folderPath, currentTextureFilename)));
         } else if (hasTexture) {
             materialMap.addMaterial(currentMaterialName,
                                     Material(Colour(255, 255, 255), illuminationModel, shininess,
-                                             folderPath + currentTextureFilename));
+                                             StringHelpers::concatFolderFile(folderPath, currentTextureFilename)));
         } else if (hasColour) {
             materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, shininess));
         }

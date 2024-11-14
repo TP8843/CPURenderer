@@ -7,6 +7,7 @@
 #include "Model.h"
 #include "../helper/Draw.h"
 #include "../helper/Interpolation.h"
+#include "../helper/StringHelpers.h"
 #include "./materials/MaterialMap.h"
 
 Model::Model(const std::vector<ModelTriangle> &triangles, MaterialMap materials) : materials(std::move(materials)),
@@ -19,10 +20,12 @@ Model Model::import(const char *objectPath, const float scale) {
 
     auto pathString = std::string(objectPath);
 
-    const auto lastSlashPos = pathString.find_last_of("/\\");
-    std::string parentPath = (std::string::npos == lastSlashPos)
-                                 ? ""
-                                 : pathString.substr(0, lastSlashPos);
+    // const auto lastSlashPos = pathString.find_last_of("/\\");
+    // std::string parentPath = (std::string::npos == lastSlashPos)
+    //                              ? ""
+    //                              : pathString.substr(0, lastSlashPos);
+
+    const std::string parentPath = StringHelpers::getFolderPath(pathString);
 
     MaterialMap materialMap = MaterialMap();
     std::string currentMaterial = "Backup";
@@ -41,24 +44,14 @@ Model Model::import(const char *objectPath, const float scale) {
     std::vector<ModelTriangle> triangles;
 
     while (getline(ObjectFile, text)) {
-        // Remove Windows carriage return. From https://stackoverflow.com/questions/2528995/remove-r-from-a-string-in-c
-        if (!text.empty() && text[text.size() - 1] == '\r')
-            text.erase(text.size() - 1);
+        text = StringHelpers::trimLine(text);
 
         // Split on all spaces
         const auto tokens = split(text, ' ');
 
         // Import materials
         if (tokens.at(0) == "mtllib") {
-#ifdef OS_Windows
-            const auto pathSeparator = "\\"
-#else
-            const auto pathSeparator = "/";
-#endif
-
-            std::cout << parentPath + tokens[1] << std::endl;
-            materialMap = MaterialMap::import(materialMap, parentPath + pathSeparator + tokens[1],
-                                          parentPath + pathSeparator);
+            materialMap = MaterialMap::import(materialMap, parentPath, tokens.at(1));
             loadedMaterialFile = true;
         }
 

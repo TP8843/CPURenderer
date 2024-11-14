@@ -84,6 +84,8 @@ add_executable(RedNoise
         src/objects/Transformation.h
         libs/stb_image.h
         src/objects/materials/Material.cpp
+        src/helper/StringHelpers.cpp
+        src/helper/StringHelpers.h
 )
 
 if (MSVC)
