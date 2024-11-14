@@ -26,6 +26,8 @@ public:
 
 private:
     static bool triangleIntersectsPoints(glm::vec3 point, glm::vec3 light, ModelTriangle triangle);
+
+    static std::pair<bool, int> trianglesIntersectsPoints(glm::vec3 point, glm::vec3 light, int currentTriangleIndex, std::vector<ModelTriangle>& triangles);
 };
 
 

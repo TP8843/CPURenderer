@@ -65,7 +65,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
     const auto height = static_cast<float>(window.height);
 
     bool hasPreviousLightIntersection = false;
-    ModelTriangle previousLightIntersection;
+    int previousLightIntersection;
 
     for (size_t j = 0; j < window.height; j++)
     {
@@ -91,7 +91,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                     if (triangleIntersectsPoints(
                         intersection.second.intersectionPoint,
                         light.position,
-                        previousLightIntersection))
+                        model.triangles.at(previousLightIntersection)))
                     {
                         inShadow = true;
                     }
@@ -103,19 +103,24 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
                 if (!hasPreviousLightIntersection)
                 {
-                    std::pair<bool, RayTriangleIntersection> closestToLight = getClosestIntersection(
-                        light.position,
-                        glm::normalize(lightDisplacement),
-                        model.triangles);
+                    // std::pair<bool, RayTriangleIntersection> closestToLight = getClosestIntersection(
+                    //     light.position,
+                    //     glm::normalize(lightDisplacement),
+                    //     model.triangles);
+                    //
+                    // inShadow = closestToLight.first
+                    //     && glm::length(lightDisplacement) - closestToLight.second.distanceFromCamera > 0.00000000000002f
+                    //     && closestToLight.second.triangleIndex != intersection.second.triangleIndex;
 
-                    inShadow = closestToLight.first
-                        && glm::length(lightDisplacement) - closestToLight.second.distanceFromCamera > 0.00000000000002f
-                        && closestToLight.second.triangleIndex != intersection.second.triangleIndex;
+                    auto lightIntersection=
+                        trianglesIntersectsPoints(intersection.second.intersectionPoint, light.position, intersection.second.triangleIndex, model.triangles);
+
+                    inShadow = lightIntersection.first;
 
                     if (inShadow)
                     {
                         hasPreviousLightIntersection = true;
-                        previousLightIntersection = closestToLight.second.intersectedTriangle;
+                        previousLightIntersection = lightIntersection.second;
                     }
                 }
 
@@ -179,4 +184,35 @@ bool Raytracer::triangleIntersectsPoints(glm::vec3 point, glm::vec3 light, Model
     }
 
     return false;
+}
+
+std::pair<bool, int> Raytracer::trianglesIntersectsPoints(glm::vec3 point, glm::vec3 light,
+    const int currentTriangleIndex,
+    std::vector<ModelTriangle>& triangles)
+{
+    glm::vec3 ray = light - point;
+    float rayDistance = glm::length(ray);
+
+    for (int i = 0; i < triangles.size(); i++)
+    {
+        ModelTriangle& triangle = triangles.at(i);
+
+        glm::vec3 e0 = triangle.vertices[1] - triangle.vertices[0];
+        glm::vec3 e1 = triangle.vertices[2] - triangle.vertices[0];
+        glm::vec3 SPVector = point - triangle.vertices[0];
+        glm::mat3 DEMatrix(-glm::normalize(ray), e0, e1);
+        glm::vec3 possibleSolution = glm::inverse(DEMatrix) * SPVector;
+
+        if ((possibleSolution.y >= 0.0 && possibleSolution.y <= 1.0) &&
+            (possibleSolution.z >= 0.0 && possibleSolution.z <= 1.0) &&
+            (possibleSolution.y + possibleSolution.z <= 1.0) &&
+            (possibleSolution.x >= 0.01) &&
+            rayDistance > possibleSolution.x &&
+            currentTriangleIndex != i)
+        {
+            return std::make_pair(true, i);
+        }
+    }
+
+    return std::make_pair(false, -1);
 }
