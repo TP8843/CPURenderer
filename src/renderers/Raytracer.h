@@ -16,7 +16,7 @@ public:
 
     static std::pair<bool, RayTriangleIntersection> getClosestIntersection(glm::vec3 camera,
                                                                            glm::vec3 rayDirection,
-                                                                           std::vector<ModelTriangle> triangles);
+                                                                           std::vector<ModelTriangle>& triangles);
 
     void renderFrame(DrawingWindow &window) const;
 

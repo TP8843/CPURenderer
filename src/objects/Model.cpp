@@ -189,14 +189,11 @@ Model Model::import(const char *objectPath, const float scale) {
         }
     }
 
-    std::cout << "tranglevertex index" << triangleVertexIndices.size() << std::endl;
-
     // Add vertex normals to all triangles that don't have custom normals
     for (int i = 0; i < triangleVertexIndices.size(); i++)
     {
-        if (!triangles[i].customNormals)
+        if (!triangles.at(i).customNormals)
         {
-            std::cout << "Reaching unreachable code :0 " << i << std::endl;
             const std::vector<int> &vertexIndices = triangleVertexIndices.at(i);
 
             for (int j = 0; j < vertexIndices.size(); j++)

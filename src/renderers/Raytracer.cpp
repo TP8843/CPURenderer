@@ -10,10 +10,14 @@ Raytracer::Raytracer(Model& model, Camera& camera, Light& light) :
 
 std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::vec3 camera,
                                                                            glm::vec3 rayDirection,
-                                                                           std::vector<ModelTriangle> triangles)
+                                                                           std::vector<ModelTriangle>& triangles)
 {
     auto closestIntersection =
         std::pair<bool, RayTriangleIntersection>(false, RayTriangleIntersection());
+
+    bool hasIntersection = false;
+    glm::vec3 closestSolution;
+    int closestIndex = -1;
 
     for (size_t i = 0; i < triangles.size(); i++)
     {
@@ -29,26 +33,30 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::
             (possibleSolution.z >= 0.0 && possibleSolution.z <= 1.0) &&
             (possibleSolution.y + possibleSolution.z <= 1.0) &&
             (possibleSolution.x >= 0) &&
-            (possibleSolution.x < closestIntersection.second.distanceFromCamera || !closestIntersection.first))
+            (possibleSolution.x < closestSolution.x || !hasIntersection))
         {
-            closestIntersection.first = true;
-            // glm::vec3 position = rayDirection * possibleSolution.x;
-
-            glm::vec3 position = triangle.vertices[0]
-                + (triangle.vertices[1] - triangle.vertices[0]) * possibleSolution.y
-                + (triangle.vertices[2] - triangle.vertices[0]) * possibleSolution.z;
-
-            closestIntersection = std::pair<bool, RayTriangleIntersection>(true, RayTriangleIntersection(
-                                                                               position,
-                                                                               glm::vec2(possibleSolution.y,
-                                                                                   possibleSolution.z),
-                                                                               possibleSolution.x,
-                                                                               triangle,
-                                                                               i));
+            hasIntersection = true;
+            closestSolution = possibleSolution;
+            closestIndex = i;
         }
     }
 
-    return closestIntersection;
+    if (hasIntersection)
+    {
+        ModelTriangle& closestTriangle = triangles.at(closestIndex);
+        glm::vec3 position = closestTriangle.vertices[0]
+        + (closestTriangle.vertices[1] - closestTriangle.vertices[0]) * closestSolution.y
+        + (closestTriangle.vertices[2] - closestTriangle.vertices[0]) * closestSolution.z;
+
+        return std::pair<bool, RayTriangleIntersection>(true, RayTriangleIntersection(
+            position,
+            glm::vec2(closestSolution.y, closestSolution.z),
+            closestSolution.x,
+            closestTriangle,
+            closestIndex));
+    }
+
+    return std::pair<bool, RayTriangleIntersection>(false, RayTriangleIntersection());
 }
 
 void Raytracer::renderFrame(DrawingWindow& window) const
@@ -101,7 +109,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                         model.triangles);
 
                     inShadow = closestToLight.first
-                        && closestToLight.second.distanceFromCamera - glm::length(lightDisplacement) < 0.00000002f
+                        && glm::length(lightDisplacement) - closestToLight.second.distanceFromCamera > 0.00000000000002f
                         && closestToLight.second.triangleIndex != intersection.second.triangleIndex;
 
                     if (inShadow)
