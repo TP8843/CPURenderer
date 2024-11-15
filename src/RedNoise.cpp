@@ -16,10 +16,24 @@
 
 int main(int argc, char* argv[])
 {
+    char* modelFile = "../models/textured-cornell-box.obj";
+    float scale = 1.0f;
+    if (argc > 1)
+    {
+        modelFile = argv[1];
+    }
+
+    if (argc > 2)
+    {
+        scale = std::stof(argv[2]);
+    }
+
+
     auto renderLoop = RenderLoop(WIDTH, HEIGHT);
 
     auto transformation = Transformation();
-    auto model = Model::import("../models/textured-cornell-box.obj", transformation);
+    transformation.scale = scale;
+    auto model = Model::import(modelFile, transformation);
 
     auto camera = Transformation(glm::vec3(0, 0, 10),
                          glm::mat3(),

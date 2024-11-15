@@ -40,7 +40,7 @@ void Transformation::translateAbsolute(const glm::vec3 &translation)
 
 void Transformation::translateRelative(const glm::vec3 &translation)
 {
-    position += rotation * translation;wda
+    position += rotation * translation;
 }
 
 void Transformation::rotate(const glm::mat3& newRotation)
