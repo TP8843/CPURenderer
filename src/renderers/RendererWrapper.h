@@ -9,9 +9,9 @@ public:
     virtual ~RendererWrapper() {}
 
     virtual void renderFrame(DrawingWindow &window) = 0;
-    virtual Camera& getCamera() = 0;
+    virtual Transformation& getCamera() = 0;
     virtual Model& getModel() = 0;
-    virtual Light& getLight() = 0;
+    virtual Transformation& getLight() = 0;
 };
 
 #endif //RENDERERWRAPPER_H

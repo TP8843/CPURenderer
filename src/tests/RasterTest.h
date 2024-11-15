@@ -6,12 +6,17 @@
 #define RASTERTEST_H
 
 #include "RenderTest.h"
+#include "../handlers/EventHandler.h"
+#include "../handlers/FrameHandler.h"
 #include "../renderers/RasterRenderer.h"
 #include "../renderers/RendererWrapper.h"
 
 class RasterTest final : public RenderTest
 {
 public:
+    std::vector<FrameHandler*> frameHandlers;
+    std::vector<EventHandler*> eventHandlers;
+
     RasterTest();
 
     void handleEvent(SDL_Event& event, DrawingWindow& window) override;
@@ -26,7 +31,8 @@ private:
 
     RendererWrapper* getCurrentRendererWrapper() const;
 
-    void processKeys();
+    // Update previous time and return time difference in seconds.
+    float updateDTime();
 };
 
 

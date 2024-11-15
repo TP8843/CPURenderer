@@ -1,5 +1,7 @@
 #include "Transformation.h"
 
+#include <iostream>
+
 Transformation::Transformation(const glm::vec3 &position, const glm::mat3 &rotation, const float &scale) :
     position(position), rotation(rotation), scale(scale),
     initialPosition(position), initialRotation(rotation), initialScale(scale)
@@ -38,7 +40,7 @@ void Transformation::translateAbsolute(const glm::vec3 &translation)
 
 void Transformation::translateRelative(const glm::vec3 &translation)
 {
-    position += rotation * translation;
+    position += rotation * translation;wda
 }
 
 void Transformation::rotate(const glm::mat3& newRotation)

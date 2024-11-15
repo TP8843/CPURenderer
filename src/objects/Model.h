@@ -30,13 +30,13 @@ public:
     std::vector<ModelTriangle> getTransformedTriangles() const;
 
     // Transforms all triangles into camera space
-    static std::vector<ModelTriangle> mapToCameraSpace(const Camera& camera, std::vector<ModelTriangle> triangles);
+    static std::vector<ModelTriangle> mapToCameraSpace(const Transformation& camera, std::vector<ModelTriangle> triangles);
 
     // Transforms to camera space and clips to view
     static std::vector<ModelTriangle> clipTriangles(std::vector<ModelTriangle> triangles);
 
     // Get clipped and transformed triangles for raster render
-    std::vector<ModelTriangle> getRasterPreparedTriangles(const Camera& camera) const;
+    std::vector<ModelTriangle> getRasterPreparedTriangles(const Transformation& camera) const;
 
     MaterialMap materials;
     std::vector<ModelTriangle> triangles;

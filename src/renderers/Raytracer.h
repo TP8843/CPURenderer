@@ -4,15 +4,13 @@
 #include <ModelTriangle.h>
 #include <RayTriangleIntersection.h>
 
-#include "../objects/Camera.h"
 #include "../objects/Model.h"
-#include "../objects/Light.h"
 
 
 class Raytracer
 {
 public:
-    Raytracer(Model& model, Camera& camera, Light& light);
+    Raytracer(Model& model, Transformation& camera, Transformation& light);
 
     static std::pair<bool, RayTriangleIntersection> getClosestIntersection(glm::vec3 camera,
                                                                            glm::vec3 rayDirection,
@@ -21,8 +19,8 @@ public:
     void renderFrame(DrawingWindow &window) const;
 
     Model& model;
-    Camera& camera;
-    Light& light;
+    Transformation& camera;
+    Transformation& light;
 
 private:
     static bool triangleIntersectsPoints(glm::vec3 point, glm::vec3 light, ModelTriangle triangle);

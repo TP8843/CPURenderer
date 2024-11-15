@@ -1,5 +1,6 @@
 #include "Material.h"
 #define STB_IMAGE_IMPLEMENTATION
+#include "../Transformation.h"
 #include "../../libs/stb_image.h"
 
 Colour Material::getColour() const
@@ -45,12 +46,12 @@ size_t Material::getTextureHeight() const
 }
 
 float Material::getColourAtPointInCameraSpace(
-    const Camera& camera,
-    const Light& light,
+    const Transformation& camera,
+    const Transformation& light,
     const glm::vec3& point,
     const glm::vec3& normal) const
 {
-    const auto lightDisplacement = point - light.getPositionInCameraSpace(camera);
+    const auto lightDisplacement = point - (light.position - camera.position) * camera.rotation;
     const auto normalisedLightDisplacement = glm::normalize(lightDisplacement);
 
     const auto reflectedDirection = normalisedLightDisplacement
@@ -70,7 +71,7 @@ float Material::getColourAtPointInCameraSpace(
                                       (1.0f + 1.0f * glm::pow(glm::length(lightDisplacement), 2.0f)), 0.0f, 1.0f);
     }
 
-    const float total = ambientIntensity + light.intensity * (diffuseIntensity + specularIntensity);
+    const float total = ambientIntensity + light.scale * (diffuseIntensity + specularIntensity);
 
     return glm::clamp(total / (1 + total), 0.0f, 1.0f);
 }

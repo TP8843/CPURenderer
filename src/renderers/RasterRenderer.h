@@ -4,24 +4,22 @@
 #include <CanvasTriangle.h>
 #include <DrawingWindow.h>
 
-#include "../objects/Camera.h"
 #include "../helper/Interpolation.h"
 #include "../objects/Model.h"
-#include "../objects/Light.h"
 
 // Electric Boogaloo
 class RasterRenderer
 {
 public:
-    RasterRenderer(Model& model, Camera& camera, Light& light);
+    RasterRenderer(Model& model, Transformation& camera, Transformation& light);
 
     void pointCloudRender(DrawingWindow& window) const;
     void wireframeRender(DrawingWindow& window) const;
     void rasterRender(DrawingWindow& window) const;
 
     Model& model;
-    Camera& camera;
-    Light& light;
+    Transformation& camera;
+    Transformation& light;
 
 private:
     float** generateDepthBuffer(const std::vector<ModelTriangle>& triangles, size_t width, size_t height) const;

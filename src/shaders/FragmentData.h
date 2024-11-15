@@ -7,6 +7,7 @@
 
 #include "../objects/materials/Material.h"
 #include "../objects/Light.h"
+#include "../objects/Transformation.h"
 
 namespace FragmentData
 {
@@ -78,15 +79,15 @@ namespace FragmentData
         DrawingWindow& window;
         float** depthBuffer;
         Material& material;
-        Camera& camera;
-        Light& light;
+        Transformation& camera;
+        Transformation& light;
         glm::vec3 normal;
 
         explicit DataUniform(DrawingWindow& window,
                              float** depthBuffer,
                              Material& material,
-                             Camera& camera,
-                             Light& light,
+                             Transformation& camera,
+                             Transformation& light,
                              const glm::vec3& normal);
     };
 

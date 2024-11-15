@@ -84,6 +84,12 @@ add_executable(RedNoise
         src/objects/materials/Material.cpp
         src/helper/StringHelpers.cpp
         src/helper/StringHelpers.h
+        src/handlers/CameraControl.cpp
+        src/handlers/CameraControl.h
+        src/handlers/OrbitHandler.cpp
+        src/handlers/OrbitHandler.h
+        src/handlers/FrameHandler.h
+        src/handlers/EventHandler.h
 )
 
 if (MSVC)

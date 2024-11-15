@@ -8,7 +8,7 @@ WireframeWrapper::WireframeWrapper(RasterRenderer& renderer) :
     renderer(renderer)
 {}
 
-Camera& WireframeWrapper::getCamera()
+Transformation& WireframeWrapper::getCamera()
 {
     return renderer.camera;
 }
@@ -18,9 +18,9 @@ Model& WireframeWrapper::getModel()
     return renderer.model;
 }
 
-Light& WireframeWrapper::getLight()
+Transformation& WireframeWrapper::getLight()
 {
-    auto light = Light(glm::vec3(0, 2, 0), 80.0f);
+    auto light = Transformation();
     return light;
 }
 

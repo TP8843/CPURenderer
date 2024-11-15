@@ -234,7 +234,7 @@ std::vector<ModelTriangle> Model::getTransformedTriangles() const
     return newTriangles;
 }
 
-std::vector<ModelTriangle> Model::mapToCameraSpace(const Camera &camera, std::vector<ModelTriangle> triangles) {
+std::vector<ModelTriangle> Model::mapToCameraSpace(const Transformation& camera, std::vector<ModelTriangle> triangles) {
     auto newTriangles = std::vector<ModelTriangle>();
     const glm::mat3 normalRotation = camera.getNormalRotationMatrix();
 
@@ -362,6 +362,6 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
     return filteredTriangles;
 }
 
-std::vector<ModelTriangle> Model::getRasterPreparedTriangles(const Camera &camera) const {
+std::vector<ModelTriangle> Model::getRasterPreparedTriangles(const Transformation& camera) const {
     return clipTriangles(mapToCameraSpace(camera, getTransformedTriangles()));
 }

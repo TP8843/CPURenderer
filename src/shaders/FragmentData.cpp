@@ -1,5 +1,7 @@
 #include "FragmentData.h"
 
+#include "../objects/Transformation.h"
+
 FragmentData::FilledData::FilledData(const glm::vec3 proportion,
                                      const float depth,
                                      const glm::vec3 position3D,
@@ -77,8 +79,8 @@ FragmentData::PrePassData FragmentData::PrePassData::operator-(const PrePassData
 FragmentData::DataUniform::DataUniform(DrawingWindow& window,
                                        float** depthBuffer,
                                        Material& material,
-                                       Camera& camera,
-                                       Light& light,
+                                       Transformation& camera,
+                                       Transformation& light,
                                        const glm::vec3& normal) :
     window(window),
     depthBuffer(depthBuffer),

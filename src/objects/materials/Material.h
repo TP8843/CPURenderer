@@ -7,6 +7,7 @@
 #include "IlluminationModel.h"
 #include "../Camera.h"
 #include "../Light.h"
+#include "../Transformation.h"
 
 class Material {
 public:
@@ -17,10 +18,10 @@ public:
     size_t getTextureWidth() const;
     size_t getTextureHeight() const;
 
-    float getColourAtPointInCameraSpace(const Camera& camera,
-                           const Light &light,
-                           const glm::vec3 &point,
-                           const glm::vec3 &normal) const;
+    float getColourAtPointInCameraSpace(const Transformation& camera,
+                                        const Transformation& light,
+                                        const glm::vec3& point,
+                                        const glm::vec3& normal) const;
 
     Material();
     Material(Colour colour, IlluminationModel illuminationModel, float specularStrength);

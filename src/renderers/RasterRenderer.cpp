@@ -5,7 +5,7 @@
 #include "../shaders/FragmentShaders.h"
 #include "../shaders/FragmentData.h"
 
-RasterRenderer::RasterRenderer(Model& model, Camera& camera, Light& light) :
+RasterRenderer::RasterRenderer(Model& model, Transformation& camera, Transformation& light) :
     model(model), camera(camera), light(light)
 {
 }
@@ -167,8 +167,8 @@ CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(const glm::vec3 vertex,
 
     if (vertex.z != 0)
     {
-        u = height * camera.focalLength * (-vertex.x / vertex.z) + (static_cast<float>(width) / 2);
-        v = height * camera.focalLength * (vertex.y / vertex.z) + (static_cast<float>(height) / 2);
+        u = height * camera.scale * (-vertex.x / vertex.z) + (static_cast<float>(width) / 2);
+        v = height * camera.scale * (vertex.y / vertex.z) + (static_cast<float>(height) / 2);
 
         // Negative due to positive z out the screen
         depth = -1.0f / vertex.z;

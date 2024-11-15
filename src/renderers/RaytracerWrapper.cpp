@@ -9,7 +9,7 @@ void RaytracerWrapper::renderFrame(DrawingWindow& window)
     raytracer.renderFrame(window);
 }
 
-Camera& RaytracerWrapper::getCamera()
+Transformation& RaytracerWrapper::getCamera()
 {
     return raytracer.camera;
 }
@@ -19,7 +19,7 @@ Model& RaytracerWrapper::getModel()
     return raytracer.model;
 }
 
-Light& RaytracerWrapper::getLight()
+Transformation& RaytracerWrapper::getLight()
 {
     return raytracer.light;
 }

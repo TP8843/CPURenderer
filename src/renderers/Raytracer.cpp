@@ -3,7 +3,7 @@
 
 #include <RayTriangleIntersection.h>
 
-Raytracer::Raytracer(Model& model, Camera& camera, Light& light) :
+Raytracer::Raytracer(Model& model, Transformation& camera, Transformation& light) :
     model(model), camera(camera), light(light)
 {
 }

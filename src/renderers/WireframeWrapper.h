@@ -6,9 +6,9 @@
 
 class WireframeWrapper final : public RendererWrapper {
 public:
-    Camera& getCamera() override;
+    Transformation& getCamera() override;
     Model& getModel() override;
-    Light& getLight() override;
+    Transformation& getLight() override;
 
     void renderFrame(DrawingWindow& window) override;
 
