@@ -3,10 +3,10 @@
 #include "RenderLoop.h"
 #include "handlers/CameraControl.h"
 #include "handlers/OrbitHandler.h"
-#include "renderers/RendererWrapper.h"
-#include "renderers/RasterWrapper.h"
-#include "renderers/RaytracerWrapper.h"
-#include "renderers/WireframeWrapper.h"
+#include "renderers/wrappers/RendererWrapper.h"
+#include "renderers/wrappers/RasterWrapper.h"
+#include "renderers/wrappers/RaytracerWrapper.h"
+#include "renderers/wrappers/WireframeWrapper.h"
 #include "tests/DrawTests.h"
 #include "tests/InteractiveTest.h"
 #include "tests/RasterTest.h"
@@ -16,7 +16,7 @@
 
 int main(int argc, char* argv[])
 {
-    char* modelFile = "../models/textured-cornell-box.obj";
+    std::string modelFile = "../models/textured-cornell-box.obj";
     float scale = 1.0f;
     if (argc > 1)
     {
@@ -27,7 +27,6 @@ int main(int argc, char* argv[])
     {
         scale = std::stof(argv[2]);
     }
-
 
     auto renderLoop = RenderLoop(WIDTH, HEIGHT);
 

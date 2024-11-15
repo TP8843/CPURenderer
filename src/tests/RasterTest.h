@@ -9,7 +9,7 @@
 #include "../handlers/EventHandler.h"
 #include "../handlers/FrameHandler.h"
 #include "../renderers/RasterRenderer.h"
-#include "../renderers/RendererWrapper.h"
+#include "../renderers/wrappers/RendererWrapper.h"
 
 class RasterTest final : public RenderTest
 {

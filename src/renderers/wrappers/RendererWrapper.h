@@ -1,7 +1,7 @@
 #ifndef RENDERERWRAPPER_H
 #define RENDERERWRAPPER_H
+
 #include <DrawingWindow.h>
-#include "../objects/Light.h"
 
 class RendererWrapper
 {

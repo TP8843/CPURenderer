@@ -1,8 +1,8 @@
 #ifndef WIREFRAMEWRAPPER_H
 #define WIREFRAMEWRAPPER_H
-#include "RasterRenderer.h"
-#include "RendererWrapper.h"
 
+#include "../RasterRenderer.h"
+#include "RendererWrapper.h"
 
 class WireframeWrapper final : public RendererWrapper {
 public:

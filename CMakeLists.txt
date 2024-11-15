@@ -51,8 +51,6 @@ add_executable(RedNoise
         src/RenderLoop.h
         src/tests/RasterTest.cpp
         src/tests/RasterTest.h
-        src/objects/Camera.cpp
-        src/objects/Camera.h
         src/helper/constants.h
         src/shaders/FragmentData.cpp
         src/shaders/FragmentData.h
@@ -64,19 +62,17 @@ add_executable(RedNoise
         src/objects/materials/Material.h
         src/renderers/Raytracer.cpp
         src/renderers/Raytracer.h
-        src/renderers/RendererWrapper.h
-        src/renderers/RasterWrapper.cpp
-        src/renderers/RasterWrapper.h
-        src/renderers/RaytracerWrapper.cpp
-        src/renderers/RaytracerWrapper.h
-        src/renderers/WireframeWrapper.cpp
-        src/renderers/WireframeWrapper.h
+        src/renderers/wrappers/RendererWrapper.h
+        src/renderers/wrappers/RasterWrapper.cpp
+        src/renderers/wrappers/RasterWrapper.h
+        src/renderers/wrappers/RaytracerWrapper.cpp
+        src/renderers/wrappers/RaytracerWrapper.h
+        src/renderers/wrappers/WireframeWrapper.cpp
+        src/renderers/wrappers/WireframeWrapper.h
         src/objects/materials/MaterialMap.cpp
         src/objects/materials/MaterialMap.h
         src/objects/Plane.cpp
         src/objects/Plane.h
-        src/objects/Light.cpp
-        src/objects/Light.h
         src/objects/materials/IlluminationModel.h
         src/objects/Transformation.cpp
         src/objects/Transformation.h

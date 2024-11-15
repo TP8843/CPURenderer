@@ -3,7 +3,6 @@
 #include <../../libs/sdw/ModelTriangle.h>
 #include <vector>
 
-#include "Camera.h"
 #include "Plane.h"
 #include "Transformation.h"
 #include "./materials/MaterialMap.h"
@@ -24,7 +23,7 @@ public:
         };
     }
 
-    static Model import(const char* objectPath, Transformation& transformation);
+    static Model import(const std::string& objectPath, Transformation& transformation);
 
     // Transforms all triangles via the Transformation property
     std::vector<ModelTriangle> getTransformedTriangles() const;

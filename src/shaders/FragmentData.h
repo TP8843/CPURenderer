@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 
 #include "../objects/materials/Material.h"
-#include "../objects/Light.h"
 #include "../objects/Transformation.h"
 
 namespace FragmentData

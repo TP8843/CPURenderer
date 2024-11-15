@@ -5,8 +5,6 @@
 #include <TextureMap.h>
 
 #include "IlluminationModel.h"
-#include "../Camera.h"
-#include "../Light.h"
 #include "../Transformation.h"
 
 class Material {

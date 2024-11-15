@@ -17,11 +17,11 @@ Model::Model(const std::vector<ModelTriangle> &triangles, MaterialMap materials,
 {
 }
 
-Model Model::import(const char *objectPath, Transformation& transformation) {
+Model Model::import(const std::string& objectPath, Transformation& transformation) {
     std::string text;
     std::ifstream ObjectFile(objectPath);
 
-    auto pathString = std::string(objectPath);
+    auto pathString = objectPath;
     const std::string parentPath = StringHelpers::getFolderPath(pathString);
 
     MaterialMap materialMap = MaterialMap();
@@ -264,9 +264,9 @@ std::vector<ModelTriangle> Model::clipTriangles(std::vector<ModelTriangle> trian
         filteredTriangles = std::vector<ModelTriangle>();
 
         for (const ModelTriangle &triangle: oldFilteredTriangles) {
-            std::array<glm::vec3, 3> vertices = std::array<glm::vec3, 3>(triangle.vertices);
-            std::array<TexturePoint, 3> texturePoints = std::array<TexturePoint, 3>(triangle.texturePoints);
-            std::array<glm::vec3, 3> vertexNormals = std::array<glm::vec3, 3>(triangle.vertexNormals);
+            auto vertices = std::array<glm::vec3, 3>(triangle.vertices);
+            auto texturePoints = std::array<TexturePoint, 3>(triangle.texturePoints);
+            auto vertexNormals = std::array<glm::vec3, 3>(triangle.vertexNormals);
 
             std::array<float, 3> distances = {
                 clippingPlane.distanceRelativeToPlane(vertices[0]),

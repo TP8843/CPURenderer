@@ -1,6 +1,5 @@
 #include "RasterRenderer.h"
 
-#include "../objects/Camera.h"
 #include "../helper/Draw.h"
 #include "../shaders/FragmentShaders.h"
 #include "../shaders/FragmentData.h"

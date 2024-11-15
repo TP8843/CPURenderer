@@ -1,8 +1,8 @@
 #ifndef RAYTRACERWRAPPER_H
 #define RAYTRACERWRAPPER_H
-#include "Raytracer.h"
-#include "RendererWrapper.h"
 
+#include "../Raytracer.h"
+#include "RendererWrapper.h"
 
 class RaytracerWrapper final : public RendererWrapper {
 public:

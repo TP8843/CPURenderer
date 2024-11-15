@@ -4,7 +4,7 @@
 
 #ifndef RASTERWRAPPER_H
 #define RASTERWRAPPER_H
-#include "RasterRenderer.h"
+#include "../RasterRenderer.h"
 #include "RendererWrapper.h"
 
 
