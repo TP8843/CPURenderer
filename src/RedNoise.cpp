@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
                          glm::mat3(),
                          1);
 
-    auto light = Transformation(glm::vec3(0, 2, 0), glm::mat3(), 20.0f);
+    auto light = Transformation(glm::vec3(0, 2, 0), glm::mat3(), 0.5f);
 
     auto orbitHandler = OrbitHandler(camera, glm::vec3());
     auto cameraControl = CameraControl(camera, light);
@@ -58,13 +58,13 @@ int main(int argc, char* argv[])
     rasterTest.addRendererWrapper(&wireframeWrapper);
     rasterTest.addRendererWrapper(&raytracerWrapper);
 
-    rasterTest.frameHandlers.push_back(&orbitHandler);
+    rasterTest.preFrameHandlers.push_back(&orbitHandler);
     rasterTest.eventHandlers.push_back(&orbitHandler);
 
-    rasterTest.frameHandlers.push_back(&cameraControl);
+    rasterTest.preFrameHandlers.push_back(&cameraControl);
     rasterTest.eventHandlers.push_back(&cameraControl);
 
-    rasterTest.frameHandlers.push_back(&debugHandler);
+    rasterTest.postFrameHandlers.push_back(&debugHandler);
     rasterTest.eventHandlers.push_back(&debugHandler);
 
     renderLoop.addTest(&rasterTest);

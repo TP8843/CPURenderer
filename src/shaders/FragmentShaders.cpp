@@ -26,13 +26,13 @@ void FragmentShaders::filled(const CanvasTriangle& _,
         data.depth == uniform.depthBuffer[y][x])
     {
 
-        const float multiplier = uniform.material.getColourAtPointInCameraSpace(
+        const Colour colour = uniform.material.getColourAtPointInCameraSpace(
             uniform.camera,
             uniform.light,
             data.position3D / data.depth,
             uniform.normal);
 
-        uniform.window.setPixelColour(x, y, (uniform.material.getColour() * multiplier).asARGB());
+        uniform.window.setPixelColour(x, y, colour.asARGB());
     }
 }
 
@@ -47,13 +47,13 @@ void FragmentShaders::filledPhong(const CanvasTriangle& _,
         data.depth == uniform.depthBuffer[y][x])
     {
 
-        const float multiplier = uniform.material.getColourAtPointInCameraSpace(
+        const Colour colour = uniform.material.getColourAtPointInCameraSpace(
             uniform.camera,
             uniform.light,
             data.position3D / data.depth,
             data.normal / data.depth);
 
-        uniform.window.setPixelColour(x, y, (uniform.material.getColour() * multiplier).asARGB());
+        uniform.window.setPixelColour(x, y, colour.asARGB());
     }
 }
 
@@ -115,17 +115,14 @@ void FragmentShaders::material(const CanvasTriangle& _,
         data.depth == uniform.depthBuffer[y][x])
     {
 
-        const float multiplier = uniform.material.getColourAtPointInCameraSpace(
+        const Colour colour = uniform.material.getColourAtPointInCameraSpace(
                 uniform.camera,
                 uniform.light,
                 data.position3D / data.depth,
-                uniform.normal);
+                uniform.normal,
+                data.texturePoint / data.depth);
 
-        const auto texture = (uniform.material.getPixelTextureColour(
-                                  glm::round(data.texturePoint.x / data.depth),
-                                  glm::round(data.texturePoint.y / data.depth)) * multiplier).asARGB();
-
-        uniform.window.setPixelColour(x, y, texture);
+        uniform.window.setPixelColour(x, y, colour.asARGB());
     }
 }
 
@@ -140,16 +137,13 @@ void FragmentShaders::materialPhong(const CanvasTriangle& _,
     data.depth == uniform.depthBuffer[y][x])
     {
 
-        const float multiplier = uniform.material.getColourAtPointInCameraSpace(
+        const Colour colour = uniform.material.getColourAtPointInCameraSpace(
             uniform.camera,
             uniform.light,
             data.position3D / data.depth,
-            data.normal / data.depth);
+            data.normal / data.depth,
+            data.texturePoint / data.depth);
 
-        const auto texture = (uniform.material.getPixelTextureColour(
-                                  glm::round(data.texturePoint.x / data.depth),
-                                  glm::round(data.texturePoint.y / data.depth)) * multiplier).asARGB();
-
-        uniform.window.setPixelColour(x, y, texture);
+        uniform.window.setPixelColour(x, y, colour.asARGB());
     }
 }

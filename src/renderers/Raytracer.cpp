@@ -124,14 +124,6 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                 const Material& material = model.materials.
                                                  getMaterial(intersection.second.intersectedTriangle.material);
 
-                const float colourMultiplier = inShadow ? 0.2f
-                    // Point must be in camera space for specular highlight calculations
-                    : material.getColourAtPointInCameraSpace(
-                        camera,
-                        light,
-                        (intersection.second.intersectionPoint - camera.position) * camera.rotation,
-                        normal * camera.getNormalRotationMatrix());
-
                 if (material.hasTexture())
                 {
                     const auto texturePoints = intersection.second.intersectedTriangle.texturePoints;
@@ -140,14 +132,27 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                         + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
                         + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
 
+                    const Colour colour = material.getColourAtPointInCameraSpace(
+                        camera,
+                        light,
+                        (intersection.second.intersectionPoint - camera.position) * camera.rotation,
+                        normal * camera.getNormalRotationMatrix(),
+                        finalTexturePoint,
+                        inShadow);
+
                     window.setPixelColour(i, window.height - j - 1,
-                                          (material.getPixelTextureColour(
-                                               static_cast<int>(finalTexturePoint.x),
-                                               static_cast<int>(finalTexturePoint.y)) * colourMultiplier).asARGB());
+                                          colour.asARGB());
                 }
                 else
                 {
-                    window.setPixelColour(i, window.height - j - 1, (material.getColour() * colourMultiplier).asARGB());
+                    const Colour colour = material.getColourAtPointInCameraSpace(
+                        camera,
+                        light,
+                        (intersection.second.intersectionPoint - camera.position) * camera.rotation,
+                        normal * camera.getNormalRotationMatrix(),
+                        inShadow);
+
+                    window.setPixelColour(i, window.height - j - 1, colour.asARGB());
                 }
             }
         }

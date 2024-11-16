@@ -60,7 +60,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fol
 
             currentMaterialName = tokens.at(1);
             illuminationModel = FLAT;
-            shininess = 32.0f;
+            shininess = defaultShininess;
         }
 
         // Colour for diffuse lighting
@@ -68,9 +68,9 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fol
             materialToStore = true;
 
             const auto colourValue = Colour(
-                static_cast<int>(glm::round(std::stof(tokens.at(1)) * 255.0f)),
-                static_cast<int>(glm::round(std::stof(tokens.at(2)) * 255.0f)),
-                static_cast<int>(glm::round(std::stof(tokens.at(3)) * 255.0f)));
+                glm::round(std::stof(tokens.at(1)) * 255.0f),
+                glm::round(std::stof(tokens.at(2)) * 255.0f),
+                glm::round(std::stof(tokens.at(3)) * 255.0f));
 
             hasColour = true;
             currentColour = colourValue;

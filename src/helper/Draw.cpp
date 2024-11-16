@@ -10,7 +10,7 @@ void Draw::drawLine(DrawingWindow& window, const CanvasPoint& from, const Canvas
 {
     const auto yDif = glm::abs(to.y - from.y);
     const auto xDif = glm::abs(to.x - from.x);
-    const auto colourValue = (255 << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
+    const auto colourValue = colour.asARGB();
 
     if (xDif >= yDif)
     {

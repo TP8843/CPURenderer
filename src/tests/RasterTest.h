@@ -12,7 +12,8 @@
 class RasterTest final : public RenderTest
 {
 public:
-    std::vector<FrameHandler*> frameHandlers;
+    std::vector<FrameHandler*> preFrameHandlers;
+    std::vector<FrameHandler*> postFrameHandlers;
     std::vector<EventHandler*> eventHandlers;
 
     RasterTest();

@@ -1,5 +1,7 @@
 #include "Material.h"
 #define STB_IMAGE_IMPLEMENTATION
+#include <TexturePoint.h>
+
 #include "../Transformation.h"
 #include "../../libs/stb_image.h"
 #include <glm/gtc/integer.hpp>
@@ -36,9 +38,9 @@ Colour Material::getPixelTextureColour(const int x, const int y) const
     const int startingPosition = (textureWidth * tiledY + tiledX) * charsPerPixel;
 
     return {
-        static_cast<int>(texture[startingPosition + 0]),
-        static_cast<int>(texture[startingPosition + 1]),
-        static_cast<int>(texture[startingPosition + 2]),
+        static_cast<float>(texture[startingPosition + 0]),
+        static_cast<float>(texture[startingPosition + 1]),
+        static_cast<float>(texture[startingPosition + 2]),
     };
 }
 
@@ -52,41 +54,40 @@ size_t Material::getTextureHeight() const
     return textureHeight;
 }
 
-float Material::getColourAtPointInCameraSpace(
+Colour Material::getColourAtPointInCameraSpace(
     const Transformation& camera,
     const Transformation& light,
     const glm::vec3& point,
-    const glm::vec3& normal) const
+    const glm::vec3& normal,
+    const TexturePoint& texturePosition,
+    const bool inShadow) const
 {
-    const auto lightDisplacement = (light.position - camera.position) * camera.rotation - point;
-    const auto normalisedLightDisplacement = glm::normalize(lightDisplacement);
+    if (!hasTexture()) return getColourAtPointInCameraSpace(camera, light, point, normal);
 
-    const auto reflectedDirection = normalisedLightDisplacement
-        - 2.0f * normal * glm::dot(normalisedLightDisplacement, normal);
+    const Colour textureColour = getPixelTextureColour(
+                                  glm::round(texturePosition.x),
+                                  glm::round(texturePosition.y));
 
-    const float specularIntensity = 0.0f;
-    // const float specularIntensity = glm::pow(
-    //     glm::max(glm::dot(glm::normalize(point), glm::normalize(reflectedDirection)), 0.0f), specularStrength);
+    return colourAtPointInCameraSpace(camera, light, point, normal, specularStrength, textureColour, textureColour, Colour(255, 255, 255), inShadow);
+}
 
-    constexpr float ambientIntensity = 0.2f;
-
-    float diffuseIntensity = glm::clamp((glm::dot(normal, normalisedLightDisplacement)) /
-                                      (1.0f + 1.0f * glm::pow(glm::length(lightDisplacement), 2.0f)), 0.0f, 1.0f);
-
-    const float total = ambientIntensity + light.scale * (diffuseIntensity + specularIntensity);
-
-    return glm::clamp(total / (1 + total), 0.0f, 1.0f);
+Colour Material::getColourAtPointInCameraSpace(
+    const Transformation &camera,
+    const Transformation &light,
+    const glm::vec3 &point,
+    const glm::vec3 &normal,
+    const bool inShadow) const
+{
+    return colourAtPointInCameraSpace(camera, light, point, normal, specularStrength, colour, colour, Colour(255, 255, 255), inShadow);
 }
 
 Material::Material() = default;
 
 Material::Material(Colour colour,
                    const IlluminationModel illuminationModel,
-                   const float specularStrength) :
-    colour(std::move(colour)),
-    illuminationModel(illuminationModel),
-    specularStrength(specularStrength)
-{
+                   const float specularStrength) : colour(std::move(colour)),
+                                                   illuminationModel(illuminationModel),
+                                                   specularStrength(specularStrength) {
 }
 
 Material::Material(const Colour& colour,
@@ -105,4 +106,41 @@ Material::Material(const Colour& colour,
                          &textureHeight,
                          nullptr,
                          STBI_rgb_alpha);
+}
+
+Colour Material::colourAtPointInCameraSpace(const Transformation &camera,
+    const Transformation &light,
+    const glm::vec3 &point,
+    const glm::vec3 &normal,
+    const float specularStrength,
+    const Colour &ambientColour,
+    const Colour &diffuseColour,
+    const Colour &specularColour,
+    const bool inShadow)
+{
+    const auto lightDisplacement = (light.position - camera.position) * camera.rotation - point;
+    const auto normalisedLightDisplacement = glm::normalize(lightDisplacement);
+
+    const auto reflectedDirection = normalisedLightDisplacement
+        - 2.0f * normal * glm::dot(normalisedLightDisplacement, normal);
+
+    const Colour specular = specularColour * (1.f - glm::pow(0.8f, specularStrength / 2.f)) * glm::pow(
+        glm::max(glm::dot(glm::normalize(point), glm::normalize(reflectedDirection)), 0.0f), specularStrength);
+
+    const Colour ambient = ambientColour * 0.2f;
+
+    const Colour diffuse = diffuseColour * glm::clamp(2.f * (glm::dot(normal, normalisedLightDisplacement)) /
+                                                                (glm::length(lightDisplacement)), 0.0f, 1.0f);
+
+    Colour total;
+    if (inShadow)
+    {
+        total = ambient;
+    }
+    else
+    {
+        total = ambient + (diffuse + specular) * light.scale;
+    }
+
+    return total;
 }
