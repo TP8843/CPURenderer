@@ -15,7 +15,7 @@ void RasterRenderer::pointCloudRender(DrawingWindow& window) const
     {
         for (const auto vertex : triangle.vertices)
         {
-            const auto mappedVertex = projectVertexOntoCanvasPoint(vertex, window.width, window.height);
+            const auto mappedVertex = projectVertexOntoCanvasPoint(vertex, window.width, window.height, camera.scale);
 
             window.setPixelColour(static_cast<int>(mappedVertex.x), static_cast<int>(mappedVertex.y), 0xFFFFFFFF);
         }
@@ -30,7 +30,7 @@ void RasterRenderer::wireframeRender(DrawingWindow& window) const
 
         for (const auto vertex : triangle.vertices)
         {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(vertex, window.width, window.height));
+            mappedVertices.push_back(projectVertexOntoCanvasPoint(vertex, window.width, window.height, camera.scale));
         }
 
         Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2],
@@ -49,9 +49,9 @@ void RasterRenderer::rasterRender(DrawingWindow& window) const
     {
         Material& material = model.materials.getMaterial(triangle.material);
 
-        CanvasPoint v0 = projectVertexOntoCanvasPoint(triangle.vertices[0], window.width, window.height);
-        CanvasPoint v1 = projectVertexOntoCanvasPoint(triangle.vertices[1], window.width, window.height);
-        CanvasPoint v2 = projectVertexOntoCanvasPoint(triangle.vertices[2], window.width, window.height);
+        CanvasPoint v0 = projectVertexOntoCanvasPoint(triangle.vertices[0], window.width, window.height, camera.scale);
+        CanvasPoint v1 = projectVertexOntoCanvasPoint(triangle.vertices[1], window.width, window.height, camera.scale);
+        CanvasPoint v2 = projectVertexOntoCanvasPoint(triangle.vertices[2], window.width, window.height, camera.scale);
 
         // Placeholder colour to allow original raster to work
         const auto canvasTriangle = CanvasTriangle(v0, v1, v2, Colour());
@@ -77,7 +77,7 @@ void RasterRenderer::rasterRender(DrawingWindow& window) const
             std::array<FragmentData::FilledData, 3> data = {d0, d1, d2};
 
             drawTriangle<FragmentData::DataUniform, FragmentData::FilledData>(
-                canvasTriangle, uniform, data, FragmentShaders::filledPhong);
+                canvasTriangle, uniform, data, FragmentShaders::filled);
         }
         else
         {
@@ -128,9 +128,9 @@ float** RasterRenderer::generateDepthBuffer(const std::vector<ModelTriangle>& tr
     for (const auto& triangle : triangles)
     {
         const auto canvasTriangle = CanvasTriangle(
-            projectVertexOntoCanvasPoint(triangle.vertices[0], width, height),
-            projectVertexOntoCanvasPoint(triangle.vertices[1], width, height),
-            projectVertexOntoCanvasPoint(triangle.vertices[2], width, height),
+            projectVertexOntoCanvasPoint(triangle.vertices[0], width, height, camera.scale),
+            projectVertexOntoCanvasPoint(triangle.vertices[1], width, height, camera.scale),
+            projectVertexOntoCanvasPoint(triangle.vertices[2], width, height, camera.scale),
             placeholderColour
         );
 
@@ -158,7 +158,7 @@ glm::vec3 RasterRenderer::applyCameraTransformation(const glm::vec3 vertex) cons
 }
 
 CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(const glm::vec3 vertex, const size_t width,
-                                                          const size_t height) const
+                                                          const size_t height, const float focalLength)
 {
     float u = 0;
     float v = 0;
@@ -166,8 +166,8 @@ CanvasPoint RasterRenderer::projectVertexOntoCanvasPoint(const glm::vec3 vertex,
 
     if (vertex.z != 0)
     {
-        u = height * camera.scale * (-vertex.x / vertex.z) + (static_cast<float>(width) / 2);
-        v = height * camera.scale * (vertex.y / vertex.z) + (static_cast<float>(height) / 2);
+        u = height * focalLength * (-vertex.x / vertex.z) + (static_cast<float>(width) / 2);
+        v = height * focalLength * (vertex.y / vertex.z) + (static_cast<float>(height) / 2);
 
         // Negative due to positive z out the screen
         depth = -1.0f / vertex.z;

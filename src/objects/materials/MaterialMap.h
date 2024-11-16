@@ -12,7 +12,7 @@ public:
 
     MaterialMap();
 
-    static constexpr float defaultShininess = 32.0f;
+    static constexpr float defaultShininess = 256.0f;
     static std::string defaultName() { return "Backup"; }
     static constexpr IlluminationModel defaultIlluminationModel = FLAT;
 

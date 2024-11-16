@@ -147,8 +147,8 @@ void FragmentShaders::materialPhong(const CanvasTriangle& _,
             data.normal / data.depth);
 
         const auto texture = (uniform.material.getPixelTextureColour(
-                                  static_cast<size_t>(glm::round(data.texturePoint.x / data.depth)),
-                                  static_cast<size_t>(glm::round(data.texturePoint.y / data.depth))) * multiplier).asARGB();
+                                  glm::round(data.texturePoint.x / data.depth),
+                                  glm::round(data.texturePoint.y / data.depth)) * multiplier).asARGB();
 
         uniform.window.setPixelColour(x, y, texture);
     }

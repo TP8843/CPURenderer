@@ -33,14 +33,14 @@ void RasterTest::renderFrame(DrawingWindow &window)
 
     window.clearPixels();
 
+    renderer->renderFrame(window);
+
     const auto deltaTime = updateDTime();
 
     for (const auto frameHandler : frameHandlers)
     {
         frameHandler->handleFrame(window, deltaTime);
     }
-
-    renderer->renderFrame(window);
 }
 
 void RasterTest::addRendererWrapper(RendererWrapper* rendererWrapper)

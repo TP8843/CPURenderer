@@ -1,5 +1,7 @@
 #include "StringHelpers.h"
 
+#include <algorithm>
+
 std::string StringHelpers::getFolderPath(const std::string& path)
 {
     const auto lastSlashPos = path.find_last_of("/\\");
@@ -37,8 +39,8 @@ std::string StringHelpers::trimLine(const std::string& line)
     //     result.erase(result.size() - 1);
 
     // Trim whitespace from start and end of line
-    const int newStartPos = result.find_first_not_of(" \t\r");
-    int newEndPos = result.find_last_not_of(" \t\r") + 1;
+    const unsigned long newStartPos = result.find_first_not_of(" \t\r");
+    unsigned long newEndPos = result.find_last_not_of(" \t\r") + 1;
     result = result.substr(newStartPos, newEndPos - newStartPos);
 
     // Remove duplicate spaces from line. From https://stackoverflow.com/questions/8362094/replace-multiple-spaces-with-one-space-in-a-string
@@ -46,7 +48,7 @@ std::string StringHelpers::trimLine(const std::string& line)
     result.erase(newEnd, result.end());
 
     // Trim away comments
-    newEndPos = result.find_first_of("#");
+    newEndPos = result.find_first_of('#');
     result = result.substr(0, newEndPos);
 
     return result;

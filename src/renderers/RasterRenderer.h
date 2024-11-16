@@ -17,6 +17,8 @@ public:
     void wireframeRender(DrawingWindow& window) const;
     void rasterRender(DrawingWindow& window) const;
 
+    static CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 vertex, size_t width, size_t height, float focalLength);
+
     Model& model;
     Transformation& camera;
     Transformation& light;
@@ -24,7 +26,6 @@ public:
 private:
     float** generateDepthBuffer(const std::vector<ModelTriangle>& triangles, size_t width, size_t height) const;
     glm::vec3 applyCameraTransformation(glm::vec3 vertex) const;
-    CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 vertex, size_t width, size_t height) const;
 
     template <typename Uniform, typename Data>
     static void drawTriangle(CanvasTriangle triangle,

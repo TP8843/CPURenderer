@@ -86,6 +86,8 @@ add_executable(RedNoise
         src/handlers/OrbitHandler.h
         src/handlers/FrameHandler.h
         src/handlers/EventHandler.h
+        src/handlers/DebugHandler.cpp
+        src/handlers/DebugHandler.h
 )
 
 if (MSVC)

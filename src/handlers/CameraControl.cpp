@@ -102,7 +102,6 @@ void CameraControl::handleEvent(DrawingWindow& window, SDL_Event& event)
 {
     if (event.type == SDL_KEYDOWN)
     {
-
         if (event.key.keysym.sym == constants::keyboard::RESET_RENDER)
         {
             camera.reset();
@@ -112,6 +111,11 @@ void CameraControl::handleEvent(DrawingWindow& window, SDL_Event& event)
         if (event.key.keysym.sym == constants::keyboard::LOOK_AT)
         {
             camera.lookAt(glm::vec3(0, 0, 0));
+        }
+
+        if (event.key.keysym.sym == constants::keyboard::PLACE_LIGHT_AT_CAMERA)
+        {
+            light.position = camera.position;
         }
     }
 }

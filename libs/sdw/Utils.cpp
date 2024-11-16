@@ -7,10 +7,7 @@ std::vector<std::string> split(const std::string &line, char delimiter) {
 	std::vector<std::string> tokens;
 	size_t pos;
 	while ((pos = haystack.find(delimiter)) != std::string::npos) {
-		if (pos != 0)
-		{
-			tokens.push_back(haystack.substr(0, pos));
-		}
+		tokens.push_back(haystack.substr(0, pos));
 		haystack.erase(0, pos + 1);
 	}
 	// Push the remaining chars onto the vector

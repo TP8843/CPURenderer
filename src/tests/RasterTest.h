@@ -1,9 +1,7 @@
-//
-// Created by Thomas Parr on 09/10/2024.
-//
-
 #ifndef RASTERTEST_H
 #define RASTERTEST_H
+
+#include <chrono>
 
 #include "RenderTest.h"
 #include "../handlers/EventHandler.h"

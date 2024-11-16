@@ -2,6 +2,7 @@
 #include "renderers/RasterRenderer.h"
 #include "RenderLoop.h"
 #include "handlers/CameraControl.h"
+#include "handlers/DebugHandler.h"
 #include "handlers/OrbitHandler.h"
 #include "renderers/wrappers/RendererWrapper.h"
 #include "renderers/wrappers/RasterWrapper.h"
@@ -43,7 +44,7 @@ int main(int argc, char* argv[])
     auto orbitHandler = OrbitHandler(camera, glm::vec3());
     auto cameraControl = CameraControl(camera, light);
 
-
+    auto debugHandler = DebugHandler(model, camera);
 
     auto renderer = RasterRenderer(model, camera, light);
     auto rasterWrapper = RasterWrapper(renderer);
@@ -59,7 +60,12 @@ int main(int argc, char* argv[])
 
     rasterTest.frameHandlers.push_back(&orbitHandler);
     rasterTest.eventHandlers.push_back(&orbitHandler);
+
     rasterTest.frameHandlers.push_back(&cameraControl);
+    rasterTest.eventHandlers.push_back(&cameraControl);
+
+    rasterTest.frameHandlers.push_back(&debugHandler);
+    rasterTest.eventHandlers.push_back(&debugHandler);
 
     renderLoop.addTest(&rasterTest);
 

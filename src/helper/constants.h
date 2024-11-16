@@ -46,6 +46,8 @@ namespace constants
         constexpr int LIGHT_TRUCK_LEFT = SDL_SCANCODE_J;
         constexpr int LIGHT_TRUCK_RIGHT = SDL_SCANCODE_L;
 
+        constexpr int PLACE_LIGHT_AT_CAMERA = SDLK_u;
+
         constexpr int ORBIT = SDLK_o;
         constexpr int RESET_RENDER = SDLK_z;
         constexpr int LOOK_AT = SDLK_p;
@@ -54,6 +56,7 @@ namespace constants
         constexpr int MAIN_TEST = SDLK_m;
         constexpr int SUB_TEST = SDLK_n;
         constexpr int RAND_TRIANGLE = SDLK_u;
+        constexpr int DEBUG_SWITCH = SDLK_b;
     }
 }
 

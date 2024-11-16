@@ -88,7 +88,7 @@ Model Model::import(const std::string& objectPath, Transformation& transformatio
         }
 
         // Face
-        if (tokens.at(0) == "f" && tokens.size() > 1 && !tokens.at(1).empty()) {
+        if (tokens.at(0) == "f" && tokens.size() > 3 && !tokens.at(1).empty()) {
             std::vector<glm::vec3> faceVertices;
             std::vector<int> vertexIndices;
             std::vector<TexturePoint> polygonTexturePoints;
@@ -110,12 +110,8 @@ Model Model::import(const std::string& objectPath, Transformation& transformatio
                     const auto point = vertexTextures.at(std::stoi(vertexTokens.at(1)) - 1);
 
                     polygonTexturePoints.emplace_back(
-                        glm::mod(
                             point.x * static_cast<float>(materialMap.getMaterial(currentMaterial).getTextureWidth()),
-                            static_cast<float>(materialMap.getMaterial(currentMaterial).getTextureWidth())),
-                        glm::mod(
-                            point.y * static_cast<float>(materialMap.getMaterial(currentMaterial).getTextureHeight()),
-                            static_cast<float>(materialMap.getMaterial(currentMaterial).getTextureHeight())));
+                            point.y * static_cast<float>(materialMap.getMaterial(currentMaterial).getTextureHeight()));
                 }
 
                 // If vertex has vertex normal data
@@ -138,7 +134,7 @@ Model Model::import(const std::string& objectPath, Transformation& transformatio
                     // Calculate normal for triangle
                     normal = glm::normalize(glm::cross(
                         faceVertices.at(0) - faceVertices.at(i),
-                        faceVertices.at(i + 1) - faceVertices.at(0)));
+                        faceVertices.at(0) - faceVertices.at(i+1)));
 
                     int vertex = vertexIndices.at(0);
                     auto vertexNormalTotal = vertexNormalTotals.at(vertex);

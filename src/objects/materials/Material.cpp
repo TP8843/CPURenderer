@@ -2,6 +2,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../Transformation.h"
 #include "../../libs/stb_image.h"
+#include <glm/gtc/integer.hpp>
 
 Colour Material::getColour() const
 {
@@ -20,13 +21,19 @@ bool Material::hasTexture() const
 
 Colour Material::getPixelTextureColour(const int x, const int y) const
 {
-    if (x < 0 || x >= textureWidth || y < 0 || y >= textureHeight)
+    int tiledX = x % textureWidth;
+    int tiledY = y % textureHeight;
+
+    if (tiledX < 0 ) tiledX += textureWidth;
+    if (tiledY < 0 ) tiledY += textureHeight;
+
+    if (tiledX < 0 || tiledX >= textureWidth || tiledY < 0 || tiledY >= textureHeight)
     {
-        std::cout << "Texture out of bounds at (" << x << "," << y << ")" << std::endl;
+        std::cout << "Texture out of bounds at (" << tiledX << "," << tiledY << ")" << std::endl;
         return {0, 0, 0};
     }
 
-    const int startingPosition = (textureWidth * y + x) * charsPerPixel;
+    const int startingPosition = (textureWidth * tiledY + tiledX) * charsPerPixel;
 
     return {
         static_cast<int>(texture[startingPosition + 0]),
@@ -51,25 +58,20 @@ float Material::getColourAtPointInCameraSpace(
     const glm::vec3& point,
     const glm::vec3& normal) const
 {
-    const auto lightDisplacement = point - (light.position - camera.position) * camera.rotation;
+    const auto lightDisplacement = (light.position - camera.position) * camera.rotation - point;
     const auto normalisedLightDisplacement = glm::normalize(lightDisplacement);
 
     const auto reflectedDirection = normalisedLightDisplacement
         - 2.0f * normal * glm::dot(normalisedLightDisplacement, normal);
 
-    const float specularIntensity = glm::pow(
-        glm::max(glm::dot(glm::normalize(-point), glm::normalize(reflectedDirection)), 0.0f), specularStrength);
+    const float specularIntensity = 0.0f;
+    // const float specularIntensity = glm::pow(
+    //     glm::max(glm::dot(glm::normalize(point), glm::normalize(reflectedDirection)), 0.0f), specularStrength);
 
     constexpr float ambientIntensity = 0.2f;
 
-
-    float diffuseIntensity = 0.0f;
-
-    if (glm::dot(point, normal) > 0.0f)
-    {
-        diffuseIntensity = glm::clamp((glm::dot(normal, normalisedLightDisplacement)) /
+    float diffuseIntensity = glm::clamp((glm::dot(normal, normalisedLightDisplacement)) /
                                       (1.0f + 1.0f * glm::pow(glm::length(lightDisplacement), 2.0f)), 0.0f, 1.0f);
-    }
 
     const float total = ambientIntensity + light.scale * (diffuseIntensity + specularIntensity);
 
