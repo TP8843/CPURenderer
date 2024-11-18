@@ -21,6 +21,15 @@ std::pair<Colour, int> Raytracer::fireRay(
 
     if (intersection.first)
     {
+        const std::array<glm::vec3, 3> vectorNormals = intersection.second.intersectedTriangle.vertexNormals;
+
+        const glm::vec3 normal = vectorNormals[0]
+                + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
+                + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
+
+        const Material& material = model.materials.
+                                 getMaterial(intersection.second.intersectedTriangle.material);
+
         bool inShadow = false;
 
         if (previousShadowIntersection != -1)
@@ -50,15 +59,6 @@ std::pair<Colour, int> Raytracer::fireRay(
                 previousShadowIntersection = lightIntersection.second;
             }
         }
-
-        const std::array<glm::vec3, 3> vectorNormals = intersection.second.intersectedTriangle.vertexNormals;
-
-        const glm::vec3 normal = vectorNormals[0]
-                + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
-                + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
-
-        const Material& material = model.materials.
-                                         getMaterial(intersection.second.intersectedTriangle.material);
 
         if (material.hasTexture())
         {
