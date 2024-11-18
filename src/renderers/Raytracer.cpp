@@ -8,6 +8,118 @@ Raytracer::Raytracer(Model& model, Transformation& camera, Transformation& light
 {
 }
 
+std::pair<Colour, int> Raytracer::fireRay(
+    glm::vec3 startingPosition,
+    glm::vec3 rayDirection,
+    std::vector<ModelTriangle>& triangles,
+    int previousIntersection) const
+{
+    auto colour = Colour(0, 0, 0);
+
+    std::pair<bool, RayTriangleIntersection> intersection =
+                getClosestIntersection(startingPosition, rayDirection, triangles);
+
+    if (intersection.first)
+    {
+        bool inShadow = false;
+
+        if (previousIntersection != -1)
+        {
+            if (triangleIntersectsPoints(
+                intersection.second.intersectionPoint,
+                light.position,
+                triangles.at(previousIntersection)))
+            {
+                inShadow = true;
+            }
+            else
+            {
+                previousIntersection = -1;
+            }
+        }
+
+        if (previousIntersection == -1)
+        {
+            auto lightIntersection=
+                trianglesIntersectsPoints(intersection.second.intersectionPoint, light.position, intersection.second.triangleIndex, triangles);
+
+            inShadow = lightIntersection.first;
+
+            if (inShadow)
+            {
+                previousIntersection = lightIntersection.second;
+            }
+        }
+
+        const std::array<glm::vec3, 3> vectorNormals = intersection.second.intersectedTriangle.vertexNormals;
+
+        const glm::vec3 normal = vectorNormals[0]
+                + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
+                + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
+
+        const Material& material = model.materials.
+                                         getMaterial(intersection.second.intersectedTriangle.material);
+
+        if (material.hasTexture())
+        {
+            const auto texturePoints = intersection.second.intersectedTriangle.texturePoints;
+
+            const auto finalTexturePoint = texturePoints[0]
+                + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
+                + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
+
+            colour = material.getColourAtPointInCameraSpace(
+                camera,
+                light,
+                (intersection.second.intersectionPoint - camera.position) * camera.rotation,
+                normal * camera.getNormalRotationMatrix(),
+                finalTexturePoint,
+                material.getIlluminationModel(),
+                inShadow);
+        }
+        else
+        {
+            colour = material.getColourAtPointInCameraSpace(
+                camera,
+                light,
+                (intersection.second.intersectionPoint - camera.position) * camera.rotation,
+                normal * camera.getNormalRotationMatrix(),
+                material.getIlluminationModel(),
+                inShadow);
+        }
+    }
+
+    return std::make_pair(colour, previousIntersection);
+}
+
+void Raytracer::renderFrame(DrawingWindow& window) const
+{
+    const auto width = static_cast<float>(window.width);
+    const auto height = static_cast<float>(window.height);
+
+    int previousLightIntersection = -1;
+
+    auto transformedTriangles = model.getTransformedTriangles();
+
+    for (size_t j = 0; j < window.height; j++)
+    {
+        for (size_t i = 0; i < window.width; i++)
+        {
+            glm::vec3 scenePosition = glm::normalize(glm::vec3(
+                (static_cast<float>(i) - width / 2) / height,
+                (static_cast<float>(j) + 1 - height / 2) / height,
+                -1
+            ));
+
+            std::pair<Colour, int> final = fireRay(camera.position, camera.rotation * scenePosition, transformedTriangles, previousLightIntersection);
+
+            previousLightIntersection = final.second;
+
+            window.setPixelColour(i, window.height - j - 1, final.first.asARGB());
+        }
+    }
+}
+
 std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::vec3 camera,
                                                                            glm::vec3 rayDirection,
                                                                            std::vector<ModelTriangle>& triangles)
@@ -57,108 +169,6 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::
     }
 
     return std::pair<bool, RayTriangleIntersection>(false, RayTriangleIntersection());
-}
-
-void Raytracer::renderFrame(DrawingWindow& window) const
-{
-    const auto width = static_cast<float>(window.width);
-    const auto height = static_cast<float>(window.height);
-
-    bool hasPreviousLightIntersection = false;
-    int previousLightIntersection;
-
-    auto transformedTriangles = model.getTransformedTriangles();
-
-    for (size_t j = 0; j < window.height; j++)
-    {
-        for (size_t i = 0; i < window.width; i++)
-        {
-            glm::vec3 scenePosition = glm::normalize(glm::vec3(
-                (static_cast<float>(i) - width / 2) / height,
-                (static_cast<float>(j) + 1 - height / 2) / height,
-                -1
-            ));
-
-            std::pair<bool, RayTriangleIntersection> intersection =
-                getClosestIntersection(camera.position, camera.rotation * scenePosition, transformedTriangles);
-
-            if (intersection.first)
-            {
-                bool inShadow = false;
-
-                if (hasPreviousLightIntersection)
-                {
-                    if (triangleIntersectsPoints(
-                        intersection.second.intersectionPoint,
-                        light.position,
-                        transformedTriangles.at(previousLightIntersection)))
-                    {
-                        inShadow = true;
-                    }
-                    else
-                    {
-                        hasPreviousLightIntersection = false;
-                    }
-                }
-
-                if (!hasPreviousLightIntersection)
-                {
-                    auto lightIntersection=
-                        trianglesIntersectsPoints(intersection.second.intersectionPoint, light.position, intersection.second.triangleIndex, transformedTriangles);
-
-                    inShadow = lightIntersection.first;
-
-                    if (inShadow)
-                    {
-                        hasPreviousLightIntersection = true;
-                        previousLightIntersection = lightIntersection.second;
-                    }
-                }
-
-                const std::array<glm::vec3, 3> vectorNormals = intersection.second.intersectedTriangle.vertexNormals;
-
-                const glm::vec3 normal = vectorNormals[0]
-                        + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
-                        + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
-
-                const Material& material = model.materials.
-                                                 getMaterial(intersection.second.intersectedTriangle.material);
-
-                if (material.hasTexture())
-                {
-                    const auto texturePoints = intersection.second.intersectedTriangle.texturePoints;
-
-                    const auto finalTexturePoint = texturePoints[0]
-                        + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
-                        + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
-
-                    const Colour colour = material.getColourAtPointInCameraSpace(
-                        camera,
-                        light,
-                        (intersection.second.intersectionPoint - camera.position) * camera.rotation,
-                        normal * camera.getNormalRotationMatrix(),
-                        finalTexturePoint,
-                        material.getIlluminationModel(),
-                        inShadow);
-
-                    window.setPixelColour(i, window.height - j - 1,
-                                          colour.asARGB());
-                }
-                else
-                {
-                    const Colour colour = material.getColourAtPointInCameraSpace(
-                        camera,
-                        light,
-                        (intersection.second.intersectionPoint - camera.position) * camera.rotation,
-                        normal * camera.getNormalRotationMatrix(),
-                        material.getIlluminationModel(),
-                        inShadow);
-
-                    window.setPixelColour(i, window.height - j - 1, colour.asARGB());
-                }
-            }
-        }
-    }
 }
 
 bool Raytracer::triangleIntersectsPoints(glm::vec3 point, glm::vec3 light, ModelTriangle triangle)
