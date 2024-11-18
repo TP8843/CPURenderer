@@ -138,6 +138,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                         (intersection.second.intersectionPoint - camera.position) * camera.rotation,
                         normal * camera.getNormalRotationMatrix(),
                         finalTexturePoint,
+                        material.getIlluminationModel(),
                         inShadow);
 
                     window.setPixelColour(i, window.height - j - 1,
@@ -150,6 +151,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                         light,
                         (intersection.second.intersectionPoint - camera.position) * camera.rotation,
                         normal * camera.getNormalRotationMatrix(),
+                        material.getIlluminationModel(),
                         inShadow);
 
                     window.setPixelColour(i, window.height - j - 1, colour.asARGB());

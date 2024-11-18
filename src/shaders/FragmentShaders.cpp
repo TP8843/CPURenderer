@@ -30,7 +30,8 @@ void FragmentShaders::filled(const CanvasTriangle& _,
             uniform.camera,
             uniform.light,
             data.position3D / data.depth,
-            uniform.normal);
+            uniform.normal,
+            uniform.material.getIlluminationModel());
 
         uniform.window.setPixelColour(x, y, colour.asARGB());
     }
@@ -51,7 +52,8 @@ void FragmentShaders::filledPhong(const CanvasTriangle& _,
             uniform.camera,
             uniform.light,
             data.position3D / data.depth,
-            data.normal / data.depth);
+            data.normal / data.depth,
+            uniform.material.getIlluminationModel());
 
         uniform.window.setPixelColour(x, y, colour.asARGB());
     }
@@ -120,7 +122,8 @@ void FragmentShaders::material(const CanvasTriangle& _,
                 uniform.light,
                 data.position3D / data.depth,
                 uniform.normal,
-                data.texturePoint / data.depth);
+                data.texturePoint / data.depth,
+                uniform.material.getIlluminationModel());
 
         uniform.window.setPixelColour(x, y, colour.asARGB());
     }
@@ -142,7 +145,8 @@ void FragmentShaders::materialPhong(const CanvasTriangle& _,
             uniform.light,
             data.position3D / data.depth,
             data.normal / data.depth,
-            data.texturePoint / data.depth);
+            data.texturePoint / data.depth,
+            uniform.material.getIlluminationModel());
 
         uniform.window.setPixelColour(x, y, colour.asARGB());
     }

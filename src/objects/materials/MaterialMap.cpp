@@ -14,9 +14,10 @@ Material& MaterialMap::getMaterial(const std::string& name)
 
 MaterialMap::MaterialMap() :
     materials(std::unordered_map<std::string, Material>())
-{}
+{
+}
 
-MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &folderPath, const std::string &file)
+MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& folderPath, const std::string& file)
 {
     std::ifstream MaterialFile(StringHelpers::concatFolderFile(folderPath, file));
     std::string line;
@@ -32,23 +33,37 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fol
     IlluminationModel illuminationModel = defaultIlluminationModel;
     float shininess = defaultShininess;
 
-    while (getline(MaterialFile, line)) {
+    while (getline(MaterialFile, line))
+    {
         line = StringHelpers::trimLine(line);
 
         const auto tokens = split(line, ' ');
 
         // Defines a new material
-        if (tokens.at(0) == "newmtl" && !tokens.at(1).empty()) {
-            if (materialToStore) {
-                if (hasTexture && hasColour) {
+        if (tokens.at(0) == "newmtl" && !tokens.at(1).empty())
+        {
+            if (materialToStore)
+            {
+                if (hasTexture && hasColour)
+                {
                     materialMap.addMaterial(currentMaterialName,
-                                            Material(currentColour, illuminationModel, shininess,
-                                                     StringHelpers::concatFolderFile(folderPath, currentTextureFilename)));
-                } else if (hasTexture) {
+                                            Material(currentColour,
+                                                     StringHelpers::concatFolderFile(
+                                                         folderPath, currentTextureFilename),
+                                                     illuminationModel,
+                                                     shininess));
+                }
+                else if (hasTexture)
+                {
                     materialMap.addMaterial(currentMaterialName,
-                                            Material(Colour(255, 255, 255), illuminationModel, shininess,
-                                                     StringHelpers::concatFolderFile(folderPath, currentTextureFilename)));
-                } else if (hasColour) {
+                                            Material(Colour(255, 255, 255),
+                                                     StringHelpers::concatFolderFile(
+                                                         folderPath, currentTextureFilename),
+                                                     illuminationModel,
+                                                     shininess));
+                }
+                else if (hasColour)
+                {
                     materialMap.addMaterial(currentMaterialName,
                                             Material(currentColour, illuminationModel, shininess));
                 }
@@ -64,7 +79,8 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fol
         }
 
         // Colour for diffuse lighting
-        if (tokens.at(0) == "Kd" && !tokens.at(1).empty()) {
+        if (tokens.at(0) == "Kd" && !tokens.at(1).empty())
+        {
             materialToStore = true;
 
             const auto colourValue = Colour(
@@ -77,12 +93,14 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fol
         }
 
         // Strength of specular highlights
-        if (tokens.at(0) == "Ns" && !tokens.at(1).empty()) {
+        if (tokens.at(0) == "Ns" && !tokens.at(1).empty())
+        {
             shininess = std::stof(tokens.at(1));
         }
 
         // Location of texture map
-        if (tokens.at(0) == "map_Kd" && !tokens.at(1).empty()) {
+        if (tokens.at(0) == "map_Kd" && !tokens.at(1).empty())
+        {
             materialToStore = true;
 
             currentTextureFilename = tokens.at(1);
@@ -90,26 +108,40 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string &fol
         }
 
         // Illumination type (UNSHADED, FLAT, PHONG)
-        if (tokens.at(0) == "illum" && !tokens.at(1).empty()) {
-            switch (std::stoi(tokens.at(1))) {
-                case 0: illuminationModel = UNSHADED;
-                case 1: illuminationModel = FLAT;
-                case 2: illuminationModel = PHONG;
-                default: illuminationModel = FLAT;
+        if (tokens.at(0) == "illum" && !tokens.at(1).empty())
+        {
+            switch (std::stoi(tokens.at(1)))
+            {
+            case 0: illuminationModel = UNSHADED;
+            case 1: illuminationModel = FLAT;
+            case 2: illuminationModel = PHONG;
+            default: illuminationModel = FLAT;
             }
         }
     }
 
-    if (materialToStore) {
-        if (hasTexture && hasColour) {
+    if (materialToStore)
+    {
+        if (hasTexture && hasColour)
+        {
             materialMap.addMaterial(currentMaterialName,
-                                    Material(currentColour, illuminationModel, shininess,
-                                             StringHelpers::concatFolderFile(folderPath, currentTextureFilename)));
-        } else if (hasTexture) {
+                                    Material(
+                                        currentColour,
+                                        StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                        illuminationModel,
+                                        shininess));
+        }
+        else if (hasTexture)
+        {
             materialMap.addMaterial(currentMaterialName,
-                                    Material(Colour(255, 255, 255), illuminationModel, shininess,
-                                             StringHelpers::concatFolderFile(folderPath, currentTextureFilename)));
-        } else if (hasColour) {
+                                    Material(
+                                        Colour(255, 255, 255),
+                                        StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                        illuminationModel,
+                                        shininess));
+        }
+        else if (hasColour)
+        {
             materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, shininess));
         }
     }
