@@ -23,6 +23,7 @@ private:
         glm::vec3 startingPosition,
         glm::vec3 rayDirection,
         const std::vector<ModelTriangle>& triangles,
+        int depth,
         int previousShadowIntersection = -1) const;
 
     std::pair<Colour, int> mirror(
@@ -30,6 +31,7 @@ private:
         const RayTriangleIntersection& intersection,
         const std::vector<ModelTriangle>& triangles,
         const glm::vec3& normal,
+        int depth,
         float previousShadowIntersection) const;
 
     std::pair<Colour, int> surfaceColour(

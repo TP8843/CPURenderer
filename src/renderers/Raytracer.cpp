@@ -12,9 +12,12 @@ std::pair<Colour, int> Raytracer::fireRay(
     glm::vec3 startingPosition,
     glm::vec3 rayDirection,
     const std::vector<ModelTriangle>& triangles,
+    const int depth,
     int previousShadowIntersection) const
 {
     auto colour = Colour(0, 0, 0);
+
+    if (depth == 0) return std::make_pair(colour, -1);
 
     std::pair<bool, RayTriangleIntersection> intersection =
         getClosestIntersection(startingPosition, rayDirection, triangles);
@@ -31,7 +34,7 @@ std::pair<Colour, int> Raytracer::fireRay(
                                          getMaterial(intersection.second.intersectedTriangle.material);
 
         if (material.getIlluminationModel() == MIRROR)
-            return mirror(rayDirection, intersection.second, triangles, normal, previousShadowIntersection);
+            return mirror(rayDirection, intersection.second, triangles, normal, depth, previousShadowIntersection);
 
         return surfaceColour(intersection.second, triangles, normal, material, previousShadowIntersection);
     }
@@ -44,12 +47,13 @@ std::pair<Colour, int> Raytracer::mirror(
     const RayTriangleIntersection& intersection,
     const std::vector<ModelTriangle>& triangles,
     const glm::vec3& normal,
+    const int depth,
     const float previousShadowIntersection) const
 {
     const glm::vec3 reflectedRay = rayDirection
         - 2.0f * normal * glm::dot(rayDirection, normal);
 
-    return fireRay(intersection.intersectionPoint, reflectedRay, triangles, previousShadowIntersection);
+    return fireRay(intersection.intersectionPoint, reflectedRay, triangles, depth - 1, previousShadowIntersection);
 }
 
 std::pair<Colour, int> Raytracer::surfaceColour(
@@ -145,7 +149,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
             ));
 
             std::pair<Colour, int> final = fireRay(camera.position, camera.rotation * scenePosition,
-                                                   transformedTriangles, previousLightIntersection);
+                                                   transformedTriangles, 20, previousLightIntersection);
 
             previousLightIntersection = final.second;
 
