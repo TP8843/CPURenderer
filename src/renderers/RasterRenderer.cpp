@@ -76,8 +76,16 @@ void RasterRenderer::rasterRender(DrawingWindow& window) const
 
             std::array<FragmentData::FilledData, 3> data = {d0, d1, d2};
 
-            drawTriangle<FragmentData::DataUniform, FragmentData::FilledData>(
-                canvasTriangle, uniform, data, FragmentShaders::filled);
+            switch (material.getIlluminationModel())
+            {
+                case PHONG:
+                    drawTriangle<FragmentData::DataUniform, FragmentData::FilledData>(
+                        canvasTriangle, uniform, data, FragmentShaders::filledPhong); break;
+
+                default:
+                    drawTriangle<FragmentData::DataUniform, FragmentData::FilledData>(
+                        canvasTriangle, uniform, data, FragmentShaders::filled); break;
+            }
         }
         else
         {
@@ -96,8 +104,16 @@ void RasterRenderer::rasterRender(DrawingWindow& window) const
 
             std::array<FragmentData::TextureData, 3> data = {d1, d2, d3};
 
-            drawTriangle<FragmentData::DataUniform, FragmentData::TextureData>(
-                canvasTriangle, uniform, data, FragmentShaders::materialPhong);
+            switch (material.getIlluminationModel())
+            {
+            case PHONG:
+                drawTriangle<FragmentData::DataUniform, FragmentData::TextureData>(
+                    canvasTriangle, uniform, data, FragmentShaders::materialPhong); break;
+
+            default:
+                drawTriangle<FragmentData::DataUniform, FragmentData::TextureData>(
+                    canvasTriangle, uniform, data, FragmentShaders::material); break;
+            }
         }
     }
 

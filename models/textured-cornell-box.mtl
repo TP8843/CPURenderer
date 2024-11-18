@@ -19,6 +19,7 @@ Ns 256.000000
 
 newmtl Yellow
 Kd 1.000000 1.000000 0.000000
+illum 3
 
 newmtl Magenta
 Kd 1.000000 0.000000 1.000000

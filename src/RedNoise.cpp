@@ -58,11 +58,11 @@ int main(int argc, char* argv[])
     rasterTest.addRendererWrapper(&wireframeWrapper);
     rasterTest.addRendererWrapper(&raytracerWrapper);
 
-    rasterTest.preFrameHandlers.push_back(&orbitHandler);
-    rasterTest.eventHandlers.push_back(&orbitHandler);
-
     rasterTest.preFrameHandlers.push_back(&cameraControl);
     rasterTest.eventHandlers.push_back(&cameraControl);
+
+    rasterTest.preFrameHandlers.push_back(&orbitHandler);
+    rasterTest.eventHandlers.push_back(&orbitHandler);
 
     rasterTest.postFrameHandlers.push_back(&debugHandler);
     rasterTest.eventHandlers.push_back(&debugHandler);

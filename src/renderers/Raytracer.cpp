@@ -11,82 +11,115 @@ Raytracer::Raytracer(Model& model, Transformation& camera, Transformation& light
 std::pair<Colour, int> Raytracer::fireRay(
     glm::vec3 startingPosition,
     glm::vec3 rayDirection,
-    std::vector<ModelTriangle>& triangles,
+    const std::vector<ModelTriangle>& triangles,
     int previousShadowIntersection) const
 {
     auto colour = Colour(0, 0, 0);
 
     std::pair<bool, RayTriangleIntersection> intersection =
-                getClosestIntersection(startingPosition, rayDirection, triangles);
+        getClosestIntersection(startingPosition, rayDirection, triangles);
 
     if (intersection.first)
     {
         const std::array<glm::vec3, 3> vectorNormals = intersection.second.intersectedTriangle.vertexNormals;
 
         const glm::vec3 normal = vectorNormals[0]
-                + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
-                + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
+            + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
+            + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
 
         const Material& material = model.materials.
-                                 getMaterial(intersection.second.intersectedTriangle.material);
+                                         getMaterial(intersection.second.intersectedTriangle.material);
 
-        bool inShadow = false;
+        if (material.getIlluminationModel() == MIRROR)
+            return mirror(rayDirection, intersection.second, triangles, normal, previousShadowIntersection);
 
-        if (previousShadowIntersection != -1)
+        return surfaceColour(intersection.second, triangles, normal, material, previousShadowIntersection);
+    }
+
+    return std::make_pair(colour, previousShadowIntersection);
+}
+
+std::pair<Colour, int> Raytracer::mirror(
+    const glm::vec3& rayDirection,
+    const RayTriangleIntersection& intersection,
+    const std::vector<ModelTriangle>& triangles,
+    const glm::vec3& normal,
+    const float previousShadowIntersection) const
+{
+    const glm::vec3 reflectedRay = rayDirection
+        - 2.0f * normal * glm::dot(rayDirection, normal);
+
+    return fireRay(intersection.intersectionPoint, reflectedRay, triangles, previousShadowIntersection);
+}
+
+std::pair<Colour, int> Raytracer::surfaceColour(
+    const RayTriangleIntersection& intersection,
+    const std::vector<ModelTriangle>& triangles,
+    const glm::vec3& normal,
+    const Material& material,
+    int previousShadowIntersection) const
+{
+    auto colour = Colour(0, 0, 0);
+    bool inShadow = false;
+
+    if (previousShadowIntersection != -1)
+    {
+        if (triangleIntersectsPoints(
+            intersection.intersectionPoint,
+            light.position,
+            triangles.at(previousShadowIntersection)))
         {
-            if (triangleIntersectsPoints(
-                intersection.second.intersectionPoint,
-                light.position,
-                triangles.at(previousShadowIntersection)))
-            {
-                inShadow = true;
-            }
-            else
-            {
-                previousShadowIntersection = -1;
-            }
-        }
-
-        if (previousShadowIntersection == -1)
-        {
-            auto lightIntersection=
-                trianglesIntersectsPoints(intersection.second.intersectionPoint, light.position, intersection.second.triangleIndex, triangles);
-
-            inShadow = lightIntersection.first;
-
-            if (inShadow)
-            {
-                previousShadowIntersection = lightIntersection.second;
-            }
-        }
-
-        if (material.hasTexture())
-        {
-            const auto texturePoints = intersection.second.intersectedTriangle.texturePoints;
-
-            const auto finalTexturePoint = texturePoints[0]
-                + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
-                + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
-
-            colour = material.getColourAtPointInCameraSpace(
-                camera,
-                light,
-                (intersection.second.intersectionPoint - camera.position) * camera.rotation,
-                normal * camera.getNormalRotationMatrix(),
-                finalTexturePoint,
-                material.getIlluminationModel(),
-                inShadow);
+            inShadow = true;
         }
         else
         {
-            colour = material.getColourAtPointInCameraSpace(
-                camera,
-                light,
-                (intersection.second.intersectionPoint - camera.position) * camera.rotation,
-                normal * camera.getNormalRotationMatrix(),
-                material.getIlluminationModel(),
-                inShadow);
+            previousShadowIntersection = -1;
         }
+    }
+
+    if (previousShadowIntersection == -1)
+    {
+        const auto lightIntersection =
+            trianglesIntersectsPoints(
+                intersection.intersectionPoint,
+                light.position,
+                intersection.triangleIndex,
+                triangles);
+
+        inShadow = lightIntersection.first;
+
+        if (inShadow)
+        {
+            previousShadowIntersection = lightIntersection.second;
+        }
+    }
+
+    if (material.hasTexture())
+    {
+        const auto texturePoints = intersection.intersectedTriangle.texturePoints;
+
+        const auto finalTexturePoint = texturePoints[0]
+            + (texturePoints[1] - texturePoints[0]) * intersection.proportions.x
+            + (texturePoints[2] - texturePoints[0]) * intersection.proportions.y;
+
+        colour = material.getColourAtPointInCameraSpace(
+            camera,
+            light,
+            (intersection.intersectionPoint - camera.position) * camera.rotation,
+            normal * camera.getNormalRotationMatrix(),
+            finalTexturePoint,
+            material.getIlluminationModel(),
+            inShadow);
+    }
+    else
+    {
+        colour = material.getColourAtPointInCameraSpace(
+            camera,
+            light,
+            (intersection.intersectionPoint - camera.position) * camera.rotation,
+            normal * camera.getNormalRotationMatrix(),
+            material.getIlluminationModel(),
+            inShadow);
     }
 
     return std::make_pair(colour, previousShadowIntersection);
@@ -111,7 +144,8 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                 -1
             ));
 
-            std::pair<Colour, int> final = fireRay(camera.position, camera.rotation * scenePosition, transformedTriangles, previousLightIntersection);
+            std::pair<Colour, int> final = fireRay(camera.position, camera.rotation * scenePosition,
+                                                   transformedTriangles, previousLightIntersection);
 
             previousLightIntersection = final.second;
 
@@ -120,9 +154,10 @@ void Raytracer::renderFrame(DrawingWindow& window) const
     }
 }
 
-std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::vec3 camera,
-                                                                           glm::vec3 rayDirection,
-                                                                           std::vector<ModelTriangle>& triangles)
+std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(
+    glm::vec3 camera,
+    glm::vec3 rayDirection,
+    const std::vector<ModelTriangle>& triangles)
 {
     auto closestIntersection =
         std::pair<bool, RayTriangleIntersection>(false, RayTriangleIntersection());
@@ -144,7 +179,7 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::
         if ((possibleSolution.y >= 0.0 && possibleSolution.y <= 1.0) &&
             (possibleSolution.z >= 0.0 && possibleSolution.z <= 1.0) &&
             (possibleSolution.y + possibleSolution.z <= 1.0) &&
-            (possibleSolution.x >= 0) &&
+            (possibleSolution.x >= 0.00001f) &&
             (possibleSolution.x < closestSolution.x || !hasIntersection))
         {
             hasIntersection = true;
@@ -155,23 +190,23 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(glm::
 
     if (hasIntersection)
     {
-        ModelTriangle& closestTriangle = triangles.at(closestIndex);
+        const ModelTriangle& closestTriangle = triangles.at(closestIndex);
         glm::vec3 position = closestTriangle.vertices[0]
-        + (closestTriangle.vertices[1] - closestTriangle.vertices[0]) * closestSolution.y
-        + (closestTriangle.vertices[2] - closestTriangle.vertices[0]) * closestSolution.z;
+            + (closestTriangle.vertices[1] - closestTriangle.vertices[0]) * closestSolution.y
+            + (closestTriangle.vertices[2] - closestTriangle.vertices[0]) * closestSolution.z;
 
         return std::pair<bool, RayTriangleIntersection>(true, RayTriangleIntersection(
-            position,
-            glm::vec2(closestSolution.y, closestSolution.z),
-            closestSolution.x,
-            closestTriangle,
-            closestIndex));
+                                                            position,
+                                                            glm::vec2(closestSolution.y, closestSolution.z),
+                                                            closestSolution.x,
+                                                            closestTriangle,
+                                                            closestIndex));
     }
 
     return std::pair<bool, RayTriangleIntersection>(false, RayTriangleIntersection());
 }
 
-bool Raytracer::triangleIntersectsPoints(glm::vec3 point, glm::vec3 light, ModelTriangle triangle)
+bool Raytracer::triangleIntersectsPoints(glm::vec3 point, glm::vec3 light, const ModelTriangle& triangle)
 {
     glm::vec3 ray = light - point;
     float rayDistance = glm::length(ray);
@@ -195,15 +230,15 @@ bool Raytracer::triangleIntersectsPoints(glm::vec3 point, glm::vec3 light, Model
 }
 
 std::pair<bool, int> Raytracer::trianglesIntersectsPoints(glm::vec3 point, glm::vec3 light,
-    const int currentTriangleIndex,
-    std::vector<ModelTriangle>& triangles)
+                                                          const int currentTriangleIndex,
+                                                          const std::vector<ModelTriangle>& triangles)
 {
     glm::vec3 ray = light - point;
     float rayDistance = glm::length(ray);
 
     for (int i = 0; i < triangles.size(); i++)
     {
-        ModelTriangle& triangle = triangles.at(i);
+        const ModelTriangle& triangle = triangles.at(i);
 
         glm::vec3 e0 = triangle.vertices[1] - triangle.vertices[0];
         glm::vec3 e1 = triangle.vertices[2] - triangle.vertices[0];
@@ -218,9 +253,9 @@ std::pair<bool, int> Raytracer::trianglesIntersectsPoints(glm::vec3 point, glm::
             rayDistance > possibleSolution.x &&
             currentTriangleIndex != i)
         {
-            return std::make_pair(true, i);
+            return std::pair<bool, int>(true, i);
         }
     }
 
-    return std::make_pair(false, -1);
+    return std::pair<bool, int>(false, -1);
 }
