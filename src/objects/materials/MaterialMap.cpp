@@ -112,10 +112,10 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& fol
         {
             switch (std::stoi(tokens.at(1)))
             {
-            case 0: illuminationModel = UNSHADED;
-            case 1: illuminationModel = FLAT;
-            case 2: illuminationModel = PHONG;
-            default: illuminationModel = FLAT;
+            case 0: illuminationModel = UNSHADED; break;
+            case 1: illuminationModel = FLAT; break;
+            case 2: illuminationModel = PHONG; break;
+            default: illuminationModel = FLAT; break;
             }
         }
     }
