@@ -12,7 +12,7 @@ std::pair<Colour, int> Raytracer::fireRay(
     glm::vec3 startingPosition,
     glm::vec3 rayDirection,
     std::vector<ModelTriangle>& triangles,
-    int previousIntersection) const
+    int previousShadowIntersection) const
 {
     auto colour = Colour(0, 0, 0);
 
@@ -23,22 +23,22 @@ std::pair<Colour, int> Raytracer::fireRay(
     {
         bool inShadow = false;
 
-        if (previousIntersection != -1)
+        if (previousShadowIntersection != -1)
         {
             if (triangleIntersectsPoints(
                 intersection.second.intersectionPoint,
                 light.position,
-                triangles.at(previousIntersection)))
+                triangles.at(previousShadowIntersection)))
             {
                 inShadow = true;
             }
             else
             {
-                previousIntersection = -1;
+                previousShadowIntersection = -1;
             }
         }
 
-        if (previousIntersection == -1)
+        if (previousShadowIntersection == -1)
         {
             auto lightIntersection=
                 trianglesIntersectsPoints(intersection.second.intersectionPoint, light.position, intersection.second.triangleIndex, triangles);
@@ -47,7 +47,7 @@ std::pair<Colour, int> Raytracer::fireRay(
 
             if (inShadow)
             {
-                previousIntersection = lightIntersection.second;
+                previousShadowIntersection = lightIntersection.second;
             }
         }
 
@@ -89,7 +89,7 @@ std::pair<Colour, int> Raytracer::fireRay(
         }
     }
 
-    return std::make_pair(colour, previousIntersection);
+    return std::make_pair(colour, previousShadowIntersection);
 }
 
 void Raytracer::renderFrame(DrawingWindow& window) const

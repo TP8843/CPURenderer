@@ -23,7 +23,7 @@ private:
         glm::vec3 startingPosition,
         glm::vec3 rayDirection,
         std::vector<ModelTriangle>& triangles,
-        int previousIntersection = -1) const;
+        int previousShadowIntersection = -1) const;
 
     static std::pair<bool, RayTriangleIntersection> getClosestIntersection(glm::vec3 camera,
                                                                            glm::vec3 rayDirection,
