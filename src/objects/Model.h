@@ -23,7 +23,7 @@ public:
         };
     }
 
-    static Model import(const std::string& objectPath, Transformation& transformation);
+    static Model import(const std::string& objectPath, MaterialMap& materialMap, Transformation& transformation);
 
     // Transforms all triangles via the Transformation property
     std::vector<ModelTriangle> getTransformedTriangles() const;

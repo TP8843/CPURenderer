@@ -17,24 +17,23 @@ Model::Model(const std::vector<ModelTriangle> &triangles, MaterialMap materials,
 {
 }
 
-Model Model::import(const std::string& objectPath, Transformation& transformation) {
+Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Transformation& transformation) {
     std::string text;
     std::ifstream ObjectFile(objectPath);
 
     auto pathString = objectPath;
     const std::string parentPath = StringHelpers::getFolderPath(pathString);
 
-    MaterialMap materialMap = MaterialMap();
     std::string currentMaterial = "Backup";
     bool loadedMaterialFile = false;
 
     std::vector<glm::vec3> vertices;
 
     // Stores the total of the adjacent face normals and the number of adjacent faces (vertex normal total, number of normals)
-    std::vector<std::pair<glm::vec3, float> > vertexNormalTotals;
+    std::vector<std::pair<glm::vec3, float>> vertexNormalTotals;
 
     // The vertices for each triangle
-    std::vector<std::vector<int> > triangleVertexIndices;
+    std::vector<std::vector<int>> triangleVertexIndices;
 
     std::vector<glm::vec3> customVertexNormals;
     std::vector<glm::vec2> vertexTextures;
@@ -48,7 +47,7 @@ Model Model::import(const std::string& objectPath, Transformation& transformatio
 
         // Import materials
         if (tokens.at(0) == "mtllib") {
-            materialMap = MaterialMap::import(materialMap, parentPath, tokens.at(1));
+            materialMap = MaterialMap::import(materialMap, objectPath, parentPath, tokens.at(1));
             loadedMaterialFile = true;
         }
 
@@ -110,8 +109,8 @@ Model Model::import(const std::string& objectPath, Transformation& transformatio
                     const auto point = vertexTextures.at(std::stoi(vertexTokens.at(1)) - 1);
 
                     polygonTexturePoints.emplace_back(
-                            point.x * static_cast<float>(materialMap.getMaterial(currentMaterial).getTextureWidth()),
-                            point.y * static_cast<float>(materialMap.getMaterial(currentMaterial).getTextureHeight()));
+                            point.x * static_cast<float>(materialMap.getMaterial(objectPath + currentMaterial).getTextureWidth()),
+                            point.y * static_cast<float>(materialMap.getMaterial(objectPath + currentMaterial).getTextureHeight()));
                 }
 
                 // If vertex has vertex normal data
@@ -155,28 +154,29 @@ Model Model::import(const std::string& objectPath, Transformation& transformatio
                         vertexNormalTotal.second + 1);
                 }
 
+                std::cout << "Using material with identifier: " << objectPath + currentMaterial << std::endl;
 
                 if (hasTexture && hasNormal) {
                     triangles.emplace_back(faceVertices[0], polygonTexturePoints[0], polygonVertexNormals[0],
                                            faceVertices[i], polygonTexturePoints[i], polygonVertexNormals[i],
                                            faceVertices[i + 1], polygonTexturePoints[i + 1], polygonVertexNormals[i + 1],
                                            normal,
-                                           currentMaterial);
+                                           objectPath + currentMaterial);
                 } else if (hasNormal) {
                     triangles.emplace_back(faceVertices[0], polygonVertexNormals[0],
                                            faceVertices[i], polygonVertexNormals[i],
                                            faceVertices[i + 1], polygonVertexNormals[i + 1],
                                            normal,
-                                           currentMaterial);
+                                           objectPath + currentMaterial);
                 } else if (hasTexture) {
                     triangles.emplace_back(faceVertices[0], polygonTexturePoints[0],
                                            faceVertices[i], polygonTexturePoints[i],
                                            faceVertices[i + 1], polygonTexturePoints[i + 1],
                                            normal,
-                                           currentMaterial);
+                                           objectPath + currentMaterial);
                 } else {
                     triangles.emplace_back(faceVertices[0], faceVertices[i], faceVertices[i + 1], normal,
-                                           currentMaterial);
+                                           objectPath + currentMaterial);
                 }
             }
         }

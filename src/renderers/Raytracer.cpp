@@ -3,8 +3,8 @@
 
 #include <RayTriangleIntersection.h>
 
-Raytracer::Raytracer(Model& model, Transformation& camera, Transformation& light) :
-    model(model), camera(camera), light(light)
+Raytracer::Raytracer(Scene& scene) :
+    scene(scene)
 {
 }
 
@@ -30,7 +30,7 @@ std::pair<Colour, int> Raytracer::fireRay(
             + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
             + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
 
-        const Material& material = model.materials.
+        const Material& material = scene.materials.
                                          getMaterial(intersection.second.intersectedTriangle.material);
 
         if (material.getIlluminationModel() == MIRROR)
@@ -70,7 +70,7 @@ std::pair<Colour, int> Raytracer::surfaceColour(
     {
         if (triangleIntersectsPoints(
             intersection.intersectionPoint,
-            light.position,
+            scene.light.position,
             triangles.at(previousShadowIntersection)))
         {
             inShadow = true;
@@ -86,7 +86,7 @@ std::pair<Colour, int> Raytracer::surfaceColour(
         const auto lightIntersection =
             trianglesIntersectsPoints(
                 intersection.intersectionPoint,
-                light.position,
+                scene.light.position,
                 intersection.triangleIndex,
                 triangles);
 
@@ -107,10 +107,10 @@ std::pair<Colour, int> Raytracer::surfaceColour(
             + (texturePoints[2] - texturePoints[0]) * intersection.proportions.y;
 
         colour = material.getColourAtPointInCameraSpace(
-            camera,
-            light,
-            (intersection.intersectionPoint - camera.position) * camera.rotation,
-            normal * camera.getNormalRotationMatrix(),
+            scene.camera,
+            scene.light,
+            (intersection.intersectionPoint - scene.camera.position) * scene.camera.rotation,
+            normal * scene.camera.getNormalRotationMatrix(),
             finalTexturePoint,
             material.getIlluminationModel(),
             inShadow);
@@ -118,10 +118,10 @@ std::pair<Colour, int> Raytracer::surfaceColour(
     else
     {
         colour = material.getColourAtPointInCameraSpace(
-            camera,
-            light,
-            (intersection.intersectionPoint - camera.position) * camera.rotation,
-            normal * camera.getNormalRotationMatrix(),
+            scene.camera,
+            scene.light,
+            (intersection.intersectionPoint - scene.camera.position) * scene.camera.rotation,
+            normal * scene.camera.getNormalRotationMatrix(),
             material.getIlluminationModel(),
             inShadow);
     }
@@ -136,7 +136,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
     int previousLightIntersection = -1;
 
-    auto transformedTriangles = model.getTransformedTriangles();
+    auto transformedTriangles = scene.getTransformedTriangles();
 
     for (size_t j = 0; j < window.height; j++)
     {
@@ -148,7 +148,7 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                 -1
             ));
 
-            std::pair<Colour, int> final = fireRay(camera.position, camera.rotation * scenePosition,
+            std::pair<Colour, int> final = fireRay(scene.camera.position, scene.camera.rotation * scenePosition,
                                                    transformedTriangles, 20, previousLightIntersection);
 
             previousLightIntersection = final.second;

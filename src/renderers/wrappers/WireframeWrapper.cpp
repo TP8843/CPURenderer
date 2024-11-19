@@ -10,18 +10,17 @@ WireframeWrapper::WireframeWrapper(RasterRenderer& renderer) :
 
 Transformation& WireframeWrapper::getCamera()
 {
-    return renderer.camera;
+    return renderer.scene.camera;
 }
 
 Model& WireframeWrapper::getModel()
 {
-    return renderer.model;
+    return *renderer.scene.models.at(0);
 }
 
 Transformation& WireframeWrapper::getLight()
 {
-    auto light = Transformation();
-    return light;
+    return renderer.scene.light;
 }
 
 void WireframeWrapper::renderFrame(DrawingWindow& window)

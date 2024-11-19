@@ -5,18 +5,17 @@
 #include <RayTriangleIntersection.h>
 
 #include "../objects/Model.h"
+#include "../objects/Scene.h"
 
 
 class Raytracer
 {
 public:
-    Raytracer(Model& model, Transformation& camera, Transformation& light);
+    Raytracer(Scene& scene);
 
     void renderFrame(DrawingWindow& window) const;
 
-    Model& model;
-    Transformation& camera;
-    Transformation& light;
+    Scene& scene;
 
 private:
     std::pair<Colour, int> fireRay(

@@ -16,7 +16,7 @@ public:
     static std::string defaultName() { return "Backup"; }
     static constexpr IlluminationModel defaultIlluminationModel = FLAT;
 
-    static MaterialMap import(MaterialMap& materialMap, const std::string &folderPath, const std::string &file);
+    static MaterialMap import(MaterialMap& materialMap, const std::string& originalPath, const std::string& folderPath, const std::string& file);
 
 private:
     std::unordered_map<std::string, Material> materials;

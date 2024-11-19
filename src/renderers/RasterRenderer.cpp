@@ -4,18 +4,18 @@
 #include "../shaders/FragmentShaders.h"
 #include "../shaders/FragmentData.h"
 
-RasterRenderer::RasterRenderer(Model& model, Transformation& camera, Transformation& light) :
-    model(model), camera(camera), light(light)
+RasterRenderer::RasterRenderer(Scene& scene) :
+    scene(scene)
 {
 }
 
 void RasterRenderer::pointCloudRender(DrawingWindow& window) const
 {
-    for (const auto& triangle : model.triangles)
+    for (const auto& triangle : scene.getRasterPreparedTriangles(scene.camera))
     {
         for (const auto vertex : triangle.vertices)
         {
-            const auto mappedVertex = projectVertexOntoCanvasPoint(vertex, window.width, window.height, camera.scale);
+            const auto mappedVertex = projectVertexOntoCanvasPoint(vertex, window.width, window.height, scene.camera.scale);
 
             window.setPixelColour(static_cast<int>(mappedVertex.x), static_cast<int>(mappedVertex.y), 0xFFFFFFFF);
         }
@@ -24,13 +24,13 @@ void RasterRenderer::pointCloudRender(DrawingWindow& window) const
 
 void RasterRenderer::wireframeRender(DrawingWindow& window) const
 {
-    for (const auto& triangle : model.getRasterPreparedTriangles(camera))
+    for (const auto& triangle : scene.getRasterPreparedTriangles(scene.camera))
     {
         auto mappedVertices = std::vector<CanvasPoint>();
 
         for (const auto vertex : triangle.vertices)
         {
-            mappedVertices.push_back(projectVertexOntoCanvasPoint(vertex, window.width, window.height, camera.scale));
+            mappedVertices.push_back(projectVertexOntoCanvasPoint(vertex, window.width, window.height, scene.camera.scale));
         }
 
         Draw::drawStrokedTriangle(window, CanvasTriangle(mappedVertices[0], mappedVertices[1], mappedVertices[2],
@@ -40,22 +40,22 @@ void RasterRenderer::wireframeRender(DrawingWindow& window) const
 
 void RasterRenderer::rasterRender(DrawingWindow& window) const
 {
-    std::vector<ModelTriangle> clippedTriangles = model.getRasterPreparedTriangles(camera);
+    std::vector<ModelTriangle> clippedTriangles = scene.getRasterPreparedTriangles(scene.camera);
 
     // Pre pass to pre calculate depth values to avoid multiple shader calls per pixel.
     auto** depthBuffer = generateDepthBuffer(clippedTriangles, window.width, window.height);
 
     for (const auto& triangle : clippedTriangles)
     {
-        Material& material = model.materials.getMaterial(triangle.material);
+        Material& material = scene.materials.getMaterial(triangle.material);
 
-        CanvasPoint v0 = projectVertexOntoCanvasPoint(triangle.vertices[0], window.width, window.height, camera.scale);
-        CanvasPoint v1 = projectVertexOntoCanvasPoint(triangle.vertices[1], window.width, window.height, camera.scale);
-        CanvasPoint v2 = projectVertexOntoCanvasPoint(triangle.vertices[2], window.width, window.height, camera.scale);
+        CanvasPoint v0 = projectVertexOntoCanvasPoint(triangle.vertices[0], window.width, window.height, scene.camera.scale);
+        CanvasPoint v1 = projectVertexOntoCanvasPoint(triangle.vertices[1], window.width, window.height, scene.camera.scale);
+        CanvasPoint v2 = projectVertexOntoCanvasPoint(triangle.vertices[2], window.width, window.height, scene.camera.scale);
 
         // Placeholder colour to allow original raster to work
         const auto canvasTriangle = CanvasTriangle(v0, v1, v2, Colour());
-        const auto uniform = FragmentData::DataUniform(window, depthBuffer, material, camera, light, triangle.normal);
+        const auto uniform = FragmentData::DataUniform(window, depthBuffer, material, scene.camera, scene.light, triangle.normal);
 
         if (!material.hasTexture())
         {
@@ -144,9 +144,9 @@ float** RasterRenderer::generateDepthBuffer(const std::vector<ModelTriangle>& tr
     for (const auto& triangle : triangles)
     {
         const auto canvasTriangle = CanvasTriangle(
-            projectVertexOntoCanvasPoint(triangle.vertices[0], width, height, camera.scale),
-            projectVertexOntoCanvasPoint(triangle.vertices[1], width, height, camera.scale),
-            projectVertexOntoCanvasPoint(triangle.vertices[2], width, height, camera.scale),
+            projectVertexOntoCanvasPoint(triangle.vertices[0], width, height, scene.camera.scale),
+            projectVertexOntoCanvasPoint(triangle.vertices[1], width, height, scene.camera.scale),
+            projectVertexOntoCanvasPoint(triangle.vertices[2], width, height, scene.camera.scale),
             placeholderColour
         );
 
@@ -166,9 +166,9 @@ float** RasterRenderer::generateDepthBuffer(const std::vector<ModelTriangle>& tr
 glm::vec3 RasterRenderer::applyCameraTransformation(const glm::vec3 vertex) const
 {
     // Map model space to camera space
-    glm::vec3 cameraVertexPosition = vertex - camera.position;
+    glm::vec3 cameraVertexPosition = vertex - scene.camera.position;
 
-    cameraVertexPosition = cameraVertexPosition * camera.rotation;
+    cameraVertexPosition = cameraVertexPosition * scene.camera.rotation;
 
     return cameraVertexPosition;
 }

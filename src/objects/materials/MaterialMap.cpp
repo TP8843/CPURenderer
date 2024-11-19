@@ -17,7 +17,7 @@ MaterialMap::MaterialMap() :
 {
 }
 
-MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& folderPath, const std::string& file)
+MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& originalPath, const std::string& folderPath, const std::string& file)
 {
     std::ifstream MaterialFile(StringHelpers::concatFolderFile(folderPath, file));
     std::string line;
@@ -44,9 +44,10 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& fol
         {
             if (materialToStore)
             {
+                std::cout << "Adding material with identifier: " << originalPath + currentMaterialName << std::endl;
                 if (hasTexture && hasColour)
                 {
-                    materialMap.addMaterial(currentMaterialName,
+                    materialMap.addMaterial(originalPath + currentMaterialName,
                                             Material(currentColour,
                                                      StringHelpers::concatFolderFile(
                                                          folderPath, currentTextureFilename),
@@ -55,7 +56,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& fol
                 }
                 else if (hasTexture)
                 {
-                    materialMap.addMaterial(currentMaterialName,
+                    materialMap.addMaterial(originalPath + currentMaterialName,
                                             Material(Colour(255, 255, 255),
                                                      StringHelpers::concatFolderFile(
                                                          folderPath, currentTextureFilename),
@@ -64,7 +65,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& fol
                 }
                 else if (hasColour)
                 {
-                    materialMap.addMaterial(currentMaterialName,
+                    materialMap.addMaterial(originalPath + currentMaterialName,
                                             Material(currentColour, illuminationModel, shininess));
                 }
             }
@@ -123,9 +124,10 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& fol
 
     if (materialToStore)
     {
+        std::cout << "Adding material with identifier: " << originalPath + currentMaterialName << std::endl;
         if (hasTexture && hasColour)
         {
-            materialMap.addMaterial(currentMaterialName,
+            materialMap.addMaterial(originalPath + currentMaterialName,
                                     Material(
                                         currentColour,
                                         StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
@@ -134,7 +136,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& fol
         }
         else if (hasTexture)
         {
-            materialMap.addMaterial(currentMaterialName,
+            materialMap.addMaterial(originalPath + currentMaterialName,
                                     Material(
                                         Colour(255, 255, 255),
                                         StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
@@ -143,7 +145,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& fol
         }
         else if (hasColour)
         {
-            materialMap.addMaterial(currentMaterialName, Material(currentColour, illuminationModel, shininess));
+            materialMap.addMaterial(originalPath + currentMaterialName, Material(currentColour, illuminationModel, shininess));
         }
     }
 

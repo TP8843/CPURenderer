@@ -11,15 +11,15 @@ void RaytracerWrapper::renderFrame(DrawingWindow& window)
 
 Transformation& RaytracerWrapper::getCamera()
 {
-    return raytracer.camera;
+    return raytracer.scene.camera;
 }
 
 Model& RaytracerWrapper::getModel()
 {
-    return raytracer.model;
+    return *raytracer.scene.models.at(0);
 }
 
 Transformation& RaytracerWrapper::getLight()
 {
-    return raytracer.light;
+    return raytracer.scene.light;
 }

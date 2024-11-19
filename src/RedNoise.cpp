@@ -4,6 +4,7 @@
 #include "handlers/CameraControl.h"
 #include "handlers/DebugHandler.h"
 #include "handlers/OrbitHandler.h"
+#include "objects/Scene.h"
 #include "renderers/wrappers/RendererWrapper.h"
 #include "renderers/wrappers/RasterWrapper.h"
 #include "renderers/wrappers/RaytracerWrapper.h"
@@ -31,9 +32,18 @@ int main(int argc, char* argv[])
 
     auto renderLoop = RenderLoop(WIDTH, HEIGHT);
 
+    auto materialMap = MaterialMap();
+
     auto transformation = Transformation();
     transformation.scale = scale;
-    auto model = Model::import(modelFile, transformation);
+    auto model = Model::import(modelFile, materialMap, transformation);
+
+    auto transformation2 = Transformation();
+    auto model2 = Model::import("../models/sphere.obj", materialMap, transformation2);
+
+    auto models = std::vector<Model*>();
+    models.push_back(&model);
+    models.push_back(&model2);
 
     auto camera = Transformation(glm::vec3(0, 0, 10),
                          glm::mat3(),
@@ -41,16 +51,18 @@ int main(int argc, char* argv[])
 
     auto light = Transformation(glm::vec3(0, 2, 0), glm::mat3(), 0.5f);
 
+    auto scene = Scene(models, materialMap, camera, light);
+
     auto orbitHandler = OrbitHandler(camera, glm::vec3());
     auto cameraControl = CameraControl(camera, light);
 
     auto debugHandler = DebugHandler(model, camera);
 
-    auto renderer = RasterRenderer(model, camera, light);
+    auto renderer = RasterRenderer(scene);
     auto rasterWrapper = RasterWrapper(renderer);
     auto wireframeWrapper = WireframeWrapper(renderer);
 
-    auto raytracer = Raytracer(model, camera, light);
+    auto raytracer = Raytracer(scene);
     auto raytracerWrapper = RaytracerWrapper(raytracer);
 
     auto rasterTest = RasterTest();

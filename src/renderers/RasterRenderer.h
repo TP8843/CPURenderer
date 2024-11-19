@@ -6,12 +6,13 @@
 
 #include "../helper/Interpolation.h"
 #include "../objects/Model.h"
+#include "../objects/Scene.h"
 
 // Electric Boogaloo
 class RasterRenderer
 {
 public:
-    RasterRenderer(Model& model, Transformation& camera, Transformation& light);
+    explicit RasterRenderer(Scene& scene);
 
     void pointCloudRender(DrawingWindow& window) const;
     void wireframeRender(DrawingWindow& window) const;
@@ -19,9 +20,7 @@ public:
 
     static CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 vertex, size_t width, size_t height, float focalLength);
 
-    Model& model;
-    Transformation& camera;
-    Transformation& light;
+    Scene& scene;
 
 private:
     float** generateDepthBuffer(const std::vector<ModelTriangle>& triangles, size_t width, size_t height) const;

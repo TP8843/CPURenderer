@@ -11,15 +11,15 @@ void RasterWrapper::renderFrame(DrawingWindow& window)
 
 Transformation& RasterWrapper::getCamera()
 {
-    return renderer.camera;
+    return renderer.scene.camera;
 }
 
 Model& RasterWrapper::getModel()
 {
-    return renderer.model;
+    return *renderer.scene.models.at(0);
 }
 
 Transformation& RasterWrapper::getLight()
 {
-    return renderer.light;
+    return renderer.scene.light;
 }
