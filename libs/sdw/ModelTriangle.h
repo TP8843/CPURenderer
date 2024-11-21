@@ -2,8 +2,8 @@
 
 #include <glm/glm.hpp>
 #include <array>
-#include <TextureMap.h>
 
+#include "TextureMap.h"
 #include "TexturePoint.h"
 
 struct ModelTriangle

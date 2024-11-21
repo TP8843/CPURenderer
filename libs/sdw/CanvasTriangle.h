@@ -1,10 +1,9 @@
 #pragma once
 
 #include "CanvasPoint.h"
-#include <iostream>
 #include <array>
-#include <Colour.h>
-#include <TextureMap.h>
+#include "Colour.h"
+#include "TextureMap.h"
 
 struct CanvasTriangle {
 	std::array<CanvasPoint, 3> vertices{};
