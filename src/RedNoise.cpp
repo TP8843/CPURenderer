@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
                          glm::mat3(),
                          1);
 
-    auto light = Transformation(glm::vec3(0, 2, 0), glm::mat3(), 1.f);
+    auto light = Transformation(glm::vec3(0, 2, 0), glm::mat3(), 2.f);
 
     auto scene = Scene(models, materialMap, camera, light);
 

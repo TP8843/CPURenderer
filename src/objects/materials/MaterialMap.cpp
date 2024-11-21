@@ -94,9 +94,9 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
             materialToStore = true;
 
             const auto colourValue = glm::vec4(
-                std::stof(tokens.at(1)),
-                std::stof(tokens.at(2)),
-                std::stof(tokens.at(3)),
+                glm::pow(std::stof(tokens.at(1)), 2.2f),
+                glm::pow(std::stof(tokens.at(2)), 2.2f),
+                glm::pow(std::stof(tokens.at(3)), 2.2f),
                 1);
 
             hasColour = true;

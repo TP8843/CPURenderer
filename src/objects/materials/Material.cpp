@@ -15,7 +15,12 @@ uint32_t Material::getScreenColour(const glm::vec4 colour)
 
     const float luminance = 0.2126 * colour.r + 0.7152 * colour.g + 0.0722 * colour.b;
 
-    const glm::vec4 correctedColour = colour / (1.f + colour);
+    glm::vec4 correctedColour = colour / (1.f + colour);
+    correctedColour = glm::vec4(
+        glm::pow(correctedColour.r, 1.f / 2.2f),
+        glm::pow(correctedColour.g, 1.f / 2.2f),
+        glm::pow(correctedColour.b, 1.f / 2.2f),
+        glm::pow(correctedColour.a, 1.f / 2.2f));
 
     const uint32_t a = static_cast<uint32_t>(glm::round(glm::max(correctedColour.a * 255.f, 0.f))) << 24;
     const uint32_t r = static_cast<uint32_t>(glm::round(glm::max(correctedColour.r * 255.f, 0.f))) << 16;
@@ -52,9 +57,9 @@ glm::vec4 Material::getPixelTextureColour(const int x, const int y) const
     const int startingPosition = (textureWidth * tiledY + tiledX) * charsPerPixel;
 
     return {
-        static_cast<float>(texture[startingPosition + 0]) / 255.0f,
-        static_cast<float>(texture[startingPosition + 1]) / 255.0f,
-        static_cast<float>(texture[startingPosition + 2]) / 255.0f,
+        glm::pow(static_cast<float>(texture[startingPosition + 0]) / 255.0f, 2.2f),
+        glm::pow(static_cast<float>(texture[startingPosition + 1]) / 255.0f, 2.2f),
+        glm::pow(static_cast<float>(texture[startingPosition + 2]) / 255.0f, 2.2f),
         1
     };
 }
@@ -182,10 +187,10 @@ glm::vec4 Material::flatShadedColour(
 
     if (inShadow)
     {
-        return getAmbient(0.2f, ambientColour);
+        return getAmbient(0.05f, ambientColour);
     }
 
-    return getAmbient(0.2f, ambientColour)
+    return getAmbient(0.05f, ambientColour)
         + getDiffuse(normalisedLightDisplacement, distanceFromLight, normal, diffuseColour) * light.scale;
 }
 
@@ -206,10 +211,10 @@ glm::vec4 Material::phongShadedColour(
 
     if (inShadow)
     {
-        return getAmbient(0.2f, ambientColour);
+        return getAmbient(0.05f, ambientColour);
     }
 
-    return getAmbient(0.2f, ambientColour) +
+    return getAmbient(0.05f, ambientColour) +
     (getDiffuse(normalisedLightDisplacement, distanceFromLight, normal, diffuseColour)
         + getPhong(normalisedLightDisplacement, point, normal, specularColour, specularStrength)) * light.scale;
 }
@@ -227,7 +232,8 @@ glm::vec4 Material::getDiffuse(
     const glm::vec3& normal,
     const glm::vec4& diffuseColour)
 {
-    return diffuseColour * glm::max((glm::dot(normal, normalisedLightDisplacement)) / (1.f * distanceFromLight),
+    return diffuseColour * 2.f * glm::max((glm::dot(normal, normalisedLightDisplacement))
+        / (4.f * glm::pow(distanceFromLight, 2.f)),
                                       0.0f);
 }
 
@@ -241,6 +247,7 @@ glm::vec4 Material::getPhong(
     const auto reflectedDirection = normalisedLightDisplacement
         - 2.0f * normal * glm::dot(normalisedLightDisplacement, normal);
 
-    return specularColour * glm::pow(
-        glm::max(glm::dot(glm::normalize(point), glm::normalize(reflectedDirection)), 0.0f), specularStrength);
+    return specularColour * glm::pow(glm::max(
+        glm::dot(glm::normalize(point), glm::normalize(reflectedDirection)),
+        0.0f), specularStrength);
 }
