@@ -7,12 +7,14 @@
 - [ ] Gourard Shading
 - [x] Phong Shading
 - [x] Mirrors
+- [x] Multiple models
 - [x] Redo colour system to support HDR and arbitrary values during calculation steps
 - [ ] Animation system
   - [ ] Linear Interpolation
   - [ ] Cubic Interpolation
   - [ ] Bézier curves (for smoother movement)
 - [ ] Metallic shading (tinted mirror surface with perturbations)
+- [ ] Multiple lights
 - [ ] Concurrency
 
 ## Generating Debug and Release Makefiles
