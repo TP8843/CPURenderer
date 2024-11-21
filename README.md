@@ -9,6 +9,7 @@
 - [x] Mirrors
 - [x] Multiple models
 - [x] Redo colour system to support HDR and arbitrary values during calculation steps
+- [ ] Add gamma correction to improve colour accuracy (https://learnopengl.com/Advanced-Lighting/Gamma-Correction)
 - [ ] Animation system
   - [ ] Linear Interpolation
   - [ ] Cubic Interpolation
