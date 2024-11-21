@@ -9,6 +9,8 @@ class MaterialMap {
 public:
     void addMaterial(const std::string& name, const Material& material);
     Material& getMaterial(const std::string& name);
+    int size() const;
+    bool hasMaterial(const std::string& name) const;
 
     MaterialMap();
 

@@ -12,6 +12,16 @@ Material& MaterialMap::getMaterial(const std::string& name)
     return materials.at(name);
 }
 
+int MaterialMap::size() const
+{
+    return materials.size();
+}
+
+bool MaterialMap::hasMaterial(const std::string& name) const
+{
+    return materials.find(name) != materials.end();
+}
+
 MaterialMap::MaterialMap() :
     materials(std::unordered_map<std::string, Material>())
 {
@@ -44,7 +54,6 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
         {
             if (materialToStore)
             {
-                std::cout << "Adding material with identifier: " << originalPath + currentMaterialName << std::endl;
                 if (hasTexture && hasColour)
                 {
                     materialMap.addMaterial(originalPath + currentMaterialName,
@@ -124,7 +133,6 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
 
     if (materialToStore)
     {
-        std::cout << "Adding material with identifier: " << originalPath + currentMaterialName << std::endl;
         if (hasTexture && hasColour)
         {
             materialMap.addMaterial(originalPath + currentMaterialName,

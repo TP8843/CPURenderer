@@ -154,8 +154,6 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
                         vertexNormalTotal.second + 1);
                 }
 
-                std::cout << "Using material with identifier: " << objectPath + currentMaterial << std::endl;
-
                 if (hasTexture && hasNormal) {
                     triangles.emplace_back(faceVertices[0], polygonTexturePoints[0], polygonVertexNormals[0],
                                            faceVertices[i], polygonTexturePoints[i], polygonVertexNormals[i],
@@ -199,7 +197,7 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
         }
     }
 
-    if (!loadedMaterialFile) {
+    if (!materialMap.hasMaterial("Backup")) {
         materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 32.0f));
     }
 
