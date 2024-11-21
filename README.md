@@ -7,7 +7,7 @@
 - [ ] Gourard Shading
 - [x] Phong Shading
 - [x] Mirrors
-- [ ] Redo colour system to support HDR and arbitrary values during calculation steps
+- [x] Redo colour system to support HDR and arbitrary values during calculation steps
 - [ ] Animation system
   - [ ] Linear Interpolation
   - [ ] Cubic Interpolation
