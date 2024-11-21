@@ -38,7 +38,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
     bool hasColour = false;
 
     std::string currentTextureFilename;
-    Colour currentColour;
+    glm::vec4 currentColour;
 
     IlluminationModel illuminationModel = defaultIlluminationModel;
     float shininess = defaultShininess;
@@ -66,7 +66,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
                 else if (hasTexture)
                 {
                     materialMap.addMaterial(originalPath + currentMaterialName,
-                                            Material(Colour(255, 255, 255),
+                                            Material(glm::vec4(1),
                                                      StringHelpers::concatFolderFile(
                                                          folderPath, currentTextureFilename),
                                                      illuminationModel,
@@ -93,10 +93,11 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
         {
             materialToStore = true;
 
-            const auto colourValue = Colour(
-                glm::round(std::stof(tokens.at(1)) * 255.0f),
-                glm::round(std::stof(tokens.at(2)) * 255.0f),
-                glm::round(std::stof(tokens.at(3)) * 255.0f));
+            const auto colourValue = glm::vec4(
+                std::stof(tokens.at(1)),
+                std::stof(tokens.at(2)),
+                std::stof(tokens.at(3)),
+                1);
 
             hasColour = true;
             currentColour = colourValue;
@@ -146,7 +147,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
         {
             materialMap.addMaterial(originalPath + currentMaterialName,
                                     Material(
-                                        Colour(255, 255, 255),
+                                        glm::vec4(1),
                                         StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
                                         illuminationModel,
                                         shininess));

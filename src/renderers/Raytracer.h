@@ -18,14 +18,14 @@ public:
     Scene& scene;
 
 private:
-    std::pair<Colour, int> fireRay(
+    std::pair<glm::vec4, int> fireRay(
         glm::vec3 startingPosition,
         glm::vec3 rayDirection,
         const std::vector<ModelTriangle>& triangles,
         int depth,
         int previousShadowIntersection = -1) const;
 
-    std::pair<Colour, int> mirror(
+    std::pair<glm::vec4, int> mirror(
         const glm::vec3& rayDirection,
         const RayTriangleIntersection& intersection,
         const std::vector<ModelTriangle>& triangles,
@@ -33,7 +33,7 @@ private:
         int depth,
         float previousShadowIntersection) const;
 
-    std::pair<Colour, int> surfaceColour(
+    std::pair<glm::vec4, int> surfaceColour(
         const RayTriangleIntersection& intersection,
         const std::vector<ModelTriangle>& triangles,
         const glm::vec3& normal,

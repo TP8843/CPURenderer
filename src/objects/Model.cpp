@@ -198,7 +198,7 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
     }
 
     if (!materialMap.hasMaterial("Backup")) {
-        materialMap.addMaterial("Backup", Material(Colour(255, 255, 255), FLAT, 32.0f));
+        materialMap.addMaterial("Backup", Material(glm::vec4(1), FLAT, 32.0f));
     }
 
     return Model(triangles, materialMap, transformation);

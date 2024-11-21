@@ -11,14 +11,16 @@
 class Material
 {
 public:
-    Colour getColour() const;
+    glm::vec4 getColour() const;
+    static uint32_t getScreenColour(glm::vec4 colour);
+
     IlluminationModel getIlluminationModel() const;
     bool hasTexture() const;
-    Colour getPixelTextureColour(int x, int y) const;
+    glm::vec4 getPixelTextureColour(int x, int y) const;
     size_t getTextureWidth() const;
     size_t getTextureHeight() const;
 
-    Colour getColourAtPointInCameraSpace(const ::Transformation& camera,
+    glm::vec4 getColourAtPointInCameraSpace(const ::Transformation& camera,
                                          const ::Transformation& light,
                                          const glm::vec3& point,
                                          const glm::vec3& normal,
@@ -26,7 +28,7 @@ public:
                                          const IlluminationModel& illuminationModel,
                                          bool inShadow = false) const;
 
-    Colour getColourAtPointInCameraSpace(const Transformation& camera,
+    glm::vec4 getColourAtPointInCameraSpace(const Transformation& camera,
                                          const Transformation& light,
                                          const glm::vec3& point,
                                          const glm::vec3& normal,
@@ -34,50 +36,50 @@ public:
                                          bool inShadow = false) const;
 
     Material();
-    explicit Material(Colour colour, IlluminationModel illuminationModel = FLAT, float specularStrength = 0.f);
-    explicit Material(const Colour& colour, const std::string& texturePath, IlluminationModel illuminationModel = FLAT,
+    explicit Material(glm::vec4 colour, IlluminationModel illuminationModel = FLAT, float specularStrength = 0.f);
+    explicit Material(const glm::vec4& colour, const std::string& texturePath, IlluminationModel illuminationModel = FLAT,
                       float specularStrength = 0.f);
 
 private:
     static constexpr int charsPerPixel = 4;
 
-    static Colour flatShadedColour(
+    static glm::vec4 flatShadedColour(
         const Transformation& camera,
         const Transformation& light,
         const glm::vec3& point,
         const glm::vec3& normal,
-        const Colour& ambientColour,
-        const Colour& diffuseColour,
+        const glm::vec4& ambientColour,
+        const glm::vec4& diffuseColour,
         bool inShadow = false);
 
-    static Colour phongShadedColour(
+    static glm::vec4 phongShadedColour(
         const Transformation& camera,
         const Transformation& light,
         const glm::vec3& point,
         const glm::vec3& normal,
         float specularStrength,
-        const Colour& ambientColour,
-        const Colour& diffuseColour,
-        const Colour& specularColour,
+        const glm::vec4& ambientColour,
+        const glm::vec4& diffuseColour,
+        const glm::vec4& specularColour,
         bool inShadow = false);
 
-    static Colour getAmbient(
+    static glm::vec4 getAmbient(
         float ambientStrength,
-        const Colour& ambientColour);
+        const glm::vec4& ambientColour);
 
-    static Colour getDiffuse(
+    static glm::vec4 getDiffuse(
         const glm::vec3& normalisedLightDisplacement,
         float distanceFromLight,
-        const glm::vec3& normal, const Colour& diffuseColour);
+        const glm::vec3& normal, const glm::vec4& diffuseColour);
 
-    static Colour getPhong(
+    static glm::vec4 getPhong(
         const glm::vec3& normalisedLightDisplacement,
         const glm::vec3& point,
         const glm::vec3& normal,
-        const Colour& specularColour,
+        const glm::vec4& specularColour,
         float specularStrength);
 
-    Colour colour;
+    glm::vec4 colour;
     IlluminationModel illuminationModel = FLAT;
     float specularStrength = 1.0f;
 

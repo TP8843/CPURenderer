@@ -8,14 +8,14 @@ Raytracer::Raytracer(Scene& scene) :
 {
 }
 
-std::pair<Colour, int> Raytracer::fireRay(
+std::pair<glm::vec4, int> Raytracer::fireRay(
     glm::vec3 startingPosition,
     glm::vec3 rayDirection,
     const std::vector<ModelTriangle>& triangles,
     const int depth,
     int previousShadowIntersection) const
 {
-    auto colour = Colour(0, 0, 0);
+    auto colour = glm::vec4(0);
 
     if (depth == 0) return std::make_pair(colour, -1);
 
@@ -42,7 +42,7 @@ std::pair<Colour, int> Raytracer::fireRay(
     return std::make_pair(colour, previousShadowIntersection);
 }
 
-std::pair<Colour, int> Raytracer::mirror(
+std::pair<glm::vec4, int> Raytracer::mirror(
     const glm::vec3& rayDirection,
     const RayTriangleIntersection& intersection,
     const std::vector<ModelTriangle>& triangles,
@@ -56,14 +56,14 @@ std::pair<Colour, int> Raytracer::mirror(
     return fireRay(intersection.intersectionPoint, reflectedRay, triangles, depth - 1, previousShadowIntersection);
 }
 
-std::pair<Colour, int> Raytracer::surfaceColour(
+std::pair<glm::vec4, int> Raytracer::surfaceColour(
     const RayTriangleIntersection& intersection,
     const std::vector<ModelTriangle>& triangles,
     const glm::vec3& normal,
     const Material& material,
     int previousShadowIntersection) const
 {
-    auto colour = Colour(0, 0, 0);
+    auto colour = glm::vec4(0);
     bool inShadow = false;
 
     if (previousShadowIntersection != -1)
@@ -148,12 +148,12 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                 -1
             ));
 
-            std::pair<Colour, int> final = fireRay(scene.camera.position, scene.camera.rotation * scenePosition,
+            std::pair<glm::vec4, int> final = fireRay(scene.camera.position, scene.camera.rotation * scenePosition,
                                                    transformedTriangles, 20, previousLightIntersection);
 
             previousLightIntersection = final.second;
 
-            window.setPixelColour(i, window.height - j - 1, final.first.asARGB());
+            window.setPixelColour(i, window.height - j - 1, Material::getScreenColour(final.first));
         }
     }
 }
