@@ -50,3 +50,5 @@ cmake-build-release
 release
 debug
 build
+
+.DS_Store
