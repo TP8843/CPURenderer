@@ -38,12 +38,8 @@ int main(int argc, char* argv[])
     transformation.scale = scale;
     auto model = Model::import(modelFile, materialMap, transformation);
 
-    auto transformation2 = Transformation();
-    auto model2 = Model::import("../models/sphere.obj", materialMap, transformation2);
-
     auto models = std::vector<Model*>();
     models.push_back(&model);
-    models.push_back(&model2);
 
     auto camera = Transformation(glm::vec3(0, 0, 10),
                          glm::mat3(),

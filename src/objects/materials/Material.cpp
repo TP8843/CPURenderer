@@ -14,8 +14,12 @@ uint32_t Material::getScreenColour(const glm::vec4 colour)
 {
 
     const float luminance = 0.2126 * colour.r + 0.7152 * colour.g + 0.0722 * colour.b;
+    const float correctedLuminance = luminance / (1.f + luminance);
 
-    glm::vec4 correctedColour = colour / (1.f + colour);
+    glm::vec4 correctedColour = glm::clamp(correctedLuminance  * (colour / luminance), 0.f, 1.f);
+
+    // glm::vec4 correctedColour = glm::clamp(colour, 0.f, 1.f);
+
     correctedColour = glm::vec4(
         glm::pow(correctedColour.r, 1.f / 2.2f),
         glm::pow(correctedColour.g, 1.f / 2.2f),
@@ -81,7 +85,7 @@ glm::vec4 Material::getColourAtPointInCameraSpace(
     const glm::vec3& normal,
     const TexturePoint& texturePosition,
     const IlluminationModel& illuminationModel,
-    const bool inShadow) const
+    const float shadowProportion) const
 {
     const glm::vec4 textureColour = getPixelTextureColour(
         glm::round(texturePosition.x),
@@ -95,19 +99,19 @@ glm::vec4 Material::getColourAtPointInCameraSpace(
             point,
             normal,
             specularStrength,
-            textureColour,
+            textureColour * 0.2f,
             textureColour,
             glm::vec4(1),
-            inShadow);
+            shadowProportion);
 
     default: return flatShadedColour(
             camera,
             light,
             point,
             normal,
+            textureColour * 0.2f,
             textureColour,
-            textureColour,
-            inShadow);
+            shadowProportion);
     }
 }
 
@@ -117,7 +121,7 @@ glm::vec4 Material::getColourAtPointInCameraSpace(
     const glm::vec3& point,
     const glm::vec3& normal,
     const IlluminationModel& illuminationModel,
-    const bool inShadow) const
+    const float shadowProportion) const
 {
     switch (illuminationModel)
     {
@@ -127,19 +131,19 @@ glm::vec4 Material::getColourAtPointInCameraSpace(
             point,
             normal,
             specularStrength,
-            colour,
+            colour * 0.2f,
             colour,
             glm::vec4(1),
-            inShadow);
+            shadowProportion);
 
     default: return flatShadedColour(
             camera,
             light,
             point,
             normal,
+            colour * 0.2f,
             colour,
-            colour,
-            inShadow);
+            shadowProportion);
     }
 }
 
@@ -178,20 +182,15 @@ glm::vec4 Material::flatShadedColour(
     const glm::vec3& normal,
     const glm::vec4& ambientColour,
     const glm::vec4& diffuseColour,
-    const bool inShadow)
+    const float shadowProportion)
 {
 
     const auto lightDisplacement = (light.position - camera.position) * camera.rotation - point;
     const auto normalisedLightDisplacement = glm::normalize(lightDisplacement);
     const auto distanceFromLight = glm::length(lightDisplacement);
 
-    if (inShadow)
-    {
-        return getAmbient(0.05f, ambientColour);
-    }
-
     return getAmbient(0.05f, ambientColour)
-        + getDiffuse(normalisedLightDisplacement, distanceFromLight, normal, diffuseColour) * light.scale;
+        + (1.f - shadowProportion) * getDiffuse(normalisedLightDisplacement, distanceFromLight, normal, diffuseColour) * light.scale;
 }
 
 glm::vec4 Material::phongShadedColour(
@@ -203,20 +202,15 @@ glm::vec4 Material::phongShadedColour(
     const glm::vec4& ambientColour,
     const glm::vec4& diffuseColour,
     const glm::vec4& specularColour,
-    const bool inShadow)
+    const float shadowProportion)
 {
     const auto lightDisplacement = (light.position - camera.position) * camera.rotation - point;
     const auto normalisedLightDisplacement = glm::normalize(lightDisplacement);
     const auto distanceFromLight = glm::length(lightDisplacement);
 
-    if (inShadow)
-    {
-        return getAmbient(0.05f, ambientColour);
-    }
-
     return getAmbient(0.05f, ambientColour) +
-    (getDiffuse(normalisedLightDisplacement, distanceFromLight, normal, diffuseColour)
-        + getPhong(normalisedLightDisplacement, point, normal, specularColour, specularStrength)) * light.scale;
+    (1.f - shadowProportion) * ((getDiffuse(normalisedLightDisplacement, distanceFromLight, normal, diffuseColour)
+        + getPhong(normalisedLightDisplacement, point, normal, specularColour, specularStrength)) * light.scale);
 }
 
 glm::vec4 Material::getAmbient(
@@ -232,8 +226,8 @@ glm::vec4 Material::getDiffuse(
     const glm::vec3& normal,
     const glm::vec4& diffuseColour)
 {
-    return diffuseColour * 2.f * glm::max((glm::dot(normal, normalisedLightDisplacement))
-        / (4.f * glm::pow(distanceFromLight, 2.f)),
+    return diffuseColour * glm::max((glm::dot(normal, normalisedLightDisplacement))
+        / (1.f * glm::pow(distanceFromLight, 2.f)),
                                       0.0f);
 }
 

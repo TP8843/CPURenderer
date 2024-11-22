@@ -63,38 +63,48 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
     const Material& material,
     int previousShadowIntersection) const
 {
-    auto colour = glm::vec4(0);
-    bool inShadow = false;
+    glm::vec4 colour;
+    float shadowProportion = false;
+    constexpr float shadowCastCount = 200.f;
 
-    if (previousShadowIntersection != -1)
+    for (int i = 0; i < shadowCastCount; ++i)
     {
-        if (triangleIntersectsPoints(
-            intersection.intersectionPoint,
-            scene.light.position,
-            triangles.at(previousShadowIntersection)))
-        {
-            inShadow = true;
-        }
-        else
-        {
-            previousShadowIntersection = -1;
-        }
-    }
 
-    if (previousShadowIntersection == -1)
-    {
-        const auto lightIntersection =
-            trianglesIntersectsPoints(
+        const auto randomOffset = glm::vec3(
+            static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 5.f) - 0.5f,
+            static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 5.f) - 0.5f,
+            static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 5.f) - 0.5f);
+
+        if (previousShadowIntersection != -1)
+        {
+            if (triangleIntersectsPoints(
                 intersection.intersectionPoint,
-                scene.light.position,
-                intersection.triangleIndex,
-                triangles);
+                scene.light.position + randomOffset,
+                triangles.at(previousShadowIntersection)))
+            {
+                shadowProportion += 1.f / shadowCastCount;
+            }
+            else
+            {
+                previousShadowIntersection = -1;
+            }
+        }
 
-        inShadow = lightIntersection.first;
-
-        if (inShadow)
+        if (previousShadowIntersection == -1)
         {
-            previousShadowIntersection = lightIntersection.second;
+            const auto lightIntersection =
+                trianglesIntersectsPoints(
+                    intersection.intersectionPoint,
+                    scene.light.position + randomOffset,
+                    intersection.triangleIndex,
+                    triangles);
+
+            shadowProportion += lightIntersection.first? 1.f / shadowCastCount : 0.f;
+
+            if (shadowProportion)
+            {
+                previousShadowIntersection = lightIntersection.second;
+            }
         }
     }
 
@@ -113,7 +123,7 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
             normal * scene.camera.getNormalRotationMatrix(),
             finalTexturePoint,
             material.getIlluminationModel(),
-            inShadow);
+            shadowProportion);
     }
     else
     {
@@ -123,7 +133,7 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
             (intersection.intersectionPoint - scene.camera.position) * scene.camera.rotation,
             normal * scene.camera.getNormalRotationMatrix(),
             material.getIlluminationModel(),
-            inShadow);
+            shadowProportion);
     }
 
     return std::make_pair(colour, previousShadowIntersection);
@@ -148,8 +158,8 @@ void Raytracer::renderFrame(DrawingWindow& window) const
                 -1
             ));
 
-            std::pair<glm::vec4, int> final = fireRay(scene.camera.position, scene.camera.rotation * scenePosition,
-                                                   transformedTriangles, 20, previousLightIntersection);
+            const std::pair<glm::vec4, int> final = fireRay(scene.camera.position, scene.camera.rotation * scenePosition,
+                                                            transformedTriangles, 20, previousLightIntersection);
 
             previousLightIntersection = final.second;
 

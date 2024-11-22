@@ -1,7 +1,6 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include <Colour.h>
 #include <TextureMap.h>
 #include <TexturePoint.h>
 
@@ -21,19 +20,19 @@ public:
     size_t getTextureHeight() const;
 
     glm::vec4 getColourAtPointInCameraSpace(const ::Transformation& camera,
-                                         const ::Transformation& light,
-                                         const glm::vec3& point,
-                                         const glm::vec3& normal,
-                                         const TexturePoint& texturePosition,
-                                         const IlluminationModel& illuminationModel,
-                                         bool inShadow = false) const;
+                                            const ::Transformation& light,
+                                            const glm::vec3& point,
+                                            const glm::vec3& normal,
+                                            const TexturePoint& texturePosition,
+                                            const IlluminationModel& illuminationModel,
+                                            float shadowProportion = 0.f) const;
 
-    glm::vec4 getColourAtPointInCameraSpace(const Transformation& camera,
-                                         const Transformation& light,
-                                         const glm::vec3& point,
-                                         const glm::vec3& normal,
-                                         const IlluminationModel& illuminationModel,
-                                         bool inShadow = false) const;
+    glm::vec4 getColourAtPointInCameraSpace(const ::Transformation& camera,
+                                            const ::Transformation& light,
+                                            const glm::vec3& point,
+                                            const glm::vec3& normal,
+                                            const IlluminationModel& illuminationModel,
+                                            float shadowProportion = false) const;
 
     Material();
     explicit Material(glm::vec4 colour, IlluminationModel illuminationModel = FLAT, float specularStrength = 0.f);
@@ -49,8 +48,7 @@ private:
         const glm::vec3& point,
         const glm::vec3& normal,
         const glm::vec4& ambientColour,
-        const glm::vec4& diffuseColour,
-        bool inShadow = false);
+        const glm::vec4& diffuseColour, float shadowProportion);
 
     static glm::vec4 phongShadedColour(
         const Transformation& camera,
@@ -60,8 +58,7 @@ private:
         float specularStrength,
         const glm::vec4& ambientColour,
         const glm::vec4& diffuseColour,
-        const glm::vec4& specularColour,
-        bool inShadow = false);
+        const glm::vec4& specularColour, float shadowProportion);
 
     static glm::vec4 getAmbient(
         float ambientStrength,
@@ -81,7 +78,8 @@ private:
 
     glm::vec4 colour;
     IlluminationModel illuminationModel = FLAT;
-    float specularStrength = 1.0f;
+    float specularStrength = 1.f;
+    float refractiveIndex = 1.f;
 
     int textureWidth = 0;
     int textureHeight = 0;

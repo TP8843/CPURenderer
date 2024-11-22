@@ -118,12 +118,12 @@ void FragmentShaders::material(const CanvasTriangle& _,
     {
 
         const glm::vec4 colour = uniform.material.getColourAtPointInCameraSpace(
-                uniform.camera,
-                uniform.light,
-                data.position3D / data.depth,
-                uniform.normal,
-                data.texturePoint / data.depth,
-                uniform.material.getIlluminationModel());
+            uniform.camera,
+            uniform.light,
+            data.position3D / data.depth,
+            uniform.normal,
+            data.texturePoint / data.depth,
+            uniform.material.getIlluminationModel());
 
         uniform.window.setPixelColour(x, y, Material::getScreenColour(colour));
     }
