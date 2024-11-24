@@ -1,6 +1,7 @@
 #include "objects/Model.h"
 #include "renderers/RasterRenderer.h"
 #include "RenderLoop.h"
+#include "handlers/AnimationHandler.h"
 #include "handlers/CameraControl.h"
 #include "handlers/DebugHandler.h"
 #include "handlers/OrbitHandler.h"
@@ -13,8 +14,8 @@
 #include "tests/InteractiveTest.h"
 #include "tests/RasterTest.h"
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 1280
+#define HEIGHT 960
 
 int main(int argc, char* argv[])
 {
@@ -38,12 +39,30 @@ int main(int argc, char* argv[])
     transformation.scale = scale;
     auto model = Model::import(modelFile, materialMap, transformation);
 
+    auto transformation2 = Transformation();
+    transformation2.position = glm::vec3(1, 0, 0);
+    auto model2 = Model::import("../models/sphere.obj", materialMap, transformation2);
+
     auto models = std::vector<Model*>();
     models.push_back(&model);
+    models.push_back(&model2);
 
     auto camera = Transformation(glm::vec3(0, 0, 10),
                          glm::mat3(),
                          1);
+
+
+    auto keyframe1 = Transformation(glm::vec3(0, 0, 30), glm::mat3(), 1.f);
+    auto keyframe2 = Transformation(glm::vec3(0, 0, 4), glm::mat3(), 1.f);
+    auto keyframe3 = Transformation(glm::vec3(0, 0, 4), glm::mat3(), 1.f);
+    keyframe3.rotateY(glm::radians(90.f));
+
+    auto cameraAnimator = AnimationHandler(camera);
+    cameraAnimator.animation.emplace_back(std::make_pair(1, keyframe1));
+    cameraAnimator.animation.emplace_back(std::make_pair(360, keyframe2));
+    cameraAnimator.animation.emplace_back(std::make_pair(360, keyframe3));
+
+    auto sphereAnimator = OrbitHandler(transformation2, glm::vec3(0, 0, 0),  true);
 
     auto light = Transformation(glm::vec3(0, 2, 0), glm::mat3(), 2.f);
 
@@ -68,6 +87,9 @@ int main(int argc, char* argv[])
 
     rasterTest.preFrameHandlers.push_back(&cameraControl);
     rasterTest.eventHandlers.push_back(&cameraControl);
+
+    // rasterTest.preFrameHandlers.push_back(&cameraAnimator);
+    // rasterTest.preFrameHandlers.push_back(&sphereAnimator);
 
     rasterTest.preFrameHandlers.push_back(&orbitHandler);
     rasterTest.eventHandlers.push_back(&orbitHandler);

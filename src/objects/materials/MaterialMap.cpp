@@ -1,5 +1,6 @@
 #include "MaterialMap.h"
 
+#include "../../libs/stb_image.h"
 #include "../../helper/StringHelpers.h"
 
 void MaterialMap::addMaterial(const std::string& name, const Material& material)
@@ -22,9 +23,53 @@ bool MaterialMap::hasMaterial(const std::string& name) const
     return materials.find(name) != materials.end();
 }
 
+// Ideas from https://blog.demofox.org/2020/05/16/using-blue-noise-for-raytraced-soft-shadows/
+glm::vec3 MaterialMap::getSampledVec3(const unsigned int x, const unsigned int y, const unsigned int sample) const
+{
+    const int angle = 2.f * 3.1415926535f * screenNoise[((y * screenNoiseWidth + x) * 3) % (screenNoiseWidth * screenNoiseHeight)];
+    const int sampleStart = (sample * 3) % (sampleNoiseWidth * sampleNoiseHeight);
+
+    auto result = glm::vec3(
+        (sampleNoise[sampleStart + 0] / 255.f) * glm::sin(angle),
+        (sampleNoise[sampleStart + 1] / 255.f) * glm::sin(angle),
+        (sampleNoise[sampleStart + 2] / 255.f) * glm::sin(angle));
+
+    return result;
+}
+
+glm::vec2 MaterialMap::getSampledVec2(unsigned int x, unsigned int y, unsigned int sample) const
+{
+    const int angle1 = 2.f * 3.1415926535f * screenNoise[((y * screenNoiseWidth + x) * 3) % (screenNoiseWidth * screenNoiseHeight)];
+    const int angle2 = 2.f * 3.1415926535f * screenNoise[((y * screenNoiseWidth + x) * 3 + 1) % (screenNoiseWidth * screenNoiseHeight)];
+    const int sampleStart = (sample * 3) % (sampleNoiseWidth * sampleNoiseHeight);
+
+    const auto result = glm::vec2(
+        (sampleNoise[sampleStart + 0] / 127.5f - 1.f) * glm::sin(angle1),
+        (sampleNoise[sampleStart + 1] / 127.5f - 1.f) * glm::sin(angle2));
+
+    return result;
+}
+
 MaterialMap::MaterialMap() :
     materials(std::unordered_map<std::string, Material>())
 {
+    sampleNoise = stbi_load(defaultSampleNoise().c_str(),
+                        &sampleNoiseWidth,
+                        &sampleNoiseHeight,
+                        nullptr,
+                        STBI_rgb);
+
+    screenNoise = stbi_load(defaultScreenNoise().c_str(),
+                    &screenNoiseWidth,
+                    &screenNoiseHeight,
+                    nullptr,
+                    STBI_rgb);
+}
+
+MaterialMap::~MaterialMap()
+{
+    // stbi_image_free(sampleNoise);
+    // stbi_image_free(screenNoise);
 }
 
 MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& originalPath, const std::string& folderPath, const std::string& file)

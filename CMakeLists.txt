@@ -90,6 +90,8 @@ add_executable(RedNoise
         src/handlers/DebugHandler.h
         src/objects/Scene.cpp
         src/objects/Scene.h
+        src/handlers/AnimationHandler.cpp
+        src/handlers/AnimationHandler.h
 )
 
 if (MSVC)

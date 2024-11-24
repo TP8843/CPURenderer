@@ -38,6 +38,7 @@ struct Transformation {
     // Rotate around y-axis by given angle (radians)
     void rotateY(float angle);
 
+    Transformation& operator=(const Transformation& other);
     Transformation operator+(const Transformation &other) const;
     Transformation operator-(const Transformation &other) const;
 

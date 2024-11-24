@@ -66,6 +66,15 @@ void Transformation::rotateY(const float angle)
         glm::vec3(glm::sin(angle), 0, glm::cos(angle))) * rotation;
 }
 
+Transformation& Transformation::operator=(const Transformation& other)
+{
+    position = other.position;
+    rotation = other.rotation;
+    scale = other.scale;
+
+    return *this;
+}
+
 Transformation Transformation::operator+(const Transformation &other) const
 {
     return {

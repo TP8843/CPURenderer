@@ -20,7 +20,7 @@ void OrbitHandler::iterateOrbit()
         glm::vec3(0, 1, 0),
         glm::vec3(glm::sin(constants::speed::ORBIT_SPEED * timeElapsed), 0, glm::cos(constants::speed::ORBIT_SPEED * timeElapsed)));
 
-    transformation.position = rotationMatrix * transformation.position;
+    transformation.position = rotationMatrix * (transformation.position - centre) + centre;
     transformation.lookAt(glm::vec3(0,0,0));
 }
 
@@ -40,8 +40,8 @@ void OrbitHandler::handleEvent(DrawingWindow& window, SDL_Event& event)
     }
 }
 
-OrbitHandler::OrbitHandler(Transformation& transformation, const glm::vec3& centre) :
-    transformation(transformation), centre(centre)
+OrbitHandler::OrbitHandler(Transformation& transformation, const glm::vec3& centre, const bool orbit) :
+    transformation(transformation), isOrbiting(orbit), centre(centre)
 {
 }
 

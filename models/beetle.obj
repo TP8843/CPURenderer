@@ -1,6 +1,9 @@
 # Blender v2.80 (sub 74) OBJ File: 'VWBugMesh002.blend'
 # www.blender.org
+mtllib beetle.mtl
+
 o VWBUG
+usemtl Red
 v -0.166874 0.540610 0.308864
 v -0.155618 0.542954 0.320774
 v -0.158392 0.557720 0.307377

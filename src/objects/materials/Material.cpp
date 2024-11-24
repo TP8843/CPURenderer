@@ -93,6 +93,7 @@ glm::vec4 Material::getColourAtPointInCameraSpace(
 
     switch (illuminationModel)
     {
+    case MIRROR:
     case PHONG: return phongShadedColour(
             camera,
             light,
@@ -125,6 +126,7 @@ glm::vec4 Material::getColourAtPointInCameraSpace(
 {
     switch (illuminationModel)
     {
+    case MIRROR:
     case PHONG: return phongShadedColour(
             camera,
             light,

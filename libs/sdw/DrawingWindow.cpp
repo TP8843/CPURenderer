@@ -52,6 +52,7 @@ void DrawingWindow::savePPM(const std::string &filename) const {
 		}};
 		outputStream.write(rgb.data(), 3);
 	}
+	std::cout << "Saved frame " << filename << std::endl;
 	outputStream.close();
 }
 
