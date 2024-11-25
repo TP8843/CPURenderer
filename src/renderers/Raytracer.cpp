@@ -101,29 +101,20 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
     glm::vec4 colour;
     float shadowProportion = 0.f;
 
-    const glm::vec3 lightDirection = -glm::normalize(scene.light.position - intersection.intersectionPoint);
+    const glm::vec3 lightDirection = glm::normalize(scene.light.position - intersection.intersectionPoint);
 
-    const glm::vec3 lightTangent = glm::normalize(glm::cross(lightDirection, glm::vec3(0.f, 1.f, 0.f)));
+    const glm::vec3 lightTangent = glm::normalize(-glm::cross(lightDirection, glm::vec3(0.f, 1.f, 0.f)));
     const glm::vec3 lightBitangent = glm::normalize(glm::cross(lightTangent, lightDirection));
 
     for (int i = 0; i < SHADOW_SAMPLES; ++i)
     {
-        const auto randomOffset = scene.materials.getSampledVec2(screenX, screenY, i) / 5.f;
-        const auto pointRadius = 3.f * randomOffset.x;
+        const auto randomOffset = scene.materials.getSampledVec2(screenX, screenY, i);
+        const auto pointRadius = randomOffset.x / 3.f;
         const auto pointAngle = randomOffset.y * 2 * M_PI;
         const auto discPos = glm::vec2(pointRadius * glm::cos(pointAngle), pointRadius * glm::sin(pointAngle));
 
         const auto finalLightPosition = scene.light.position + lightTangent * discPos.x
             + lightBitangent * discPos.y;
-
-        // if (shadowProportion == 0.f && i > 8)
-        //     break;
-        //
-        // if (shadowProportion >= 7.f && i > 8)
-        // {
-        //     shadowProportion = SHADOW_SAMPLES;
-        //     break;
-        // }
 
         if (previousShadowIntersection != -1)
         {
@@ -220,12 +211,10 @@ void Raytracer::renderRow(
 
 void Raytracer::renderFrame(DrawingWindow& window) const
 {
-    ctpl::thread_pool pool(10);
+    ctpl::thread_pool pool(std::thread::hardware_concurrency());
     auto jobs = std::vector<std::future<void>>();
     const auto width = static_cast<float>(window.width);
     const auto height = static_cast<float>(window.height);
-
-    int previousLightIntersection = -1;
 
     auto transformedTriangles = scene.getTransformedTriangles();
 
@@ -235,27 +224,6 @@ void Raytracer::renderFrame(DrawingWindow& window) const
         {
             renderRow(window, transformedTriangles, width, height, j);
         }));
-
-        // for (size_t i = 0; i < window.width; i++)
-        // {
-        //     glm::vec3 scenePosition = glm::normalize(glm::vec3(
-        //         (static_cast<float>(i) - width / 2) / height,
-        //         (static_cast<float>(j) + 1 - height / 2) / height,
-        //         -1
-        //     ));
-        //
-        //     const std::pair<glm::vec4, int> final = fireRay(
-        //         scene.camera.position,
-        //         scene.camera.rotation * scenePosition,
-        //         transformedTriangles,
-        //         2,
-        //         i, j,
-        //         previousLightIntersection);
-        //
-        //     previousLightIntersection = final.second;
-        //
-        //     window.setPixelColour(i, window.height - j - 1, Material::getScreenColour(final.first));
-        // }
     }
 
     for (auto& job : jobs)
@@ -316,16 +284,16 @@ std::pair<bool, RayTriangleIntersection> Raytracer::getClosestIntersection(
     return std::pair<bool, RayTriangleIntersection>(false, RayTriangleIntersection());
 }
 
-bool Raytracer::triangleIntersectsPoints(glm::vec3 point, glm::vec3 light, const ModelTriangle& triangle)
+bool Raytracer::triangleIntersectsPoints(const glm::vec3 point, const glm::vec3 light, const ModelTriangle& triangle)
 {
-    glm::vec3 ray = light - point;
-    float rayDistance = glm::length(ray);
+    const glm::vec3 ray = light - point;
+    const float rayDistance = glm::length(ray);
 
-    glm::vec3 e0 = triangle.vertices[1] - triangle.vertices[0];
-    glm::vec3 e1 = triangle.vertices[2] - triangle.vertices[0];
-    glm::vec3 SPVector = point - triangle.vertices[0];
-    glm::mat3 DEMatrix(-glm::normalize(ray), e0, e1);
-    glm::vec3 possibleSolution = glm::inverse(DEMatrix) * SPVector;
+    const glm::vec3 e0 = triangle.vertices[1] - triangle.vertices[0];
+    const glm::vec3 e1 = triangle.vertices[2] - triangle.vertices[0];
+    const glm::vec3 SPVector = point - triangle.vertices[0];
+    const glm::mat3 DEMatrix(-glm::normalize(ray), e0, e1);
+    const glm::vec3 possibleSolution = glm::inverse(DEMatrix) * SPVector;
 
     if ((possibleSolution.y >= 0.0 && possibleSolution.y <= 1.0) &&
         (possibleSolution.z >= 0.0 && possibleSolution.z <= 1.0) &&

@@ -17,6 +17,7 @@ public:
     static void drawLineTest(DrawingWindow& window);
     static void drawTexturedTriangleTest(DrawingWindow& window);
     static void drawEdgeCaseTriangles(DrawingWindow& window);
+    static void drawNoiseTest(DrawingWindow& window);
 
     DrawTests();
 
@@ -27,12 +28,13 @@ private:
     int currentTest;
     std::vector<void (*)(DrawingWindow&)> testFunctions = std::vector<void (*)(DrawingWindow&)>
     {
+        drawNoiseTest,
         drawRedNoise,
         drawGreyscaleInterpolation,
         drawTwoDimensionalColorInterpolation,
         drawLineTest,
         drawTexturedTriangleTest,
-        drawEdgeCaseTriangles,
+        drawEdgeCaseTriangles
     };
 };
 
