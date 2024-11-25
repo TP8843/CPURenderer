@@ -14,8 +14,8 @@
 #include "tests/InteractiveTest.h"
 #include "tests/RasterTest.h"
 
-#define WIDTH 1280
-#define HEIGHT 960
+#define WIDTH 640
+#define HEIGHT 480
 
 int main(int argc, char* argv[])
 {

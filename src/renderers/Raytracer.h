@@ -48,6 +48,12 @@ private:
         unsigned int screenY,
         int previousShadowIntersection) const;
 
+    void renderRow(
+        DrawingWindow& window,
+        const std::vector<ModelTriangle>& triangles,
+        float width,
+        float height, int row) const;
+
     static std::pair<bool, RayTriangleIntersection> getClosestIntersection(
         glm::vec3 camera,
         glm::vec3 rayDirection,

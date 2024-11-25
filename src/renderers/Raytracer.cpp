@@ -1,5 +1,6 @@
 #include "Raytracer.h"
 #include <glm/glm.hpp>
+#include "../../libs/ctpl_stl.h"
 
 #include <RayTriangleIntersection.h>
 
@@ -45,7 +46,7 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
                 screenY,
                 previousShadowIntersection);
 
-            return std::make_pair(0.6f
+            return std::make_pair(0.4f
                 * surfaceColour(
                     intersection.second,
                     triangles,
@@ -54,7 +55,7 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
                     screenX,
                     screenY,
                     previousShadowIntersection).first
-                + 0.4f * result.first * material.getColour(),
+                + 0.6f * result.first * material.getColour(),
                 result.second);
         }
 
@@ -75,7 +76,7 @@ std::pair<glm::vec4, int> Raytracer::mirror(
     const float previousShadowIntersection) const
 {
     const glm::vec3 reflectedRay = rayDirection
-        - 2.0f * (normal + scene.materials.getSampledVec3(screenX, screenY, 0) * 0.5f)
+        - 2.0f * (normal)
         * glm::dot(rayDirection, normal);
 
     return fireRay(
@@ -187,8 +188,40 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
     return std::make_pair(colour, previousShadowIntersection);
 }
 
+void Raytracer::renderRow(
+    DrawingWindow& window,
+    const std::vector<ModelTriangle>& triangles,
+    const float width,
+    const float height,
+    const int row) const
+{
+    int previousLightIntersection = -1;
+    for (size_t i = 0; i < window.width; i++)
+    {
+        glm::vec3 scenePosition = glm::normalize(glm::vec3(
+            (static_cast<float>(i) - width / 2) / height,
+            (static_cast<float>(row) + 1 - height / 2) / height,
+            -1
+        ));
+
+        const std::pair<glm::vec4, int> final = fireRay(
+            scene.camera.position,
+            scene.camera.rotation * scenePosition,
+            triangles,
+            2,
+            i, row,
+            previousLightIntersection);
+
+        previousLightIntersection = final.second;
+
+        window.setPixelColour(i, window.height - row - 1, Material::getScreenColour(final.first));
+    }
+}
+
 void Raytracer::renderFrame(DrawingWindow& window) const
 {
+    ctpl::thread_pool pool(10);
+    auto jobs = std::vector<std::future<void>>();
     const auto width = static_cast<float>(window.width);
     const auto height = static_cast<float>(window.height);
 
@@ -198,26 +231,36 @@ void Raytracer::renderFrame(DrawingWindow& window) const
 
     for (size_t j = 0; j < window.height; j++)
     {
-        for (size_t i = 0; i < window.width; i++)
+        jobs.push_back(pool.push([this, transformedTriangles, width, height, j, &window](int id) -> void
         {
-            glm::vec3 scenePosition = glm::normalize(glm::vec3(
-                (static_cast<float>(i) - width / 2) / height,
-                (static_cast<float>(j) + 1 - height / 2) / height,
-                -1
-            ));
+            renderRow(window, transformedTriangles, width, height, j);
+        }));
 
-            const std::pair<glm::vec4, int> final = fireRay(
-                scene.camera.position,
-                scene.camera.rotation * scenePosition,
-                transformedTriangles,
-                2,
-                i, j,
-                previousLightIntersection);
+        // for (size_t i = 0; i < window.width; i++)
+        // {
+        //     glm::vec3 scenePosition = glm::normalize(glm::vec3(
+        //         (static_cast<float>(i) - width / 2) / height,
+        //         (static_cast<float>(j) + 1 - height / 2) / height,
+        //         -1
+        //     ));
+        //
+        //     const std::pair<glm::vec4, int> final = fireRay(
+        //         scene.camera.position,
+        //         scene.camera.rotation * scenePosition,
+        //         transformedTriangles,
+        //         2,
+        //         i, j,
+        //         previousLightIntersection);
+        //
+        //     previousLightIntersection = final.second;
+        //
+        //     window.setPixelColour(i, window.height - j - 1, Material::getScreenColour(final.first));
+        // }
+    }
 
-            previousLightIntersection = final.second;
-
-            window.setPixelColour(i, window.height - j - 1, Material::getScreenColour(final.first));
-        }
+    for (auto& job : jobs)
+    {
+        job.get();
     }
 }
 
