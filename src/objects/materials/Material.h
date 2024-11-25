@@ -15,7 +15,9 @@ public:
 
     IlluminationModel getIlluminationModel() const;
     bool hasTexture() const;
+    bool hasNormalMap() const;
     glm::vec4 getPixelTextureColour(int x, int y) const;
+    glm::vec3 getNormal(int x, int y) const;
     size_t getTextureWidth() const;
     size_t getTextureHeight() const;
 
@@ -36,8 +38,19 @@ public:
 
     Material();
     explicit Material(glm::vec4 colour, IlluminationModel illuminationModel = FLAT, float specularStrength = 0.f);
-    explicit Material(const glm::vec4& colour, const std::string& texturePath, IlluminationModel illuminationModel = FLAT,
-                      float specularStrength = 0.f);
+
+    explicit Material(
+        const glm::vec4& colour,
+        const std::string& texturePath,
+        IlluminationModel illuminationModel = FLAT,
+        float specularStrength = 0.f);
+
+    explicit Material(
+    const glm::vec4& colour,
+    const std::string& texturePath,
+    const std::string& normalPath,
+    IlluminationModel illuminationModel = FLAT,
+    float specularStrength = 0.f);
 
 private:
     static constexpr int charsPerPixel = 4;
@@ -85,6 +98,11 @@ private:
     int textureHeight = 0;
     unsigned char* texture{};
     bool hasTextureBool{};
+
+    int normalWidth = 0;
+    int normalHeight = 0;
+    unsigned char* normal{};
+    bool hasNormalBool{};
 };
 
 #endif //MATERIAL_H

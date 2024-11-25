@@ -48,7 +48,7 @@ public:
 
 private:
     explicit Model(const std::vector<ModelTriangle>& triangles,
-                   MaterialMap materials,
+                   const MaterialMap& materials,
                    Transformation& transformation);
 };
 

@@ -26,7 +26,8 @@ bool MaterialMap::hasMaterial(const std::string& name) const
 // Ideas from https://blog.demofox.org/2020/05/16/using-blue-noise-for-raytraced-soft-shadows/
 glm::vec3 MaterialMap::getSampledVec3(const unsigned int x, const unsigned int y, const unsigned int sample) const
 {
-    const int angle = 2.f * 3.1415926535f * screenNoise[((y * screenNoiseWidth + x) * 3) % (screenNoiseWidth * screenNoiseHeight)];
+    const int angle = 2.f * 3.1415926535f * screenNoise[((y * screenNoiseWidth + x) * 3) % (screenNoiseWidth *
+        screenNoiseHeight)];
     const int sampleStart = (sample * 3) % (sampleNoiseWidth * sampleNoiseHeight);
 
     auto result = glm::vec3(
@@ -39,8 +40,10 @@ glm::vec3 MaterialMap::getSampledVec3(const unsigned int x, const unsigned int y
 
 glm::vec2 MaterialMap::getSampledVec2(unsigned int x, unsigned int y, unsigned int sample) const
 {
-    const int angle1 = 2.f * 3.1415926535f * screenNoise[((y * screenNoiseWidth + x) * 3) % (screenNoiseWidth * screenNoiseHeight)];
-    const int angle2 = 2.f * 3.1415926535f * screenNoise[((y * screenNoiseWidth + x) * 3 + 1) % (screenNoiseWidth * screenNoiseHeight)];
+    const int angle1 = 2.f * 3.1415926535f * screenNoise[((y * screenNoiseWidth + x) * 3) % (screenNoiseWidth *
+        screenNoiseHeight)];
+    const int angle2 = 2.f * 3.1415926535f * screenNoise[((y * screenNoiseWidth + x) * 3 + 1) % (screenNoiseWidth *
+        screenNoiseHeight)];
     const int sampleStart = (sample * 3) % (sampleNoiseWidth * sampleNoiseHeight);
 
     const auto result = glm::vec2(
@@ -54,16 +57,16 @@ MaterialMap::MaterialMap() :
     materials(std::unordered_map<std::string, Material>())
 {
     sampleNoise = stbi_load(defaultSampleNoise().c_str(),
-                        &sampleNoiseWidth,
-                        &sampleNoiseHeight,
-                        nullptr,
-                        STBI_rgb);
+                            &sampleNoiseWidth,
+                            &sampleNoiseHeight,
+                            nullptr,
+                            STBI_rgb);
 
     screenNoise = stbi_load(defaultScreenNoise().c_str(),
-                    &screenNoiseWidth,
-                    &screenNoiseHeight,
-                    nullptr,
-                    STBI_rgb);
+                            &screenNoiseWidth,
+                            &screenNoiseHeight,
+                            nullptr,
+                            STBI_rgb);
 }
 
 MaterialMap::~MaterialMap()
@@ -72,7 +75,8 @@ MaterialMap::~MaterialMap()
     // stbi_image_free(screenNoise);
 }
 
-MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& originalPath, const std::string& folderPath, const std::string& file)
+MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& originalPath,
+                                const std::string& folderPath, const std::string& file)
 {
     std::ifstream MaterialFile(StringHelpers::concatFolderFile(folderPath, file));
     std::string line;
@@ -80,10 +84,12 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
 
     bool materialToStore = false;
     bool hasTexture = false;
+    bool hasNormal = false;
     bool hasColour = false;
 
     std::string currentTextureFilename;
-    glm::vec4 currentColour;
+    std::string currentNormalFilename;
+    glm::vec4 currentColour = glm::vec4(1);
 
     IlluminationModel illuminationModel = defaultIlluminationModel;
     float shininess = defaultShininess;
@@ -99,25 +105,25 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
         {
             if (materialToStore)
             {
-                if (hasTexture && hasColour)
+                if (hasTexture && hasNormal)
                 {
                     materialMap.addMaterial(originalPath + currentMaterialName,
                                             Material(currentColour,
-                                                     StringHelpers::concatFolderFile(
-                                                         folderPath, currentTextureFilename),
+                                                     StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                                     StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
                                                      illuminationModel,
                                                      shininess));
                 }
                 else if (hasTexture)
                 {
                     materialMap.addMaterial(originalPath + currentMaterialName,
-                                            Material(glm::vec4(1),
-                                                     StringHelpers::concatFolderFile(
-                                                         folderPath, currentTextureFilename),
-                                                     illuminationModel,
-                                                     shininess));
+                                            Material(
+                                                currentColour,
+                                                StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                                illuminationModel,
+                                                shininess));
                 }
-                else if (hasColour)
+                else
                 {
                     materialMap.addMaterial(originalPath + currentMaterialName,
                                             Material(currentColour, illuminationModel, shininess));
@@ -128,6 +134,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
             hasColour = false;
             hasTexture = false;
 
+            currentColour = glm::vec4(1);
             currentMaterialName = tokens.at(1);
             illuminationModel = FLAT;
             shininess = defaultShininess;
@@ -163,23 +170,46 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
             hasTexture = true;
         }
 
+        // Location of normal map
+        if ((tokens.at(0) == "map_Disp" || tokens.at(0) == "bump") && !tokens.at(1).empty())
+        {
+            materialToStore = true;
+
+            currentNormalFilename = tokens.at(1);
+            hasNormal = true;
+        }
+
         // Illumination type (UNSHADED, FLAT, PHONG)
         if (tokens.at(0) == "illum" && !tokens.at(1).empty())
         {
             switch (std::stoi(tokens.at(1)))
             {
-            case UNSHADED: illuminationModel = UNSHADED; break;
-            case FLAT: illuminationModel = FLAT; break;
-            case PHONG: illuminationModel = PHONG; break;
-            case MIRROR: illuminationModel = MIRROR; break;
-            default: illuminationModel = FLAT; break;
+            case UNSHADED: illuminationModel = UNSHADED;
+                break;
+            case FLAT: illuminationModel = FLAT;
+                break;
+            case PHONG: illuminationModel = PHONG;
+                break;
+            case MIRROR: illuminationModel = MIRROR;
+                break;
+            default: illuminationModel = FLAT;
+                break;
             }
         }
     }
 
     if (materialToStore)
     {
-        if (hasTexture && hasColour)
+        if (hasTexture && hasNormal)
+        {
+            materialMap.addMaterial(originalPath + currentMaterialName,
+                                    Material(currentColour,
+                                             StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                             StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
+                                             illuminationModel,
+                                             shininess));
+        }
+        else if (hasTexture)
         {
             materialMap.addMaterial(originalPath + currentMaterialName,
                                     Material(
@@ -188,18 +218,10 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
                                         illuminationModel,
                                         shininess));
         }
-        else if (hasTexture)
+        else
         {
             materialMap.addMaterial(originalPath + currentMaterialName,
-                                    Material(
-                                        glm::vec4(1),
-                                        StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
-                                        illuminationModel,
-                                        shininess));
-        }
-        else if (hasColour)
-        {
-            materialMap.addMaterial(originalPath + currentMaterialName, Material(currentColour, illuminationModel, shininess));
+                                    Material(currentColour, illuminationModel, shininess));
         }
     }
 

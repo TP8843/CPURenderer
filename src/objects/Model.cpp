@@ -10,8 +10,8 @@
 #include "../helper/StringHelpers.h"
 #include "./materials/MaterialMap.h"
 
-Model::Model(const std::vector<ModelTriangle> &triangles, MaterialMap materials, Transformation& transformation) :
-    materials(std::move(materials)),
+Model::Model(const std::vector<ModelTriangle> &triangles, const MaterialMap& materials, Transformation& transformation) :
+    materials(materials),
     triangles(triangles),
     transformation(transformation)
 {
@@ -21,11 +21,9 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
     std::string text;
     std::ifstream ObjectFile(objectPath);
 
-    auto pathString = objectPath;
-    const std::string parentPath = StringHelpers::getFolderPath(pathString);
+    const std::string parentPath = StringHelpers::getFolderPath(objectPath);
 
     std::string currentMaterial = "Backup";
-    bool loadedMaterialFile = false;
 
     std::vector<glm::vec3> vertices;
 
@@ -48,7 +46,6 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
         // Import materials
         if (tokens.at(0) == "mtllib") {
             materialMap = MaterialMap::import(materialMap, objectPath, parentPath, tokens.at(1));
-            loadedMaterialFile = true;
         }
 
         // Vertex
@@ -94,6 +91,7 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
             std::vector<glm::vec3> polygonVertexNormals;
             bool hasTexture = false;
             bool hasNormal = false;
+            bool hasNormalMap = false;
 
             for (int i = 1; i < tokens.size(); i++) {
                 auto vertexTokens = split(tokens.at(i), '/');
@@ -124,6 +122,13 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
 
             // Add triangles for all parts of polygon
             for (int i = 1; i < faceVertices.size() - 1; i++) {
+                const glm::vec3 v0 = faceVertices.at(0);
+                const glm::vec3 v1 = faceVertices.at(i);
+                const glm::vec3 v2 = faceVertices.at(i + 1);
+
+                // glm::vec3 tangent;
+                // glm::vec3 bitangent;
+
                 triangleVertexIndices.push_back({vertexIndices.at(0), vertexIndices.at(i), vertexIndices.at(i + 1)});
 
                 glm::vec3 normal;
@@ -132,8 +137,8 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
                 } else {
                     // Calculate normal for triangle
                     normal = glm::normalize(glm::cross(
-                        faceVertices.at(0) - faceVertices.at(i),
-                        faceVertices.at(0) - faceVertices.at(i+1)));
+                        v0 - v1,
+                        v0 - v2));
 
                     int vertex = vertexIndices.at(0);
                     auto vertexNormalTotal = vertexNormalTotals.at(vertex);
