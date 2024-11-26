@@ -11,7 +11,7 @@
 class Raytracer
 {
 public:
-    static constexpr float SHADOW_SAMPLES = 40;
+    static constexpr float SHADOW_SAMPLES = 64;
 
     explicit Raytracer(Scene& scene);
 

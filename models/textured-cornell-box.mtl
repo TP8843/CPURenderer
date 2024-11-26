@@ -25,7 +25,8 @@ illum 1
 newmtl Magenta
 Kd 1.000000 0.000000 1.000000
 # Kd 1.000000 1.000000 1.000000
-illum 1
+Ns 128.000000
+illum 3
 
 newmtl Cyan
 Kd 0.000000 1.000000 1.000000

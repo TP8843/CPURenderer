@@ -88,7 +88,6 @@ std::pair<glm::vec4, int> Raytracer::mirror(
         previousShadowIntersection);
 }
 
-// Ideas from https://blog.demofox.org/2020/05/16/using-blue-noise-for-raytraced-soft-shadows/
 std::pair<glm::vec4, int> Raytracer::surfaceColour(
     const RayTriangleIntersection& intersection,
     const std::vector<ModelTriangle>& triangles,
@@ -108,13 +107,16 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
 
     for (int i = 0; i < SHADOW_SAMPLES; ++i)
     {
-        const auto randomOffset = scene.materials.getSampledVec2(screenX, screenY, i);
+        const auto randomOffset = glm::vec3(
+            static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 4.f) - 0.5f,
+            static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 4.f) - 0.5f,
+            static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 4.f) - 0.5f);
+
         const auto pointRadius = randomOffset.x / 3.f;
         const auto pointAngle = randomOffset.y * 2 * M_PI;
         const auto discPos = glm::vec2(pointRadius * glm::cos(pointAngle), pointRadius * glm::sin(pointAngle));
 
-        const auto finalLightPosition = scene.light.position + lightTangent * discPos.x
-            + lightBitangent * discPos.y;
+        const auto finalLightPosition = scene.light.position + randomOffset;
 
         if (previousShadowIntersection != -1)
         {

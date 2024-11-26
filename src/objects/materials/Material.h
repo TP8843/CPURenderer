@@ -82,7 +82,7 @@ private:
         float distanceFromLight,
         const glm::vec3& normal, const glm::vec4& diffuseColour);
 
-    static glm::vec4 getPhong(
+    static glm::vec4 getSpecular(
         const glm::vec3& normalisedLightDisplacement,
         const glm::vec3& point,
         const glm::vec3& normal,

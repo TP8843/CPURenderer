@@ -269,7 +269,7 @@ glm::vec4 Material::phongShadedColour(
 
     return getAmbient(0.05f, ambientColour) +
         (1.f - shadowProportion) * ((getDiffuse(normalisedLightDisplacement, distanceFromLight, normal, diffuseColour)
-            + getPhong(normalisedLightDisplacement, point, normal, specularColour, specularStrength)) * light.scale);
+            + getSpecular(normalisedLightDisplacement, point, normal, specularColour, specularStrength)) * light.scale);
 }
 
 glm::vec4 Material::getAmbient(
@@ -290,7 +290,7 @@ glm::vec4 Material::getDiffuse(
                                     0.0f);
 }
 
-glm::vec4 Material::getPhong(
+glm::vec4 Material::getSpecular(
     const glm::vec3& normalisedLightDisplacement,
     const glm::vec3& point,
     const glm::vec3& normal,
