@@ -17,6 +17,32 @@
 #define WIDTH 640
 #define HEIGHT 480
 
+AnimationHandler generateCameraHandler(Transformation& camera)
+{
+    auto animation = AnimationHandler(camera);
+    auto startingAnimation = Transformation();
+    startingAnimation.position = glm::vec3(0, 0, 30);
+
+    for (float i = 0; i < 180; i++)
+    {
+        const auto angle = (i * 2.f * M_PI) / 180.f;
+
+        const auto rotationMatrix = glm::mat3(
+            glm::vec3(glm::cos(angle), 0, -glm::sin(angle)),
+            glm::vec3(0, 1, 0),
+            glm::vec3(glm::sin(angle), 0, glm::cos(angle)));
+
+        auto transformation = startingAnimation;
+        transformation.position = startingAnimation.position - (i / 180.f) * glm::vec3(0, 0, 25);
+        transformation.position = rotationMatrix * transformation.position;
+        transformation.lookAt(glm::vec3());
+
+        animation.animation.emplace_back(1, transformation);
+    }
+
+    return animation;
+}
+
 int main(int argc, char* argv[])
 {
     std::string modelFile = "../models/textured-cornell-box.obj";
@@ -51,17 +77,7 @@ int main(int argc, char* argv[])
                          glm::mat3(),
                          1);
 
-
-    auto keyframe1 = Transformation(glm::vec3(0, 0, 10), glm::mat3(), 1.f);
-    auto keyframe2 = Transformation(glm::vec3(10.f/glm::sqrt(2), 0, 10.f/glm::sqrt(2)), glm::mat3(), 1.f);
-    auto keyframe3 = Transformation(glm::vec3(10, 0, 0), glm::mat3(), 1.f);
-    keyframe3.lookAt(glm::vec3(0, 0, 0));
-    keyframe2.lookAt(glm::vec3(0, 0, 0));
-
-    auto cameraAnimator = AnimationHandler(camera);
-    cameraAnimator.animation.emplace_back(std::make_pair(1, keyframe1));
-    cameraAnimator.animation.emplace_back(std::make_pair(360, keyframe2));
-    cameraAnimator.animation.emplace_back(std::make_pair(90, keyframe3));
+    auto cameraAnimator = generateCameraHandler(camera);
 
     auto sphereAnimator = OrbitHandler(transformation2, glm::vec3(0, 0, 0),  true);
 
