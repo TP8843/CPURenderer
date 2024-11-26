@@ -37,25 +37,16 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
         if (depth > 0 && material.getIlluminationModel() == MIRROR)
         {
             const auto result = mirror(
-                rayDirection,
-                intersection.second,
-                triangles,
-                normal,
-                depth,
-                screenX,
-                screenY,
-                previousShadowIntersection);
+               rayDirection,
+               intersection.second,
+               triangles,
+               normal,
+               depth,
+               screenX,
+               screenY,
+               previousShadowIntersection);
 
-            return std::make_pair(0.4f
-                * surfaceColour(
-                    intersection.second,
-                    triangles,
-                    normal,
-                    material,
-                    screenX,
-                    screenY,
-                    previousShadowIntersection).first
-                + 0.6f * result.first * material.getColour(),
+            return std::make_pair(result.first * material.getColour(),
                 result.second);
         }
 
@@ -194,14 +185,14 @@ void Raytracer::renderRow(
         glm::vec3 scenePosition = glm::normalize(glm::vec3(
             (static_cast<float>(i) - width / 2) / height,
             (static_cast<float>(row) + 1 - height / 2) / height,
-            -1
+            -scene.camera.scale
         ));
 
         const std::pair<glm::vec4, int> final = fireRay(
             scene.camera.position,
             scene.camera.rotation * scenePosition,
             triangles,
-            2,
+            10,
             i, row,
             previousLightIntersection);
 

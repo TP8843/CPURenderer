@@ -21,7 +21,7 @@ public:
     // Return state of orbit
     bool getOrbit() const;
 
-    OrbitHandler(Transformation& transformation, const glm::vec3& centre, bool orbit = false);
+    OrbitHandler(Transformation& transformation, const glm::vec3& centre, bool orbit = false, bool dTime = true, bool lookAt = true);
 
 private:
     // Update previous time and return time difference in seconds.
@@ -31,6 +31,8 @@ private:
     Transformation& transformation;
 
     bool isOrbiting = false;
+    bool usingDTime = false;
+    bool lookAt = false;
 
     glm::vec3 centre;
     std::chrono::milliseconds prevTime{};

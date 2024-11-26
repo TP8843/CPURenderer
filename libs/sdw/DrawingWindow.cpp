@@ -1,5 +1,8 @@
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include <array>
 #include "DrawingWindow.h"
+#include "../../libs/stb_image_write.h"
 // On some platforms you may need to include <cstring> (if you compiler can't find memset !)
 
 DrawingWindow::DrawingWindow() {}
@@ -54,6 +57,21 @@ void DrawingWindow::savePPM(const std::string &filename) const {
 	}
 	std::cout << "Saved frame " << filename << std::endl;
 	outputStream.close();
+}
+
+void DrawingWindow::savePNG(const std::string &filename) const {
+	auto* buffer  = new uint8_t[width * height * 4];
+	for (int i = 0; i < width * height; i++)
+	{
+		buffer[i * 4 + 0] = static_cast<uint8_t>((pixelBuffer[i] >> 16) & 0xFF);
+		buffer[i * 4 + 1] = static_cast<uint8_t>((pixelBuffer[i] >> 8) & 0xFF);
+		buffer[i * 4 + 2] = static_cast<uint8_t>((pixelBuffer[i] >> 0) & 0xFF);
+		buffer[i * 4 + 3] = 255;
+	}
+
+	stbi_write_png(filename.c_str(), width, height, 4, buffer, width * 4);
+	std::cout << "Saved frame " << filename << std::endl;
+	delete[] buffer;
 }
 
 bool DrawingWindow::pollForInputEvents(SDL_Event &event) {

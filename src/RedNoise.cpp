@@ -4,6 +4,7 @@
 #include "handlers/AnimationHandler.h"
 #include "handlers/CameraControl.h"
 #include "handlers/DebugHandler.h"
+#include "handlers/ExportHandler.h"
 #include "handlers/OrbitHandler.h"
 #include "objects/Scene.h"
 #include "renderers/wrappers/RendererWrapper.h"
@@ -17,15 +18,15 @@
 #define WIDTH 640
 #define HEIGHT 480
 
-AnimationHandler generateCameraHandler(Transformation& camera)
+AnimationHandler generateCameraHandler(Transformation& camera, ExportHandler& exportHandler)
 {
-    auto animation = AnimationHandler(camera);
+    auto animation = AnimationHandler(camera, exportHandler);
     auto startingAnimation = Transformation();
     startingAnimation.position = glm::vec3(0, 0, 30);
 
-    for (float i = 0; i < 180; i++)
+    for (int i = 0; i < 225; i++)
     {
-        const auto angle = (i * 2.f * M_PI) / 180.f;
+        const auto angle = -(static_cast<float>(i) * 2.f * M_PI) / 180.f;
 
         const auto rotationMatrix = glm::mat3(
             glm::vec3(glm::cos(angle), 0, -glm::sin(angle)),
@@ -33,12 +34,22 @@ AnimationHandler generateCameraHandler(Transformation& camera)
             glm::vec3(glm::sin(angle), 0, glm::cos(angle)));
 
         auto transformation = startingAnimation;
-        transformation.position = startingAnimation.position - (i / 180.f) * glm::vec3(0, 0, 25);
+        transformation.position = startingAnimation.position - (static_cast<float>(i) / 225.f) * glm::vec3(0, 0, 30);
         transformation.position = rotationMatrix * transformation.position;
         transformation.lookAt(glm::vec3());
 
         animation.animation.emplace_back(1, transformation);
     }
+
+    auto mirror = Transformation();
+    mirror.position = glm::vec3(1, 0, 0);
+    mirror.rotateY(-(M_PI / 2.f));
+    mirror.scale = 0.5;
+
+    animation.animation.emplace_back(120, mirror);
+
+    auto wait = mirror;
+    animation.animation.emplace_back(60, wait);
 
     return animation;
 }
@@ -66,7 +77,7 @@ int main(int argc, char* argv[])
     auto model = Model::import(modelFile, materialMap, transformation);
 
     auto transformation2 = Transformation();
-    transformation2.position = glm::vec3(1, 0, 0);
+    transformation2.position = glm::vec3(0, -0.6, 0.2);
     auto model2 = Model::import("../models/sphere.obj", materialMap, transformation2);
 
     auto models = std::vector<Model*>();
@@ -77,9 +88,10 @@ int main(int argc, char* argv[])
                          glm::mat3(),
                          1);
 
-    auto cameraAnimator = generateCameraHandler(camera);
+    auto exportHandler = ExportHandler();
+    AnimationHandler cameraAnimator = generateCameraHandler(camera, exportHandler);
 
-    auto sphereAnimator = OrbitHandler(transformation2, glm::vec3(0, 0, 0),  true);
+    auto sphereAnimator = OrbitHandler(transformation2, glm::vec3(0, -0.6, 0.8),  true, false, false);
 
     auto light = Transformation(glm::vec3(0, 2, 0), glm::mat3(), 2.f);
 
@@ -106,7 +118,10 @@ int main(int argc, char* argv[])
     rasterTest.eventHandlers.push_back(&cameraControl);
 
     rasterTest.preFrameHandlers.push_back(&cameraAnimator);
+    rasterTest.eventHandlers.push_back(&cameraAnimator);
     rasterTest.preFrameHandlers.push_back(&sphereAnimator);
+
+    rasterTest.postFrameHandlers.push_back(&exportHandler);
 
     rasterTest.preFrameHandlers.push_back(&orbitHandler);
     rasterTest.eventHandlers.push_back(&orbitHandler);

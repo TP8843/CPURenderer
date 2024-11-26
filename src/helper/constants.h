@@ -46,6 +46,8 @@ namespace constants
         constexpr int LIGHT_TRUCK_LEFT = SDL_SCANCODE_J;
         constexpr int LIGHT_TRUCK_RIGHT = SDL_SCANCODE_L;
 
+        constexpr int RUN_ANIMATION = SDLK_v;
+
         constexpr int PLACE_LIGHT_AT_CAMERA = SDLK_u;
 
         constexpr int ORBIT = SDLK_o;

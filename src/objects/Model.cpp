@@ -37,6 +37,8 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
     std::vector<glm::vec2> vertexTextures;
     std::vector<ModelTriangle> triangles;
 
+    std::cout << "Loading Model File: " << objectPath << std::endl;
+
     while (getline(ObjectFile, text)) {
         text = StringHelpers::trimLine(text);
 

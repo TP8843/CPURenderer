@@ -22,6 +22,9 @@ public:
 	DrawingWindow(int w, int h, bool fullscreen);
 	void renderFrame();
 	void savePPM(const std::string &filename) const;
+
+	void savePNG(const std::string &filename) const;
+
 	void saveBMP(const std::string &filename) const;
 	bool pollForInputEvents(SDL_Event &event);
 	void setPixelColour(size_t x, size_t y, uint32_t colour);

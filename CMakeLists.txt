@@ -77,6 +77,7 @@ add_executable(RedNoise
         src/objects/Transformation.cpp
         src/objects/Transformation.h
         libs/stb_image.h
+        libs/stb_image_write.h
         src/objects/materials/Material.cpp
         src/helper/StringHelpers.cpp
         src/helper/StringHelpers.h
@@ -92,6 +93,8 @@ add_executable(RedNoise
         src/objects/Scene.h
         src/handlers/AnimationHandler.cpp
         src/handlers/AnimationHandler.h
+        src/handlers/ExportHandler.cpp
+        src/handlers/ExportHandler.h
 )
 
 if (MSVC)

@@ -13,7 +13,17 @@ bool OrbitHandler::toggleOrbit()
 
 void OrbitHandler::iterateOrbit()
 {
-    const float timeElapsed = updateDTime();
+
+    float timeElapsed;
+
+    if (usingDTime)
+    {
+        timeElapsed = updateDTime();
+    }
+    else
+    {
+        timeElapsed = 1.f / 30.f;
+    }
 
     const auto rotationMatrix = glm::mat3(
         glm::vec3(glm::cos(constants::speed::ORBIT_SPEED * timeElapsed), 0, -glm::sin(constants::speed::ORBIT_SPEED * timeElapsed)),
@@ -21,7 +31,9 @@ void OrbitHandler::iterateOrbit()
         glm::vec3(glm::sin(constants::speed::ORBIT_SPEED * timeElapsed), 0, glm::cos(constants::speed::ORBIT_SPEED * timeElapsed)));
 
     transformation.position = rotationMatrix * (transformation.position - centre) + centre;
-    transformation.lookAt(glm::vec3(0,0,0));
+
+    if (lookAt)
+        transformation.lookAt(centre);
 }
 
 void OrbitHandler::handleFrame(DrawingWindow& window, float deltaTime)
@@ -40,8 +52,8 @@ void OrbitHandler::handleEvent(DrawingWindow& window, SDL_Event& event)
     }
 }
 
-OrbitHandler::OrbitHandler(Transformation& transformation, const glm::vec3& centre, const bool orbit) :
-    transformation(transformation), isOrbiting(orbit), centre(centre)
+OrbitHandler::OrbitHandler(Transformation& transformation, const glm::vec3& centre, const bool orbit, const bool dTime, const bool lookAt) :
+    transformation(transformation), isOrbiting(orbit), centre(centre), usingDTime(dTime), lookAt(lookAt)
 {
 }
 

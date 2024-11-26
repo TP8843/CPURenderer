@@ -34,13 +34,12 @@ std::string StringHelpers::trimLine(const std::string& line)
 
     if (result.empty()) return result;
 
-    // // Remove Windows carriage return. From https://stackoverflow.com/questions/2528995/remove-r-from-a-string-in-c
-    // if (!result.empty() && result.at(result.size() - 1) == '\r')
-    //     result.erase(result.size() - 1);
-
     // Trim whitespace from start and end of line
     const unsigned long newStartPos = result.find_first_not_of(" \t\r");
     unsigned long newEndPos = result.find_last_not_of(" \t\r") + 1;
+
+    if (newStartPos > result.size()) return { "" };
+
     result = result.substr(newStartPos, newEndPos - newStartPos);
 
     // Remove duplicate spaces from line. From https://stackoverflow.com/questions/8362094/replace-multiple-spaces-with-one-space-in-a-string
