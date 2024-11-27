@@ -192,6 +192,8 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
                 break;
             case MIRROR: illuminationModel = MIRROR;
                 break;
+            case REFRACTION_NO_FRESNEL: illuminationModel = REFRACTION_NO_FRESNEL;
+                break;
             default: illuminationModel = FLAT;
                 break;
             }

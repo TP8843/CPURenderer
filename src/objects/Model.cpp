@@ -217,6 +217,8 @@ std::vector<ModelTriangle> Model::getTransformedTriangles() const
     auto newTriangles = std::vector<ModelTriangle>();
     const glm::mat3 normalRotation = transformation.getNormalRotationMatrix();
 
+    if (transformation.scale == 0.f) return newTriangles;
+
     for (const ModelTriangle &triangle : triangles)
     {
         newTriangles.emplace_back(

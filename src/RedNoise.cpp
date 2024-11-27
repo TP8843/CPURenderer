@@ -46,10 +46,43 @@ AnimationHandler generateCameraHandler(Transformation& camera, ExportHandler& ex
     mirror.rotateY(-(M_PI / 2.f));
     mirror.scale = 0.5;
 
-    animation.animation.emplace_back(120, mirror);
+    animation.animation.emplace_back(150, mirror);
 
     auto wait = mirror;
-    animation.animation.emplace_back(60, wait);
+    animation.animation.emplace_back(30, wait);
+
+    return animation;
+}
+
+AnimationHandler generateLogoHandler(Transformation& logo, ExportHandler& exportHandler)
+{
+    auto animation = AnimationHandler(logo, exportHandler);
+
+    auto start = Transformation();
+    start.scale = 0.f;
+    start.position = glm::vec3(2.6f, 0.f, 0.f);
+    start.rotateY((M_PI / 4.f));
+
+    animation.animation.emplace_back(1, start);
+    animation.animation.emplace_back(200, start);
+
+    for (int i = 0; i < 175; i++)
+    {
+        const float proportion = static_cast<float>(i) / 175.f;
+
+        auto transformation = start;
+        transformation.rotateY((glm::min(proportion * 1.6f, 1.f) * -(3.f * M_PI / 4.f)));
+        transformation.scale = proportion;
+
+        animation.animation.emplace_back(1, transformation);
+    }
+
+    auto fullSize = start;
+    fullSize.scale = 1.f;
+    fullSize.rotation = glm::mat3();
+    fullSize.rotateY(-(M_PI / 2.f));
+
+    animation.animation.emplace_back(30, fullSize);
 
     return animation;
 }
@@ -80,9 +113,16 @@ int main(int argc, char* argv[])
     transformation2.position = glm::vec3(0, -0.6, 0.2);
     auto model2 = Model::import("../models/sphere.obj", materialMap, transformation2);
 
+    auto transformationLogo = Transformation();
+    transformationLogo.scale = 1.f;
+    transformationLogo.position = glm::vec3(2.5f, 0.f, 0.f);
+    transformationLogo.rotateY(-(M_PI / 2.f));
+    auto model3 = Model::import("../models/hackspace-logo/logo-centred.obj", materialMap, transformationLogo);
+
     auto models = std::vector<Model*>();
     models.push_back(&model);
     models.push_back(&model2);
+    models.push_back(&model3);
 
     auto camera = Transformation(glm::vec3(0, 0, 10),
                          glm::mat3(),
@@ -90,6 +130,7 @@ int main(int argc, char* argv[])
 
     auto exportHandler = ExportHandler();
     AnimationHandler cameraAnimator = generateCameraHandler(camera, exportHandler);
+    AnimationHandler logoAnimator = generateLogoHandler(transformationLogo, exportHandler);
 
     auto sphereAnimator = OrbitHandler(transformation2, glm::vec3(0, -0.6, 0.8),  true, false, false);
 
@@ -119,6 +160,8 @@ int main(int argc, char* argv[])
 
     rasterTest.preFrameHandlers.push_back(&cameraAnimator);
     rasterTest.eventHandlers.push_back(&cameraAnimator);
+    rasterTest.preFrameHandlers.push_back(&logoAnimator);
+    rasterTest.eventHandlers.push_back(&logoAnimator);
     rasterTest.preFrameHandlers.push_back(&sphereAnimator);
 
     rasterTest.postFrameHandlers.push_back(&exportHandler);

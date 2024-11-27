@@ -10,7 +10,7 @@ Transformation::Transformation(const glm::vec3 &position, const glm::mat3 &rotat
 
 glm::vec3 Transformation::transformPoint(const glm::vec3 point) const
 {
-    return (point * scale + position) * rotation;
+    return point * scale * rotation + position;
 }
 
 glm::mat3 Transformation::getNormalRotationMatrix() const

@@ -14,8 +14,7 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
     glm::vec3 rayDirection,
     const std::vector<ModelTriangle>& triangles,
     const int depth,
-    const unsigned int screenX,
-    const unsigned int screenY,
+    const std::vector<float> refractiveIndexes,
     int previousShadowIntersection) const
 {
     auto colour = glm::vec4(0);
@@ -27,12 +26,11 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
     {
         const std::array<glm::vec3, 3> vectorNormals = intersection.second.intersectedTriangle.vertexNormals;
 
+        const Material& material = scene.materials.getMaterial(intersection.second.intersectedTriangle.material);
+
         const glm::vec3 normal = vectorNormals[0]
             + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
             + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
-
-        const Material& material = scene.materials.
-                                         getMaterial(intersection.second.intersectedTriangle.material);
 
         if (depth > 0 && material.getIlluminationModel() == MIRROR)
         {
@@ -42,15 +40,28 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
                triangles,
                normal,
                depth,
-               screenX,
-               screenY,
+               refractiveIndexes,
                previousShadowIntersection);
 
             return std::make_pair(result.first * material.getColour(),
                 result.second);
         }
 
-        return surfaceColour(intersection.second, triangles, normal, material, screenX, screenY, previousShadowIntersection);
+        if (depth > 0 && material.getIlluminationModel() == REFRACTION_NO_FRESNEL)
+        {
+            const auto result = refract(
+               rayDirection,
+               intersection.second,
+               triangles,
+               normal,
+               depth,
+               refractiveIndexes,
+               previousShadowIntersection);
+
+            return std::make_pair(result.first, result.second);
+        }
+
+        return surfaceColour(intersection.second, triangles, normal, material, previousShadowIntersection);
     }
 
     return std::make_pair(colour, previousShadowIntersection);
@@ -62,8 +73,7 @@ std::pair<glm::vec4, int> Raytracer::mirror(
     const std::vector<ModelTriangle>& triangles,
     const glm::vec3& normal,
     const int depth,
-    const unsigned int screenX,
-    const unsigned int screenY,
+    const std::vector<float> refractiveIndexes,
     const float previousShadowIntersection) const
 {
     const glm::vec3 reflectedRay = rayDirection
@@ -75,7 +85,46 @@ std::pair<glm::vec4, int> Raytracer::mirror(
         reflectedRay,
         triangles,
         depth - 1,
-        screenX, screenY,
+        refractiveIndexes,
+        previousShadowIntersection);
+}
+
+std::pair<glm::vec4, int> Raytracer::refract(
+    const glm::vec3& rayDirection,
+    const RayTriangleIntersection& intersection,
+    const std::vector<ModelTriangle>& triangles,
+    const glm::vec3& normal,
+    int depth,
+    std::vector<float> refractiveIndexes,
+    float previousShadowIntersection) const
+{
+    const Material& material = scene.materials.getMaterial(intersection.intersectedTriangle.material);
+    const float currentRefractiveIndex = refractiveIndexes.back();
+    float newRefractiveIndex;
+
+    if (glm::dot(rayDirection, normal) > 0.f)
+    {
+        newRefractiveIndex = 1.5f;
+    }
+    else
+    {
+        refractiveIndexes.pop_back();
+        newRefractiveIndex = refractiveIndexes.back();
+    }
+
+    const glm::vec3 perpendicular = rayDirection - (normal)
+    * glm::dot(rayDirection, normal);
+
+    const float ratio = newRefractiveIndex / currentRefractiveIndex;
+
+    const glm::vec3 refractedRay = rayDirection - perpendicular - ratio * perpendicular;
+
+    return fireRay(
+        intersection.intersectionPoint,
+        refractedRay,
+        triangles,
+        depth - 1,
+        refractiveIndexes,
         previousShadowIntersection);
 }
 
@@ -84,28 +133,25 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
     const std::vector<ModelTriangle>& triangles,
     const glm::vec3& normal,
     const Material& material,
-    const unsigned int screenX,
-    const unsigned int screenY,
     int previousShadowIntersection) const
 {
     glm::vec4 colour;
     float shadowProportion = 0.f;
 
-    const glm::vec3 lightDirection = glm::normalize(scene.light.position - intersection.intersectionPoint);
-
-    const glm::vec3 lightTangent = glm::normalize(-glm::cross(lightDirection, glm::vec3(0.f, 1.f, 0.f)));
-    const glm::vec3 lightBitangent = glm::normalize(glm::cross(lightTangent, lightDirection));
+    // const glm::vec3 lightDirection = glm::normalize(scene.light.position - intersection.intersectionPoint);
+    // const glm::vec3 lightTangent = glm::normalize(-glm::cross(lightDirection, glm::vec3(0.f, 1.f, 0.f)));
+    // const glm::vec3 lightBitangent = glm::normalize(glm::cross(lightTangent, lightDirection));
 
     for (int i = 0; i < SHADOW_SAMPLES; ++i)
     {
         const auto randomOffset = glm::vec3(
             static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 4.f) - 0.5f,
             static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 4.f) - 0.5f,
-            static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 4.f) - 0.5f);
+        static_cast<float>(random()) / (static_cast<float>(RAND_MAX) * 4.f) - 0.5f);
 
-        const auto pointRadius = randomOffset.x / 3.f;
-        const auto pointAngle = randomOffset.y * 2 * M_PI;
-        const auto discPos = glm::vec2(pointRadius * glm::cos(pointAngle), pointRadius * glm::sin(pointAngle));
+        // const auto pointRadius = randomOffset.x / 1.5f;
+        // const auto pointAngle = randomOffset.y * 2 * M_PI;
+        // const auto discPos = glm::vec2(pointRadius * glm::cos(pointAngle), pointRadius * glm::sin(pointAngle));
 
         const auto finalLightPosition = scene.light.position + randomOffset;
 
@@ -160,6 +206,32 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
     }
     else
     {
+        // const glm::vec4 v0Colour = material.getColourAtPointInCameraSpace(
+        //     scene.camera,
+        //     scene.light,
+        //     (intersection.intersectedTriangle.vertices[0] - scene.camera.position) * scene.camera.rotation,
+        //     intersection.intersectedTriangle.vertexNormals[0] * scene.camera.getNormalRotationMatrix(),
+        //     material.getIlluminationModel(),
+        //     shadowProportion / SHADOW_SAMPLES);
+        //
+        // const glm::vec4 v1Colour = material.getColourAtPointInCameraSpace(
+        //     scene.camera,
+        //     scene.light,
+        //     (intersection.intersectedTriangle.vertices[1] - scene.camera.position) * scene.camera.rotation,
+        //     intersection.intersectedTriangle.vertexNormals[1] * scene.camera.getNormalRotationMatrix(),
+        //     material.getIlluminationModel(),
+        //     shadowProportion / SHADOW_SAMPLES);
+        //
+        // const glm::vec4 v2Colour = material.getColourAtPointInCameraSpace(
+        //     scene.camera,
+        //     scene.light,
+        //     (intersection.intersectedTriangle.vertices[2] - scene.camera.position) * scene.camera.rotation,
+        //     intersection.intersectedTriangle.vertexNormals[2] * scene.camera.getNormalRotationMatrix(),
+        //     material.getIlluminationModel(),
+        //     shadowProportion / SHADOW_SAMPLES);
+        //
+        // colour = v0Colour + v1Colour * intersection.proportions.x + v2Colour * intersection.proportions.y;
+
         colour = material.getColourAtPointInCameraSpace(
             scene.camera,
             scene.light,
@@ -193,7 +265,7 @@ void Raytracer::renderRow(
             scene.camera.rotation * scenePosition,
             triangles,
             10,
-            i, row,
+            std::vector<float>(1.f),
             previousLightIntersection);
 
         previousLightIntersection = final.second;

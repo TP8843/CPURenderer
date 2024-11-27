@@ -8,7 +8,7 @@ Ns 256.000000
 
 newmtl Red
 Kd 1.000000 0.000000 0.000000
-illum 2
+illum 6
 Ns 256.000000
 
 newmtl Green

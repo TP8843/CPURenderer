@@ -25,8 +25,7 @@ private:
         glm::vec3 rayDirection,
         const std::vector<ModelTriangle>& triangles,
         int depth,
-        unsigned int screenX,
-        unsigned int screenY,
+        std::vector<float> refractiveIndexes,
         int previousShadowIntersection = -1) const;
 
     std::pair<glm::vec4, int> mirror(
@@ -35,17 +34,23 @@ private:
         const std::vector<ModelTriangle>& triangles,
         const glm::vec3& normal,
         int depth,
-        unsigned int screenX,
-        unsigned int screenY,
+        std::vector<float> refractiveIndexes,
         float previousShadowIntersection) const;
+
+    std::pair<glm::vec4, int> refract(
+    const glm::vec3& rayDirection,
+    const RayTriangleIntersection& intersection,
+    const std::vector<ModelTriangle>& triangles,
+    const glm::vec3& normal,
+    int depth,
+    std::vector<float> refractiveIndexes,
+    float previousShadowIntersection) const;
 
     std::pair<glm::vec4, int> surfaceColour(
         const RayTriangleIntersection& intersection,
         const std::vector<ModelTriangle>& triangles,
         const glm::vec3& normal,
         const Material& material,
-        unsigned int screenX,
-        unsigned int screenY,
         int previousShadowIntersection) const;
 
     void renderRow(
