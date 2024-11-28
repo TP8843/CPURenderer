@@ -47,4 +47,7 @@ Kd 0.000000 1.000000 1.000000
 
 newmtl Cobbles
 Kd 1.000000 1.000000 1.000000
-map_Kd texture.ppm
+map_Kd ./cobble/cobble.png
+map_bump ./cobble/cobble-normal.png
+illum 2
+Ns 128.000000

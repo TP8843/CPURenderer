@@ -16,8 +16,10 @@ public:
     IlluminationModel getIlluminationModel() const;
     bool hasTexture() const;
     bool hasNormalMap() const;
+    bool hasSpecularMap() const;
     glm::vec4 getPixelTextureColour(int x, int y) const;
     glm::vec3 getNormal(int x, int y) const;
+    glm::vec3 getSpecular(int x, int y) const;
     size_t getTextureWidth() const;
     size_t getTextureHeight() const;
 
@@ -37,26 +39,48 @@ public:
                                             float shadowProportion = false) const;
 
     Material();
-    explicit Material(glm::vec4 colour, IlluminationModel illuminationModel, float specularStrength = 0.f);
+    explicit Material(glm::vec4 colour, IlluminationModel illuminationModel, float specularStrength);
 
     explicit Material(
         const glm::vec4& colour,
         const std::string& texturePath,
         IlluminationModel illuminationModel,
-        float specularStrength = 0.f);
+        float specularStrength);
+
+    explicit Material(
+        const glm::vec4& colour,
+        const std::string& texturePath,
+        IlluminationModel illuminationModel,
+        float specularStrength,
+        const std::string& specularPath);
 
     explicit Material(
         const glm::vec4& colour,
         const std::string& texturePath,
         IlluminationModel illuminationModel,
         const std::string& normalPath,
-        float specularStrength = 0.f);
+        float specularStrength);
+
+    explicit Material(
+        const glm::vec4& colour,
+        const std::string& texturePath,
+        IlluminationModel illuminationModel,
+        const std::string& normalPath,
+        float specularStrength,
+        const std::string& specularPath);
 
     explicit Material(
         const glm::vec4& colour,
         IlluminationModel illuminationModel,
         const std::string& normalPath,
-        float specularStrength = 0.f);
+        float specularStrength);
+
+    explicit Material(
+        const glm::vec4& colour,
+        IlluminationModel illuminationModel,
+        const std::string& normalPath,
+        float specularStrength,
+        const std::string& specularPath);
 
 private:
     static constexpr int charsPerPixel = 4;
@@ -105,10 +129,11 @@ private:
     unsigned char* texture{};
     bool hasTextureBool;
 
-    int normalWidth = 0;
-    int normalHeight = 0;
     unsigned char* normal{};
     bool hasNormalBool;
+
+    unsigned char* specular{};
+    bool hasSpecularBool;
 };
 
 #endif //MATERIAL_H

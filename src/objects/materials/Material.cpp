@@ -46,6 +46,11 @@ bool Material::hasNormalMap() const
     return hasNormalBool;
 }
 
+bool Material::hasSpecularMap() const
+{
+    return hasSpecularBool;
+}
+
 glm::vec4 Material::getPixelTextureColour(const int x, const int y) const
 {
     int tiledX = x % textureWidth;
@@ -71,6 +76,31 @@ glm::vec4 Material::getPixelTextureColour(const int x, const int y) const
 }
 
 glm::vec3 Material::getNormal(const int x, const int y) const
+{
+    int tiledX = x % textureWidth;
+    int tiledY = y % textureHeight;
+
+    if (tiledX < 0) tiledX += textureWidth;
+    if (tiledY < 0) tiledY += textureHeight;
+
+    if (tiledX < 0 || tiledX >= textureWidth || tiledY < 0 || tiledY >= textureHeight)
+    {
+        std::cout << "Normal out of bounds at (" << tiledX << "," << tiledY << ")" << std::endl;
+        return {0, 0, 1,};
+    }
+
+    const int startingPosition = (textureWidth * tiledY + tiledX) * charsPerPixel;
+
+    const auto normalVector = glm::vec3{
+        (static_cast<float>(normal[startingPosition + 0]) / 255.0f) * 2.f - 1.f,
+        (static_cast<float>(normal[startingPosition + 1]) / 255.0f) * 2.f - 1.f,
+        (static_cast<float>(normal[startingPosition + 2]) / 127.0f - 1.f)
+    };
+
+    return glm::normalize(normalVector);
+}
+
+glm::vec3 Material::getSpecular(const int x, const int y) const
 {
     int tiledX = x % textureWidth;
     int tiledY = y % textureHeight;
@@ -180,11 +210,13 @@ Material::Material() = default;
 
 Material::Material(glm::vec4 colour,
                    const IlluminationModel illuminationModel,
-                   const float specularStrength) : colour(std::move(colour)),
-                                                   illuminationModel(illuminationModel),
-                                                   specularStrength(specularStrength),
-hasTextureBool(false),
-hasNormalBool(false)
+                   const float specularStrength) :
+    colour(std::move(colour)),
+    illuminationModel(illuminationModel),
+    specularStrength(specularStrength),
+    hasTextureBool(false),
+    hasNormalBool(false),
+    hasSpecularBool(false)
 {
 }
 
@@ -196,11 +228,42 @@ Material::Material(const glm::vec4& colour,
     illuminationModel(illuminationModel),
     specularStrength(specularStrength),
     hasTextureBool(true),
-    hasNormalBool(false)
+    hasNormalBool(false),
+    hasSpecularBool(false)
 {
     std::cout << "Attempting to load texture from " << texturePath << std::endl;
 
     texture = stbi_load(texturePath.c_str(),
+                        &textureWidth,
+                        &textureHeight,
+                        nullptr,
+                        STBI_rgb_alpha);
+}
+
+Material::Material(
+    const glm::vec4& colour,
+    const std::string& texturePath,
+    const IlluminationModel illuminationModel,
+    float specularStrength,
+    const std::string& specularPath) :
+    colour(colour),
+    illuminationModel(illuminationModel),
+    specularStrength(specularStrength),
+    hasTextureBool(true),
+    hasNormalBool(false),
+    hasSpecularBool(true)
+{
+    std::cout << "Attempting to load texture from " << texturePath << std::endl;
+
+    texture = stbi_load(texturePath.c_str(),
+                        &textureWidth,
+                        &textureHeight,
+                        nullptr,
+                        STBI_rgb_alpha);
+
+    std::cout << "Attempting to load specular from " << texturePath << std::endl;
+
+    specular = stbi_load(specularPath.c_str(),
                         &textureWidth,
                         &textureHeight,
                         nullptr,
@@ -217,7 +280,8 @@ Material::Material(
     illuminationModel(illuminationModel),
     specularStrength(specularStrength),
     hasTextureBool(true),
-    hasNormalBool(true)
+    hasNormalBool(true),
+    hasSpecularBool(false)
 {
     std::cout << "Attempting to load diffuse texture from " << texturePath << std::endl;
     std::cout << "Attempting to load normal texture from " << normalPath << std::endl;
@@ -237,17 +301,86 @@ Material::Material(
 
 Material::Material(
     const glm::vec4& colour,
+    const std::string& texturePath,
+    const IlluminationModel illuminationModel,
+    const std::string& normalPath,
+    float specularStrength,
+    const std::string& specularPath) :
+    colour(colour),
+    illuminationModel(illuminationModel),
+    specularStrength(specularStrength),
+    hasTextureBool(true),
+    hasNormalBool(true),
+    hasSpecularBool(true)
+{
+    std::cout << "Attempting to load diffuse texture from " << texturePath << std::endl;
+    std::cout << "Attempting to load normal texture from " << normalPath << std::endl;
+    std::cout << "Attempting to load specular texture from " << specularPath << std::endl;
+
+
+    normal = stbi_load(normalPath.c_str(),
+                       &textureHeight,
+                       &textureHeight,
+                       nullptr,
+                       STBI_rgb_alpha);
+
+    texture = stbi_load(texturePath.c_str(),
+                        &textureWidth,
+                        &textureHeight,
+                        nullptr,
+                        STBI_rgb_alpha);
+
+    specular = stbi_load(specularPath.c_str(),
+                    &textureWidth,
+                    &textureHeight,
+                    nullptr,
+                    STBI_rgb_alpha);
+}
+
+Material::Material(
+    const glm::vec4& colour,
     const IlluminationModel illuminationModel,
     const std::string& normalPath,
     const float specularStrength) :
     colour(colour),
     illuminationModel(illuminationModel),
     specularStrength(specularStrength),
-    hasNormalBool(true)
+    hasTextureBool(false),
+    hasNormalBool(true),
+    hasSpecularBool(false)
 {
     std::cout << "Attempting to load normal texture from " << normalPath << std::endl;
 
     normal = stbi_load(normalPath.c_str(),
+                       &textureWidth,
+                       &textureHeight,
+                       nullptr,
+                       STBI_rgb_alpha);
+}
+
+Material::Material(
+    const glm::vec4& colour,
+    const IlluminationModel illuminationModel,
+    const std::string& normalPath,
+    const float specularStrength,
+    const std::string& specularPath) :
+    colour(colour),
+    illuminationModel(illuminationModel),
+    specularStrength(specularStrength),
+    hasNormalBool(true),
+    hasSpecularBool(true)
+{
+    std::cout << "Attempting to load normal texture from " << normalPath << std::endl;
+
+    normal = stbi_load(normalPath.c_str(),
+                       &textureWidth,
+                       &textureHeight,
+                       nullptr,
+                       STBI_rgb_alpha);
+
+    std::cout << "Attempting to load specular texture from " << specularPath << std::endl;
+
+    specular = stbi_load(specularPath.c_str(),
                        &textureWidth,
                        &textureHeight,
                        nullptr,

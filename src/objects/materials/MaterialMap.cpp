@@ -85,10 +85,11 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
     bool materialToStore = false;
     bool hasTexture = false;
     bool hasNormal = false;
-    bool hasColour = false;
+    bool hasSpecular = false;
 
     std::string currentTextureFilename;
     std::string currentNormalFilename;
+    std::string currentSpecularFilename;
     glm::vec4 currentColour = glm::vec4(1);
 
     IlluminationModel illuminationModel = defaultIlluminationModel;
@@ -105,7 +106,17 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
         {
             if (materialToStore)
             {
-                if (hasTexture && hasNormal)
+                if (hasTexture && hasNormal && hasSpecular)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                        Material(currentColour,
+                                 StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                 illuminationModel,
+                                 StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
+                                 shininess,
+                                 StringHelpers::concatFolderFile(folderPath, currentSpecularFilename)));
+                }
+                else if (hasTexture && hasNormal)
                 {
                     materialMap.addMaterial(originalPath + currentMaterialName,
                                             Material(currentColour,
@@ -113,6 +124,25 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
                                                      illuminationModel,
                                                      StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
                                                      shininess));
+                }
+                else if (hasNormal && hasSpecular)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                        Material(currentColour,
+                                 illuminationModel,
+                                 StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
+                                 shininess,
+                                 StringHelpers::concatFolderFile(folderPath, currentSpecularFilename)));
+                }
+                else if (hasTexture && hasSpecular)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                                            Material(
+                                                currentColour,
+                                                StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                                illuminationModel,
+                                                shininess,
+                                                StringHelpers::concatFolderFile(folderPath, currentSpecularFilename)));
                 }
                 else if (hasNormal)
                 {
@@ -139,7 +169,6 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
             }
 
             materialToStore = false;
-            hasColour = false;
             hasTexture = false;
             hasNormal = false;
 
@@ -160,7 +189,6 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
                 glm::pow(std::stof(tokens.at(3)), 2.2f),
                 1);
 
-            hasColour = true;
             currentColour = colourValue;
         }
 
@@ -186,6 +214,14 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
 
             currentNormalFilename = tokens.at(1);
             hasNormal = true;
+        }
+
+        if (tokens.at(0) == "map_Ks" && !tokens.at(1).empty())
+        {
+            materialToStore = true;
+
+            currentSpecularFilename = tokens.at(1);
+            hasSpecular = true;
         }
 
         // Illumination type (UNSHADED, FLAT, PHONG)

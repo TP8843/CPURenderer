@@ -31,13 +31,44 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
             + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
             + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
 
+        glm::vec3 transformedNormal = normal;
+
+        if (material.hasNormalMap())
+        {
+            const auto texturePoints = intersection.second.intersectedTriangle.texturePoints;
+            const auto vertices = intersection.second.intersectedTriangle.vertices;
+
+            const TexturePoint finalTexturePoint = texturePoints[0]
+                + (texturePoints[1] - texturePoints[0]) * intersection.second.proportions.x
+                + (texturePoints[2] - texturePoints[0]) * intersection.second.proportions.y;
+
+            glm::vec3 edge0 = vertices.at(1) - vertices.at(0);
+            glm::vec3 edge1 = vertices.at(2) - vertices.at(0);
+
+            TexturePoint textureEdge0 = texturePoints.at(1) - texturePoints.at(0);
+            TexturePoint textureEdge1 = texturePoints.at(2) - texturePoints.at(0);
+
+            float r = 1.0f / (textureEdge0.x * textureEdge1.y - textureEdge0.y * textureEdge1.x);
+            glm::vec3 tangent = glm::normalize((edge0 * textureEdge1.y - edge1 * textureEdge0.y) * r);
+            glm::vec3 bitangent = glm::normalize((edge1 * textureEdge0.x - edge0 * textureEdge1.x) * r);
+
+            glm::mat3 transformationMatrix = glm::mat3(
+                tangent,
+                bitangent,
+                normal);
+
+            transformedNormal = glm::normalize(transformationMatrix * material.getNormal(finalTexturePoint.x, finalTexturePoint.y));
+
+            // return std::make_pair(glm::vec4(transformedNormal, 1.f), -1);
+        }
+
         if (depth > 0 && material.getIlluminationModel() == MIRROR)
         {
             const auto result = mirror(
                rayDirection,
                intersection.second,
                triangles,
-               normal,
+               transformedNormal,
                depth,
                previousShadowIntersection);
 
@@ -51,14 +82,14 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
                rayDirection,
                intersection.second,
                triangles,
-               intersection.second.intersectedTriangle.normal,
+               transformedNormal,
                depth,
                previousShadowIntersection);
 
             return std::make_pair(result.first, result.second);
         }
 
-        return surfaceColour(intersection.second, triangles, normal, material, previousShadowIntersection);
+        return surfaceColour(intersection.second, triangles, transformedNormal, material, previousShadowIntersection);
     }
 
     return std::make_pair(colour, previousShadowIntersection);
@@ -258,32 +289,6 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
     const auto vertices = intersection.intersectedTriangle.vertices;
     glm::vec3 transformedNormal = normal;
 
-    if (material.hasNormalMap())
-    {
-        const TexturePoint finalTexturePoint = texturePoints[0]
-            + (texturePoints[1] - texturePoints[0]) * intersection.proportions.x
-            + (texturePoints[2] - texturePoints[0]) * intersection.proportions.y;
-
-        glm::vec3 edge0 = vertices.at(1) - vertices.at(0);
-        glm::vec3 edge1 = vertices.at(2) - vertices.at(0);
-
-        TexturePoint textureEdge0 = texturePoints.at(1) - texturePoints.at(0);
-        TexturePoint textureEdge1 = texturePoints.at(2) - texturePoints.at(0);
-
-        float r = 1.0f / (textureEdge0.x * textureEdge1.y - textureEdge0.y * textureEdge1.x);
-        glm::vec3 tangent = glm::normalize((edge0 * textureEdge1.y - edge1 * textureEdge0.y) * r);
-        glm::vec3 bitangent = glm::normalize((edge1 * textureEdge0.x - edge0 * textureEdge1.x) * r);
-
-        glm::mat3 transformationMatrix = glm::mat3(
-            tangent,
-            bitangent,
-            normal);
-
-        transformedNormal = glm::normalize(material.getNormal(finalTexturePoint.x, finalTexturePoint.y) * transformationMatrix);
-
-        // return std::make_pair(glm::vec4(transformedNormal, 1.f), -1);
-    }
-
     if (material.hasTexture())
     {
         const TexturePoint finalTexturePoint = texturePoints[0]
@@ -294,7 +299,7 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
             scene.camera,
             scene.light,
             (intersection.intersectionPoint - scene.camera.position) * scene.camera.rotation,
-            transformedNormal * scene.camera.getNormalRotationMatrix(),
+            normal * scene.camera.getNormalRotationMatrix(),
             finalTexturePoint,
             material.getIlluminationModel(),
             shadowProportion / SHADOW_SAMPLES);
@@ -331,7 +336,7 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
             scene.camera,
             scene.light,
             (intersection.intersectionPoint - scene.camera.position) * scene.camera.rotation,
-            transformedNormal * scene.camera.getNormalRotationMatrix(),
+            normal * scene.camera.getNormalRotationMatrix(),
             material.getIlluminationModel(),
             shadowProportion / SHADOW_SAMPLES);
     }
