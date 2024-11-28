@@ -14,7 +14,6 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
     glm::vec3 rayDirection,
     const std::vector<ModelTriangle>& triangles,
     const int depth,
-    const std::vector<float> refractiveIndexes,
     int previousShadowIntersection) const
 {
     auto colour = glm::vec4(0);
@@ -40,7 +39,6 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
                triangles,
                normal,
                depth,
-               refractiveIndexes,
                previousShadowIntersection);
 
             return std::make_pair(result.first * material.getColour(),
@@ -49,13 +47,53 @@ std::pair<glm::vec4, int> Raytracer::fireRay(
 
         if (depth > 0 && material.getIlluminationModel() == REFRACTION_NO_FRESNEL)
         {
-            const auto result = refract(
+            const auto result = refractIntoBox(
                rayDirection,
                intersection.second,
                triangles,
-               normal,
+               intersection.second.intersectedTriangle.normal,
                depth,
-               refractiveIndexes,
+               previousShadowIntersection);
+
+            return std::make_pair(result.first, result.second);
+        }
+
+        return surfaceColour(intersection.second, triangles, normal, material, previousShadowIntersection);
+    }
+
+    return std::make_pair(colour, previousShadowIntersection);
+}
+
+std::pair<glm::vec4, int> Raytracer::fireRayInsideBox(
+    glm::vec3 startingPosition,
+    glm::vec3 rayDirection,
+    const std::vector<ModelTriangle>& triangles,
+    const int depth,
+    int previousShadowIntersection) const
+{
+    auto colour = glm::vec4(0);
+
+    std::pair<bool, RayTriangleIntersection> intersection =
+        getClosestIntersection(startingPosition, rayDirection, triangles);
+
+    if (intersection.first)
+    {
+        const std::array<glm::vec3, 3> vectorNormals = intersection.second.intersectedTriangle.vertexNormals;
+
+        const Material& material = scene.materials.getMaterial(intersection.second.intersectedTriangle.material);
+
+        const glm::vec3 normal = vectorNormals[0]
+            + (vectorNormals[1] - vectorNormals[0]) * intersection.second.proportions.x
+            + (vectorNormals[2] - vectorNormals[0]) * intersection.second.proportions.y;
+
+        if (depth > 0)
+        {
+            const auto result = refractOutOfBox(
+               rayDirection,
+               intersection.second,
+               triangles,
+               intersection.second.intersectedTriangle.normal,
+               depth,
                previousShadowIntersection);
 
             return std::make_pair(result.first, result.second);
@@ -73,59 +111,96 @@ std::pair<glm::vec4, int> Raytracer::mirror(
     const std::vector<ModelTriangle>& triangles,
     const glm::vec3& normal,
     const int depth,
-    const std::vector<float> refractiveIndexes,
     const float previousShadowIntersection) const
 {
-    const glm::vec3 reflectedRay = rayDirection
+    const glm::vec3 reflectedRay = glm::normalize(rayDirection
         - 2.0f * (normal)
-        * glm::dot(rayDirection, normal);
+        * glm::dot(rayDirection, normal));
 
     return fireRay(
         intersection.intersectionPoint,
         reflectedRay,
         triangles,
         depth - 1,
-        refractiveIndexes,
         previousShadowIntersection);
 }
 
-std::pair<glm::vec4, int> Raytracer::refract(
+std::pair<glm::vec4, int> Raytracer::refractIntoBox(
     const glm::vec3& rayDirection,
     const RayTriangleIntersection& intersection,
     const std::vector<ModelTriangle>& triangles,
     const glm::vec3& normal,
     int depth,
-    std::vector<float> refractiveIndexes,
     float previousShadowIntersection) const
 {
     const Material& material = scene.materials.getMaterial(intersection.intersectedTriangle.material);
-    const float currentRefractiveIndex = refractiveIndexes.back();
-    float newRefractiveIndex;
+    float currentRefractiveIndex = 1.f;
+    float newRefractiveIndex = 1.33f;
 
-    if (glm::dot(rayDirection, normal) > 0.f)
-    {
-        newRefractiveIndex = 1.5f;
-    }
-    else
-    {
-        refractiveIndexes.pop_back();
-        newRefractiveIndex = refractiveIndexes.back();
-    }
+    // std::cout << "Current refractive index: " << currentRefractiveIndex << ", New refractive index: " << newRefractiveIndex << std::endl;
 
-    const glm::vec3 perpendicular = rayDirection - (normal)
-    * glm::dot(rayDirection, normal);
+    const float ratio = currentRefractiveIndex / newRefractiveIndex;
 
-    const float ratio = newRefractiveIndex / currentRefractiveIndex;
+    const float cosThetaI = -glm::dot(rayDirection, normal);
+    const float sin2ThetaT = glm::pow(ratio, 2.f) * (1.f - glm::pow(cosThetaI, 2.f));
 
-    const glm::vec3 refractedRay = rayDirection - perpendicular - ratio * perpendicular;
+    const glm::vec3 refractedRay = glm::normalize(ratio * rayDirection + (ratio * cosThetaI - glm::sqrt(1.f - sin2ThetaT)) * normal);
 
-    return fireRay(
+    return fireRayInsideBox(
         intersection.intersectionPoint,
         refractedRay,
         triangles,
         depth - 1,
-        refractiveIndexes,
         previousShadowIntersection);
+
+}
+
+std::pair<glm::vec4, int> Raytracer::refractOutOfBox(
+    const glm::vec3& rayDirection,
+    const RayTriangleIntersection& intersection,
+    const std::vector<ModelTriangle>& triangles,
+    const glm::vec3& normal,
+    int depth,
+    float previousShadowIntersection) const
+{
+    const Material& material = scene.materials.getMaterial(intersection.intersectedTriangle.material);
+    float currentRefractiveIndex = 1.33f;
+    float newRefractiveIndex = 1.f;
+
+    // std::cout << "Current refractive index: " << currentRefractiveIndex << ", New refractive index: " << newRefractiveIndex << std::endl;
+
+    const float ratio = currentRefractiveIndex / newRefractiveIndex;
+    const float cosThetaI = glm::dot(rayDirection, normal);
+    const float sin2ThetaT = glm::pow(ratio, 2.f) * (1.f - glm::pow(cosThetaI, 2.f));
+
+    if (sin2ThetaT > 1.f)
+    {
+         const glm::vec3 reflectedRay = glm::normalize(rayDirection
+             - 2.0f * (-normal)
+             * glm::dot(rayDirection, -normal));
+
+         return fireRayInsideBox(
+             intersection.intersectionPoint,
+             reflectedRay,
+             triangles,
+             depth - 1,
+             previousShadowIntersection);
+
+        return std::make_pair(glm::vec4(0, 1, 0, 0), -1);
+    }
+    else
+    {
+        if (material.getIlluminationModel() != REFRACTION_NO_FRESNEL) return surfaceColour(intersection, triangles, normal, material, previousShadowIntersection);
+
+        const glm::vec3 refractedRay = glm::normalize(ratio * glm::normalize(rayDirection) + (ratio * cosThetaI - glm::sqrt(1.f - sin2ThetaT)) * normal);
+
+        return fireRay(
+            intersection.intersectionPoint,
+            refractedRay,
+            triangles,
+            depth - 1,
+            previousShadowIntersection);
+    }
 }
 
 std::pair<glm::vec4, int> Raytracer::surfaceColour(
@@ -265,7 +340,6 @@ void Raytracer::renderRow(
             scene.camera.rotation * scenePosition,
             triangles,
             10,
-            std::vector<float>(1.f),
             previousLightIntersection);
 
         previousLightIntersection = final.second;

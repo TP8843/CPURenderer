@@ -25,8 +25,14 @@ private:
         glm::vec3 rayDirection,
         const std::vector<ModelTriangle>& triangles,
         int depth,
-        std::vector<float> refractiveIndexes,
         int previousShadowIntersection = -1) const;
+
+    std::pair<glm::vec4, int> fireRayInsideBox(
+        glm::vec3 startingPosition,
+        glm::vec3 rayDirection,
+        const std::vector<ModelTriangle>& triangles,
+        int depth,
+        int previousShadowIntersection) const;
 
     std::pair<glm::vec4, int> mirror(
         const glm::vec3& rayDirection,
@@ -34,16 +40,22 @@ private:
         const std::vector<ModelTriangle>& triangles,
         const glm::vec3& normal,
         int depth,
-        std::vector<float> refractiveIndexes,
         float previousShadowIntersection) const;
 
-    std::pair<glm::vec4, int> refract(
+    std::pair<glm::vec4, int> refractIntoBox(
     const glm::vec3& rayDirection,
     const RayTriangleIntersection& intersection,
     const std::vector<ModelTriangle>& triangles,
     const glm::vec3& normal,
     int depth,
-    std::vector<float> refractiveIndexes,
+    float previousShadowIntersection) const;
+
+    std::pair<glm::vec4, int> refractOutOfBox(
+    const glm::vec3& rayDirection,
+    const RayTriangleIntersection& intersection,
+    const std::vector<ModelTriangle>& triangles,
+    const glm::vec3& normal,
+    int depth,
     float previousShadowIntersection) const;
 
     std::pair<glm::vec4, int> surfaceColour(
