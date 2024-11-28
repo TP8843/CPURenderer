@@ -108,9 +108,11 @@ Model Model::import(const std::string& objectPath, MaterialMap& materialMap, Tra
                     hasTexture = true;
                     const auto point = vertexTextures.at(std::stoi(vertexTokens.at(1)) - 1);
 
+                    const Material& material = materialMap.getMaterial(objectPath + currentMaterial);
+
                     polygonTexturePoints.emplace_back(
-                            point.x * static_cast<float>(materialMap.getMaterial(objectPath + currentMaterial).getTextureWidth()),
-                            point.y * static_cast<float>(materialMap.getMaterial(objectPath + currentMaterial).getTextureHeight()));
+                            point.x * static_cast<float>(material.getTextureWidth()),
+                            point.y * static_cast<float>(material.getTextureHeight()));
                 }
 
                 // If vertex has vertex normal data

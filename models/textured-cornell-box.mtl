@@ -15,6 +15,7 @@ newmtl Green
 Kd 0.000000 1.000000 0.000000
 illum 2
 Ns 256.000000
+map_bump normalmap.png
 
 newmtl Blue
 Kd 0.000000 0.000000 1.000000

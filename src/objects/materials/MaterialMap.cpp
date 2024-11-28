@@ -110,9 +110,17 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
                     materialMap.addMaterial(originalPath + currentMaterialName,
                                             Material(currentColour,
                                                      StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
-                                                     StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
                                                      illuminationModel,
+                                                     StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
                                                      shininess));
+                }
+                else if (hasNormal)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                        Material(currentColour,
+                                 illuminationModel,
+                                 StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
+                                 shininess));
                 }
                 else if (hasTexture)
                 {
@@ -133,6 +141,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
             materialToStore = false;
             hasColour = false;
             hasTexture = false;
+            hasNormal = false;
 
             currentColour = glm::vec4(1);
             currentMaterialName = tokens.at(1);
@@ -171,7 +180,7 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
         }
 
         // Location of normal map
-        if ((tokens.at(0) == "map_Disp" || tokens.at(0) == "bump") && !tokens.at(1).empty())
+        if ((tokens.at(0) == "map_Disp" || tokens.at(0) == "bump" || tokens.at(0) == "map_bump") && !tokens.at(1).empty())
         {
             materialToStore = true;
 
@@ -207,9 +216,17 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
             materialMap.addMaterial(originalPath + currentMaterialName,
                                     Material(currentColour,
                                              StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
-                                             StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
                                              illuminationModel,
+                                             StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
                                              shininess));
+        }
+        else if (hasNormal)
+        {
+            materialMap.addMaterial(originalPath + currentMaterialName,
+                Material(currentColour,
+                         illuminationModel,
+                         StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
+                         shininess));
         }
         else if (hasTexture)
         {

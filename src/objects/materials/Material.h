@@ -37,20 +37,26 @@ public:
                                             float shadowProportion = false) const;
 
     Material();
-    explicit Material(glm::vec4 colour, IlluminationModel illuminationModel = FLAT, float specularStrength = 0.f);
+    explicit Material(glm::vec4 colour, IlluminationModel illuminationModel, float specularStrength = 0.f);
 
     explicit Material(
         const glm::vec4& colour,
         const std::string& texturePath,
-        IlluminationModel illuminationModel = FLAT,
+        IlluminationModel illuminationModel,
         float specularStrength = 0.f);
 
     explicit Material(
-    const glm::vec4& colour,
-    const std::string& texturePath,
-    const std::string& normalPath,
-    IlluminationModel illuminationModel = FLAT,
-    float specularStrength = 0.f);
+        const glm::vec4& colour,
+        const std::string& texturePath,
+        IlluminationModel illuminationModel,
+        const std::string& normalPath,
+        float specularStrength = 0.f);
+
+    explicit Material(
+        const glm::vec4& colour,
+        IlluminationModel illuminationModel,
+        const std::string& normalPath,
+        float specularStrength = 0.f);
 
 private:
     static constexpr int charsPerPixel = 4;
@@ -97,12 +103,12 @@ private:
     int textureWidth = 0;
     int textureHeight = 0;
     unsigned char* texture{};
-    bool hasTextureBool{};
+    bool hasTextureBool;
 
     int normalWidth = 0;
     int normalHeight = 0;
     unsigned char* normal{};
-    bool hasNormalBool{};
+    bool hasNormalBool;
 };
 
 #endif //MATERIAL_H

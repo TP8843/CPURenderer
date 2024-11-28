@@ -80,21 +80,19 @@ glm::vec3 Material::getNormal(const int x, const int y) const
 
     if (tiledX < 0 || tiledX >= textureWidth || tiledY < 0 || tiledY >= textureHeight)
     {
-        std::cout << "Texture out of bounds at (" << tiledX << "," << tiledY << ")" << std::endl;
+        std::cout << "Normal out of bounds at (" << tiledX << "," << tiledY << ")" << std::endl;
         return {0, 0, 1,};
     }
 
     const int startingPosition = (textureWidth * tiledY + tiledX) * charsPerPixel;
 
-    auto normal = glm::vec3{
-        static_cast<float>(texture[startingPosition + 0]) / 255.0f,
-        static_cast<float>(texture[startingPosition + 1]) / 255.0f,
-        static_cast<float>(texture[startingPosition + 2]) / 255.0f
+    const auto normalVector = glm::vec3{
+        (static_cast<float>(normal[startingPosition + 0]) / 255.0f) * 2.f - 1.f,
+        (static_cast<float>(normal[startingPosition + 1]) / 255.0f) * 2.f - 1.f,
+        (static_cast<float>(normal[startingPosition + 2]) / 127.0f - 1.f)
     };
 
-    normal = normal * 2.f - 1.f;
-
-    return glm::normalize(normal);
+    return glm::normalize(normalVector);
 }
 
 size_t Material::getTextureWidth() const
@@ -184,7 +182,9 @@ Material::Material(glm::vec4 colour,
                    const IlluminationModel illuminationModel,
                    const float specularStrength) : colour(std::move(colour)),
                                                    illuminationModel(illuminationModel),
-                                                   specularStrength(specularStrength)
+                                                   specularStrength(specularStrength),
+hasTextureBool(false),
+hasNormalBool(false)
 {
 }
 
@@ -195,7 +195,8 @@ Material::Material(const glm::vec4& colour,
     colour(colour),
     illuminationModel(illuminationModel),
     specularStrength(specularStrength),
-    hasTextureBool(true)
+    hasTextureBool(true),
+    hasNormalBool(false)
 {
     std::cout << "Attempting to load texture from " << texturePath << std::endl;
 
@@ -209,8 +210,8 @@ Material::Material(const glm::vec4& colour,
 Material::Material(
     const glm::vec4& colour,
     const std::string& texturePath,
-    const std::string& normalPath,
     const IlluminationModel illuminationModel,
+    const std::string& normalPath,
     const float specularStrength) :
     colour(colour),
     illuminationModel(illuminationModel),
@@ -222,8 +223,8 @@ Material::Material(
     std::cout << "Attempting to load normal texture from " << normalPath << std::endl;
 
     normal = stbi_load(normalPath.c_str(),
-                       &normalWidth,
-                       &normalHeight,
+                       &textureHeight,
+                       &textureHeight,
                        nullptr,
                        STBI_rgb_alpha);
 
@@ -232,6 +233,25 @@ Material::Material(
                         &textureHeight,
                         nullptr,
                         STBI_rgb_alpha);
+}
+
+Material::Material(
+    const glm::vec4& colour,
+    const IlluminationModel illuminationModel,
+    const std::string& normalPath,
+    const float specularStrength) :
+    colour(colour),
+    illuminationModel(illuminationModel),
+    specularStrength(specularStrength),
+    hasNormalBool(true)
+{
+    std::cout << "Attempting to load normal texture from " << normalPath << std::endl;
+
+    normal = stbi_load(normalPath.c_str(),
+                       &textureWidth,
+                       &textureHeight,
+                       nullptr,
+                       STBI_rgb_alpha);
 }
 
 glm::vec4 Material::flatShadedColour(
