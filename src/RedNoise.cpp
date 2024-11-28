@@ -54,6 +54,33 @@ AnimationHandler generateCameraHandler(Transformation& camera, ExportHandler& ex
     return animation;
 }
 
+AnimationHandler generateRasterCameraHandler(Transformation& camera, ExportHandler& exportHandler)
+{
+    auto animation = AnimationHandler(camera, exportHandler);
+
+    auto startingAnimation = Transformation();
+    startingAnimation.position = glm::vec3(0, 5, 15);
+    startingAnimation.lookAt(glm::vec3());
+
+    animation.animation.emplace_back(1, startingAnimation);
+
+    auto endingAnimation = startingAnimation;
+    endingAnimation.position = glm::vec3(0, -1.5, -1);
+
+    for (int i = 0; i < 180; i++)
+    {
+        const float proportion = static_cast<float>(i) / 180.f;
+
+        auto transformation = startingAnimation;
+        transformation.rotateX(proportion * (M_PI / 5.f));
+        transformation.position = startingAnimation.position + (endingAnimation.position - startingAnimation.position) * proportion;
+
+        animation.animation.emplace_back(1, transformation);
+    }
+
+    return animation;
+}
+
 AnimationHandler generateLogoHandler(Transformation& logo, ExportHandler& exportHandler)
 {
     auto animation = AnimationHandler(logo, exportHandler);
@@ -89,7 +116,7 @@ AnimationHandler generateLogoHandler(Transformation& logo, ExportHandler& export
 
 int main(int argc, char* argv[])
 {
-    std::string modelFile = "../models/textured-cornell-box.obj";
+    std::string modelFile = "./models/textured-cornell-box.obj";
     float scale = 1.0f;
     if (argc > 1)
     {
@@ -111,13 +138,13 @@ int main(int argc, char* argv[])
 
     auto transformation2 = Transformation();
     transformation2.position = glm::vec3(0, -0.6, 0.2);
-    auto model2 = Model::import("../models/sphere.obj", materialMap, transformation2);
+    auto model2 = Model::import("./models/sphere.obj", materialMap, transformation2);
 
     auto transformationLogo = Transformation();
     transformationLogo.scale = 1.f;
     transformationLogo.position = glm::vec3(2.5f, 0.f, 0.f);
     transformationLogo.rotateY(-(M_PI / 2.f));
-    auto model3 = Model::import("../models/hackspace-logo/logo-centred.obj", materialMap, transformationLogo);
+    auto model3 = Model::import("./models/hackspace-logo/logo-centred.obj", materialMap, transformationLogo);
 
     auto models = std::vector<Model*>();
     models.push_back(&model);
@@ -129,7 +156,7 @@ int main(int argc, char* argv[])
                          1);
 
     auto exportHandler = ExportHandler();
-    AnimationHandler cameraAnimator = generateCameraHandler(camera, exportHandler);
+    AnimationHandler cameraAnimator = generateRasterCameraHandler(camera, exportHandler);
     AnimationHandler logoAnimator = generateLogoHandler(transformationLogo, exportHandler);
 
     auto sphereAnimator = OrbitHandler(transformation2, glm::vec3(0, -0.6, 0.8),  true, false, false);

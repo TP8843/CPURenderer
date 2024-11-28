@@ -1,0 +1,1 @@
+ffmpeg -framerate 30 -pattern_type sequence -start_number 0 -i "%d.png" -vcodec libx264 -pix_fmt yuv420p -b 1600k output.mp4

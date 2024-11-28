@@ -11,8 +11,8 @@ void ExportHandler::handleFrame(DrawingWindow &window, float deltaTime)
 
 void ExportHandler::startExporting()
 {
-    exporting = true;
     frame = 0;
+    exporting = true;
 }
 
 void ExportHandler::stopExporting()
