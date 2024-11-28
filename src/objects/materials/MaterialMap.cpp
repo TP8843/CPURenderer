@@ -247,37 +247,66 @@ MaterialMap MaterialMap::import(MaterialMap& materialMap, const std::string& ori
 
     if (materialToStore)
     {
-        if (hasTexture && hasNormal)
-        {
-            materialMap.addMaterial(originalPath + currentMaterialName,
-                                    Material(currentColour,
-                                             StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
-                                             illuminationModel,
-                                             StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
-                                             shininess));
-        }
-        else if (hasNormal)
-        {
-            materialMap.addMaterial(originalPath + currentMaterialName,
-                Material(currentColour,
-                         illuminationModel,
-                         StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
-                         shininess));
-        }
-        else if (hasTexture)
-        {
-            materialMap.addMaterial(originalPath + currentMaterialName,
-                                    Material(
-                                        currentColour,
-                                        StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
-                                        illuminationModel,
-                                        shininess));
-        }
-        else
-        {
-            materialMap.addMaterial(originalPath + currentMaterialName,
-                                    Material(currentColour, illuminationModel, shininess));
-        }
+           if (hasTexture && hasNormal && hasSpecular)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                        Material(currentColour,
+                                 StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                 illuminationModel,
+                                 StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
+                                 shininess,
+                                 StringHelpers::concatFolderFile(folderPath, currentSpecularFilename)));
+                }
+                else if (hasTexture && hasNormal)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                                            Material(currentColour,
+                                                     StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                                     illuminationModel,
+                                                     StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
+                                                     shininess));
+                }
+                else if (hasNormal && hasSpecular)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                        Material(currentColour,
+                                 illuminationModel,
+                                 StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
+                                 shininess,
+                                 StringHelpers::concatFolderFile(folderPath, currentSpecularFilename)));
+                }
+                else if (hasTexture && hasSpecular)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                                            Material(
+                                                currentColour,
+                                                StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                                illuminationModel,
+                                                shininess,
+                                                StringHelpers::concatFolderFile(folderPath, currentSpecularFilename)));
+                }
+                else if (hasNormal)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                        Material(currentColour,
+                                 illuminationModel,
+                                 StringHelpers::concatFolderFile(folderPath, currentNormalFilename),
+                                 shininess));
+                }
+                else if (hasTexture)
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                                            Material(
+                                                currentColour,
+                                                StringHelpers::concatFolderFile(folderPath, currentTextureFilename),
+                                                illuminationModel,
+                                                shininess));
+                }
+                else
+                {
+                    materialMap.addMaterial(originalPath + currentMaterialName,
+                                            Material(currentColour, illuminationModel, shininess));
+                }
     }
 
     return materialMap;

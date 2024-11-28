@@ -100,7 +100,7 @@ glm::vec3 Material::getNormal(const int x, const int y) const
     return glm::normalize(normalVector);
 }
 
-glm::vec3 Material::getSpecular(const int x, const int y) const
+glm::vec4 Material::getSpecular(const int x, const int y) const
 {
     int tiledX = x % textureWidth;
     int tiledY = y % textureHeight;
@@ -110,19 +110,20 @@ glm::vec3 Material::getSpecular(const int x, const int y) const
 
     if (tiledX < 0 || tiledX >= textureWidth || tiledY < 0 || tiledY >= textureHeight)
     {
-        std::cout << "Normal out of bounds at (" << tiledX << "," << tiledY << ")" << std::endl;
-        return {0, 0, 1,};
+        std::cout << "Specular out of bounds at (" << tiledX << "," << tiledY << ")" << std::endl;
+        return {0, 0, 0, 1,};
     }
 
     const int startingPosition = (textureWidth * tiledY + tiledX) * charsPerPixel;
 
-    const auto normalVector = glm::vec3{
-        (static_cast<float>(normal[startingPosition + 0]) / 255.0f) * 2.f - 1.f,
-        (static_cast<float>(normal[startingPosition + 1]) / 255.0f) * 2.f - 1.f,
-        (static_cast<float>(normal[startingPosition + 2]) / 127.0f - 1.f)
+    const auto colour = glm::vec4{
+        (static_cast<float>(specular[startingPosition + 0]) / 255.0f),
+        (static_cast<float>(specular[startingPosition + 1]) / 255.0f),
+        (static_cast<float>(specular[startingPosition + 2]) / 255.0f),
+        1
     };
 
-    return glm::normalize(normalVector);
+    return colour;
 }
 
 size_t Material::getTextureWidth() const
@@ -144,9 +145,20 @@ glm::vec4 Material::getColourAtPointInCameraSpace(
     const IlluminationModel& illuminationModel,
     const float shadowProportion) const
 {
-    const glm::vec4 textureColour = getPixelTextureColour(
+
+    glm::vec4 textureColour = colour;
+    if (hasTexture())
+    {
+        textureColour = getPixelTextureColour(
         glm::round(texturePosition.x),
         glm::round(texturePosition.y));
+    }
+
+    auto specularColour = glm::vec4(1);
+    if (hasSpecularMap())
+    {
+        specularColour = getSpecular(texturePosition.x, texturePosition.y);
+    }
 
     switch (illuminationModel)
     {
@@ -159,7 +171,7 @@ glm::vec4 Material::getColourAtPointInCameraSpace(
             specularStrength,
             textureColour * 0.2f,
             textureColour,
-            glm::vec4(1),
+            specularColour,
             shadowProportion);
 
     default: return flatShadedColour(

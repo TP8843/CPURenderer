@@ -289,7 +289,7 @@ std::pair<glm::vec4, int> Raytracer::surfaceColour(
     const auto vertices = intersection.intersectedTriangle.vertices;
     glm::vec3 transformedNormal = normal;
 
-    if (material.hasTexture())
+    if (material.hasTexture() || material.hasSpecularMap())
     {
         const TexturePoint finalTexturePoint = texturePoints[0]
             + (texturePoints[1] - texturePoints[0]) * intersection.proportions.x

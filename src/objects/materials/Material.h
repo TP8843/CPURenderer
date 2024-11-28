@@ -19,7 +19,7 @@ public:
     bool hasSpecularMap() const;
     glm::vec4 getPixelTextureColour(int x, int y) const;
     glm::vec3 getNormal(int x, int y) const;
-    glm::vec3 getSpecular(int x, int y) const;
+    glm::vec4 getSpecular(int x, int y) const;
     size_t getTextureWidth() const;
     size_t getTextureHeight() const;
 
