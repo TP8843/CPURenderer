@@ -1,5 +1,21 @@
 # CPU Raster/Pathtraced Renderer
 
+## Installation
+
+### Install SDL2
+
+- First, install SDL2 as a package. Examples of packages for package managers include:
+```
+apt install libsdl2-dev
+rpm -i SDL2-devel
+yum install SDL2-devel
+brew install sdl2
+port install libsdl2
+pacman -S sdl2
+```
+
+- If using Windows, make use of WSL2 (Windows Subsystem for Linux) to run the program as a Linux application, running one of the commands as above (e.g. `apt install libsdl2-dev` for Debian based distros like Ubuntu)
+
 ## Implemented Features
 - [x] Diffuse Shading
 - [x] Specular Highlights
