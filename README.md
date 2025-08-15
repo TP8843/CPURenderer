@@ -1,22 +1,22 @@
-# RedNoise
+# CPU Raster/Pathtraced Renderer
 
 ## Implemented Features
 - [x] Diffuse Shading
 - [x] Specular Highlights
 - [x] Flat Shading
-- [ ] Gourard Shading
+- [x] Gourard Shading
 - [x] Phong Shading
 - [x] Mirrors
 - [x] Multiple models
 - [x] Redo colour system to support HDR and arbitrary values during calculation steps
-- [ ] Add gamma correction to improve colour accuracy (https://learnopengl.com/Advanced-Lighting/Gamma-Correction)
-- [ ] Animation system
-  - [ ] Linear Interpolation
+- [x] Add gamma correction to improve colour accuracy (https://learnopengl.com/Advanced-Lighting/Gamma-Correction)
+- [x] Animation system
+  - [x] Linear Interpolation
   - [ ] Cubic Interpolation
   - [ ] Bézier curves (for smoother movement)
 - [ ] Metallic shading (tinted mirror surface with perturbations)
 - [ ] Multiple lights
-- [ ] Concurrency
+- [x] Concurrency
 
 ## Generating Debug and Release Makefiles
 
