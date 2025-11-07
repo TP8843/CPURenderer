@@ -86,7 +86,7 @@ void DrawTests::drawLineTest(DrawingWindow &window)
 
 void DrawTests::drawTexturedTriangleTest(DrawingWindow &window)
 {
-	const auto texture = TextureMap("./texture.ppm");
+	const auto texture = TextureMap("./models/texture.ppm");
 	const auto v1 = CanvasPoint(160, 10, TexturePoint(195, 5));
 	const auto v2 = CanvasPoint(300, 230, TexturePoint(395, 380));
 	const auto v3 = CanvasPoint(10, 150, TexturePoint(65, 330));
@@ -132,25 +132,6 @@ void DrawTests::drawEdgeCaseTriangles (DrawingWindow &window)
 	Draw::drawFilledTriangle(window, triangle2);
 	Draw::drawFilledTriangle(window, triangle3);
 	Draw::drawFilledTriangle(window, triangle4);
-}
-
-void DrawTests::drawNoiseTest(DrawingWindow &window)
-{
-	auto materialMap = MaterialMap();
-
-	for (int i = 0; i < 100; i++)
-	{
-		glm::vec2 random = materialMap.getSampledVec2(0, 0, i);
-		random = random * 100.f + glm::vec2(window.width / 2.f,window.height / 2.f);
-
-		const auto randomOffset = materialMap.getSampledVec2(0, 0, i);
-		const auto pointRadius = (1.f / 3.f) * randomOffset.x;
-		const auto pointAngle = randomOffset.y * 2 * M_PI;
-		auto discPos = glm::vec2(pointRadius * glm::cos(pointAngle), pointRadius * glm::sin(pointAngle));
-		discPos = discPos * 200.f + glm::vec2(window.width / 2, window.height / 2);
-
-		window.setPixelColour(discPos.x, discPos.y, 0xFFFFFFFF);
-	}
 }
 
 void DrawTests::handleEvent(SDL_Event& event, DrawingWindow& window)
